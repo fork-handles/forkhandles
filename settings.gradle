@@ -1,0 +1,5 @@
+rootProject.name = "fork-handles"
+
+include 'bunting4k'
+include 'tuples4k'
+include 'forkhandles-bom'
