@@ -34,7 +34,7 @@ class BuntingTest {
         MyTestFlags(arrayOf()).use(output) {
             required
         }
-        assertThat(output.toString(), equalTo("Usage: <name> [OPTIONS]\nNMissing --required option"))
+        assertThat(output.toString(), equalTo("Usage: <name> [OPTIONS]\nMissing --required (STRING) option"))
     }
 
     @Test
@@ -74,7 +74,7 @@ class BuntingTest {
         MyTestFlags(arrayOf("--mapped", "asd")).use(output) {
             mapped
         }
-        assertThat(output.toString(), equalTo("Usage: <name> [OPTIONS]\nIllegal --mapped option: asd"))
+        assertThat(output.toString(), equalTo("Usage: <name> [OPTIONS]\nIllegal --mapped (INT) option: asd"))
     }
 
     @Test
@@ -89,10 +89,10 @@ class BuntingTest {
         }
         assertThat(output.toString(), equalTo("Usage: <name> [OPTIONS]\n" +
             "Options:\n" +
-            "\t-a, --anEnum\t\tThis is an Enum. Option choice: [a, b]\n" +
-            "\t-d, --defaulted\t\tThis is a defaulted option\n" +
-            "\t-m, --mapped\t\tThis is a mapped option\n" +
-            "\t-r, --required\t\tThis is a required option\n" +
+            "\t-a, --anEnum\t\tThis is an Enum. Option choice: [a, b] (ANENUM)\n" +
+            "\t-d, --defaulted\t\tThis is a defaulted option (STRING)\n" +
+            "\t-m, --mapped\t\tThis is a mapped option (INT)\n" +
+            "\t-r, --required\t\tThis is a required option (STRING)\n" +
             "    -h, --help          Show this message and exit"))
     }
 

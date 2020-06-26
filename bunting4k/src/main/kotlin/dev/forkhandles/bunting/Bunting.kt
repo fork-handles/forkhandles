@@ -14,7 +14,7 @@ abstract class Bunting(internal val args: Array<String>) {
             listOf(p.javaField!!.apply { trySetAccessible() }[this]!!)
                 .filterIsInstance<BuntingFlag<*>>()
                 .firstOrNull()
-                ?.let { p.name to (it.description ?: "") }
+                ?.let { p.name to "${it.description ?: ""} (${p.typeDescription()})" }
         }
         .sortedBy { it.first }
         .describe()

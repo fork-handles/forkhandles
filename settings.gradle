@@ -1,4 +1,4 @@
-rootProject.name = "fork-handles"
+rootProject.name = "forkhandles"
 
 include 'bunting4k'
 include 'tuples4k'
