@@ -1,5 +1,6 @@
 package dev.forkhandles.bunting
 
+import java.util.UUID
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -25,3 +26,12 @@ data class BuntingFlag<T> internal constructor(
         } ?: throw MissingFlag(property)
     }
 }
+
+fun BuntingFlag<String>.int() = map(String::toInt)
+fun BuntingFlag<String>.float() = map(String::toFloat)
+fun BuntingFlag<String>.long() = map(String::toLong)
+fun BuntingFlag<String>.uuid() = map(UUID::fromString)
+fun BuntingFlag<String>.char() = map(String::first)
+fun BuntingFlag<String>.boolean() = map(String::toBoolean)
+inline fun <reified T : Enum<T>> BuntingFlag<String>.enum() =
+    copy(description = (description ?: "") + ". Option choice: " + enumValues<T>().toList()).map { enumValueOf<T>(it) }

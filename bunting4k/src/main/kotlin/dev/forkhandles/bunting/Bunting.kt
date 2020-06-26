@@ -1,6 +1,5 @@
 package dev.forkhandles.bunting
 
-import java.util.UUID
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.javaField
 
@@ -31,12 +30,3 @@ fun <T : Bunting> T.use(out: (String) -> Unit = ::println, fn: T.() -> Unit) =
     } catch (e: BuntingException) {
         out("Usage: <name> [OPTIONS]\n" + e.localizedMessage)
     }
-
-fun BuntingFlag<String>.int() = map(String::toInt)
-fun BuntingFlag<String>.float() = map(String::toFloat)
-fun BuntingFlag<String>.long() = map(String::toLong)
-fun BuntingFlag<String>.uuid() = map(UUID::fromString)
-fun BuntingFlag<String>.char() = map(String::first)
-fun BuntingFlag<String>.boolean() = map(String::toBoolean)
-inline fun <reified T : Enum<T>> BuntingFlag<String>.enum() =
-    copy(description = (description ?: "") + ". Option choice: " + enumValues<T>().toList()).map { enumValueOf<T>(it) }

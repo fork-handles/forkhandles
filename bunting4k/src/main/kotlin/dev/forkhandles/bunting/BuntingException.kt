@@ -1,6 +1,5 @@
 package dev.forkhandles.bunting
 
-import java.lang.RuntimeException
 import kotlin.reflect.KProperty
 
 sealed class BuntingException(message: String, cause: Throwable? = null) : RuntimeException(message, cause)
