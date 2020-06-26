@@ -89,9 +89,9 @@ allprojects {
                         asNode().appendNode('url', 'https://forkhandles.dev')
                         asNode().appendNode('developers')
                         asNode().appendNode('scm').
-                            appendNode('url', 'git@github.com:fork-handles/' + archivesBaseName + '.git').parent().
-                            appendNode('connection', 'scm:git:git@github.com:fork-handles/' + archivesBaseName + '.git').parent().
-                            appendNode('developerConnection', 'scm:git:git@github.com:fork-handles/' + archivesBaseName + '.git')
+                            appendNode('url', 'git@github.com:fork-handles/forkhandles.git').parent().
+                            appendNode('connection', 'scm:git:git@github.com:fork-handles/forkhandles.git').parent().
+                            appendNode('developerConnection', 'scm:git:git@github.com:fork-handles/forkhandles.git')
                         asNode().appendNode('licenses').appendNode('license').
                             appendNode('name', 'Apache License, Version 2.0').parent().
                             appendNode('url', 'http://www.apache.org/licenses/LICENSE-2.0.html')
@@ -119,8 +119,8 @@ allprojects {
 
             desc = description
             websiteUrl = 'https://forkhandles.dev'
-            issueTrackerUrl = 'https://github.com/fork-handles/fork-handles/issues'
-            vcsUrl = 'https://github.com/fork-handles/fork-handles.git'
+            issueTrackerUrl = 'https://github.com/fork-handles/forkhandles/issues'
+            vcsUrl = 'https://github.com/fork-handles/forkhandles.git'
             licenses = ['Apache-2.0']
             labels = []
             publicDownloadNumbers = true
