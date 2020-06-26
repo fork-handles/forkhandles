@@ -2,4 +2,5 @@ description = 'ForkHandles Tuples library'
 
 dependencies {
     api Libs.kotlin_stdlib_jdk8
+    testApi Config.TestDependencies
 }
