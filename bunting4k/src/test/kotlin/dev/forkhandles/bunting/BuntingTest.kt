@@ -39,6 +39,14 @@ class BuntingTest {
     }
 
     @Test
+    fun `no value then required flag is parsed`() {
+        MyTestFlags(arrayOf("--noValueFlag", "--required", "foo", "--noValueFlag2", "--required2", "foo2")).use(output) {
+            assertThat(required, equalTo("foo"))
+        }
+        assertThat(output.toString(), equalTo(""))
+    }
+
+    @Test
     fun `missing required flag blows`() {
         MyTestFlags(arrayOf()).use(output) {
             required
