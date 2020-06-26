@@ -4,8 +4,9 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.javaField
 
 abstract class Bunting(internal val args: Array<String>) {
-    fun requiredFlag(description: String? = null) = BuntingFlag({ it }, description, null)
-    fun defaultedFlag(default: String?, description: String? = null) = BuntingFlag({ it }, description, default)
+    fun noValueFlag(description: String? = null) = NoValueFlag(description)
+    fun requiredFlag(description: String? = null) = ValueFlag({ it }, description, null)
+    fun defaultedFlag(default: String?, description: String? = null) = ValueFlag({ it }, description, default)
 
     internal fun description() = this::class.members
         .filterIsInstance<KProperty<*>>()

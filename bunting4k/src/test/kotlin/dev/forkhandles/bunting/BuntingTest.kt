@@ -15,14 +15,23 @@ class BuntingTest {
     }
 
     class MyTestFlags(args: Array<String>) : Bunting(args) {
-        val required by requiredFlag("This is a required option")
-        val defaulted by defaultedFlag("0.0.0", "This is a defaulted option")
-        val mapped by requiredFlag("This is a mapped option").map { it.toInt() }
+        val noValueFlag by noValueFlag("This is a no option flag")
+        val required by requiredFlag("This is a required flag")
+        val defaulted by defaultedFlag("0.0.0", "This is a defaulted flag")
+        val mapped by requiredFlag("This is a mapped flag").map { it.toInt() }
         val anEnum by requiredFlag("This is an Enum").enum<AnEnum>()
     }
 
     @Test
-    fun `required option is parsed`() {
+    fun `no value flag is parsed`() {
+        MyTestFlags(arrayOf("--noValueFlag")).use(output) {
+            assertThat(noValueFlag, equalTo(true))
+        }
+        assertThat(output.toString(), equalTo(""))
+    }
+
+    @Test
+    fun `required flag is parsed`() {
         MyTestFlags(arrayOf("--required", "foo")).use(output) {
             assertThat(required, equalTo("foo"))
         }
@@ -30,15 +39,15 @@ class BuntingTest {
     }
 
     @Test
-    fun `missing required option blows`() {
+    fun `missing required flag blows`() {
         MyTestFlags(arrayOf()).use(output) {
             required
         }
-        assertThat(output.toString(), equalTo("Usage: <name> [OPTIONS]\nMissing --required (STRING) option"))
+        assertThat(output.toString(), equalTo("Usage: <name> [OPTIONS]\nMissing --required (STRING) flag"))
     }
 
     @Test
-    fun `missing defaulted option is defaulted`() {
+    fun `missing defaulted flag is defaulted`() {
         MyTestFlags(arrayOf()).use(output) {
             assertThat(defaulted, equalTo("0.0.0"))
         }
@@ -46,7 +55,7 @@ class BuntingTest {
     }
 
     @Test
-    fun `passing short option`() {
+    fun `passing short flag`() {
         MyTestFlags(arrayOf("-r", "foo")).use(output) {
             assertThat(required, equalTo("foo"))
         }
@@ -62,7 +71,7 @@ class BuntingTest {
     }
 
     @Test
-    fun `mapped option`() {
+    fun `mapped flag`() {
         MyTestFlags(arrayOf("--mapped", "123")).use(output) {
             assertThat(mapped, equalTo(123))
         }
@@ -70,11 +79,11 @@ class BuntingTest {
     }
 
     @Test
-    fun `illegal value option`() {
+    fun `illegal value flag`() {
         MyTestFlags(arrayOf("--mapped", "asd")).use(output) {
             mapped
         }
-        assertThat(output.toString(), equalTo("Usage: <name> [OPTIONS]\nIllegal --mapped (INT) option: asd"))
+        assertThat(output.toString(), equalTo("Usage: <name> [OPTIONS]\nIllegal --mapped (INT) flag: asd"))
     }
 
     @Test
@@ -90,9 +99,10 @@ class BuntingTest {
         assertThat(output.toString(), equalTo("Usage: <name> [OPTIONS]\n" +
             "Options:\n" +
             "\t-a, --anEnum\t\tThis is an Enum. Option choice: [a, b] (ANENUM)\n" +
-            "\t-d, --defaulted\t\tThis is a defaulted option (STRING)\n" +
-            "\t-m, --mapped\t\tThis is a mapped option (INT)\n" +
-            "\t-r, --required\t\tThis is a required option (STRING)\n" +
+            "\t-d, --defaulted\t\tThis is a defaulted flag (STRING)\n" +
+            "\t-m, --mapped\t\tThis is a mapped flag (INT)\n" +
+            "\t-n, --noValueFlag\t\tThis is a no option flag (BOOLEAN)\n" +
+            "\t-r, --required\t\tThis is a required flag (STRING)\n" +
             "    -h, --help          Show this message and exit"))
     }
 

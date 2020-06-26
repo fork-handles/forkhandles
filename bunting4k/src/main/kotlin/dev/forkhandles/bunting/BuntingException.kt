@@ -6,7 +6,7 @@ sealed class BuntingException(message: String, cause: Throwable? = null) : Runti
 
 class Help(message: String) : BuntingException(message)
 
-class MissingFlag(property: KProperty<*>) : BuntingException("Missing --${property.name} (${property.typeDescription()}) option")
+class MissingFlag(property: KProperty<*>) : BuntingException("Missing --${property.name} (${property.typeDescription()}) flag")
 
 class IllegalFlag(property: KProperty<*>, value: String, cause: Throwable) :
-    BuntingException("Illegal --${property.name} (${property.typeDescription()}) option: $value", cause)
+    BuntingException("Illegal --${property.name} (${property.typeDescription()}) flag: $value", cause)

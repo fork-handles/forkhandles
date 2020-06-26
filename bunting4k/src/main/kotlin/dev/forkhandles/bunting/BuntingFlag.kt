@@ -4,13 +4,20 @@ import java.util.UUID
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-data class BuntingFlag<T> internal constructor(
-    internal val fn: (String) -> T,
-    val description: String? = null,
-    internal val default: String?
-) : ReadOnlyProperty<Bunting, T> {
+sealed class BuntingFlag<T>(open val description: String? = null) : ReadOnlyProperty<Bunting, T>
 
-    fun <NEXT> map(nextFn: (T) -> NEXT) = BuntingFlag({ nextFn(fn(it)) }, description, default)
+class NoValueFlag(description: String? = null) : BuntingFlag<Boolean>(description) {
+    override fun getValue(thisRef: Bunting, property: KProperty<*>): Boolean =
+        thisRef.args.contains("--${property.name}") || thisRef.args.contains("--${property.name.first()}")
+}
+
+data class ValueFlag<T> internal constructor(
+    internal val fn: (String) -> T,
+    override val description: String? = null,
+    internal val default: String?
+) : BuntingFlag<T>(description) {
+
+    fun <NEXT> map(nextFn: (T) -> NEXT) = ValueFlag({ nextFn(fn(it)) }, description, default)
 
     override fun getValue(thisRef: Bunting, property: KProperty<*>): T {
         val windowed = thisRef.args.toList().windowed(2).map { it[0] to it[1] }.toMap()
@@ -27,11 +34,11 @@ data class BuntingFlag<T> internal constructor(
     }
 }
 
-fun BuntingFlag<String>.int() = map(String::toInt)
-fun BuntingFlag<String>.float() = map(String::toFloat)
-fun BuntingFlag<String>.long() = map(String::toLong)
-fun BuntingFlag<String>.uuid() = map(UUID::fromString)
-fun BuntingFlag<String>.char() = map(String::first)
-fun BuntingFlag<String>.boolean() = map(String::toBoolean)
-inline fun <reified T : Enum<T>> BuntingFlag<String>.enum() =
+fun ValueFlag<String>.int() = map(String::toInt)
+fun ValueFlag<String>.float() = map(String::toFloat)
+fun ValueFlag<String>.long() = map(String::toLong)
+fun ValueFlag<String>.uuid() = map(UUID::fromString)
+fun ValueFlag<String>.char() = map(String::first)
+fun ValueFlag<String>.boolean() = map(String::toBoolean)
+inline fun <reified T : Enum<T>> ValueFlag<String>.enum() =
     copy(description = (description ?: "") + ". Option choice: " + enumValues<T>().toList()).map { enumValueOf<T>(it) }
