@@ -17,7 +17,7 @@ class ClokkTest {
     }
 
     @Test
-    fun `truncating clock`() {
+    fun `truncated clock`() {
         assertThat(Clokk.Truncated(SECONDS).now(), equalTo(ZonedDateTime.now(ZoneId.of("UTC")).truncatedTo(SECONDS)))
         assertThat(Clokk.Truncated(MINUTES).now(), equalTo(ZonedDateTime.now(ZoneId.of("UTC")).truncatedTo(MINUTES)))
         assertThat(Clokk.Truncated(HOURS).now(), equalTo(ZonedDateTime.now(ZoneId.of("UTC")).truncatedTo(HOURS)))

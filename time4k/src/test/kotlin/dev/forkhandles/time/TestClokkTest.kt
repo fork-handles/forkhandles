@@ -19,17 +19,12 @@ class TestClokkTest {
     }
 
     @Test
-    fun `ticking clock`() {
+    fun `auto-ticking clock`() {
         val now = ZonedDateTime.now()
-        assertThat(TestClokk.Fixed(now).now(), equalTo(now))
-    }
+        val clokk = TestClokk.AutoTicking(now)
+        val tick = Duration.ofSeconds(1)
 
-    @Test
-    fun `ticking2 clock`() {
-        val now = ZonedDateTime.now()
-        val klock = TestClokk.AutoTicking(now)
-        assertThat(klock.now(), equalTo(now))
-        assertThat(klock.now(), equalTo(now.plusSeconds(1)))
+        assertThat(clokk.now(), equalTo(now))
+        assertThat(clokk.tick(tick).now(), equalTo(now + tick + tick))
     }
-
 }
