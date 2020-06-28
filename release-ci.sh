@@ -11,7 +11,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 LOCAL_VERSION=$(jq -r .forkhandles.version $DIR/version.json)
 
-BINTRAY_VERSION=$(curl -s https://bintray.com/api/v1/packages/forkhandles/maven/forkhandles-bom/versions/_latest | jq -r .name)
+BINTRAY_VERSION=$(curl -s https://bintray.com/api/v1/packages/fork-handles/maven/forkhandles-bom/versions/_latest | jq -r .name)
 
 if [[ "$LOCAL_VERSION" == "$BINTRAY_VERSION" ]]; then
     echo "Version has not changed"
