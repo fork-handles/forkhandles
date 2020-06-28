@@ -4,16 +4,16 @@ import java.util.UUID
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-sealed class BuntingFlag<T>(open val description: String? = null) : ReadOnlyProperty<Bunting, T>
+sealed class BuntingFlag<T>(open val description: String = "") : ReadOnlyProperty<Bunting, T>
 
-class NoValueFlag(description: String? = null) : BuntingFlag<Boolean>(description) {
+class NoValueFlag(description: String = "") : BuntingFlag<Boolean>(description) {
     override fun getValue(thisRef: Bunting, property: KProperty<*>): Boolean =
         thisRef.args.contains("--${property.name}") || thisRef.args.contains("--${property.name.first()}")
 }
 
 data class ValueFlag<T> internal constructor(
     internal val fn: (String) -> T,
-    override val description: String? = null,
+    override val description: String = "",
     internal val default: String?
 ) : BuntingFlag<T>(description) {
 

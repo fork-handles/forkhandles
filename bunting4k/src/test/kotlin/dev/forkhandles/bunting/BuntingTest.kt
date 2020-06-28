@@ -2,6 +2,7 @@ package dev.forkhandles.bunting
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
+import com.natpryce.hamkrest.startsWith
 import org.junit.jupiter.api.Test
 import java.lang.IllegalArgumentException
 import java.util.UUID
@@ -104,14 +105,14 @@ class BuntingTest {
         MyTestFlags(strings).use(output) {
             throw IllegalArgumentException()
         }
-        assertThat(output.toString(), equalTo("Usage: <name> [OPTIONS]\n" +
-            "Options:\n" +
-            "\t-a, --anEnum\t\tThis is an Enum. Option choice: [a, b] (ANENUM)\n" +
-            "\t-d, --defaulted\t\tThis is a defaulted flag (STRING)\n" +
-            "\t-m, --mapped\t\tThis is a mapped flag (INT)\n" +
-            "\t-n, --noValueFlag\t\tThis is a no option flag (BOOLEAN)\n" +
-            "\t-r, --required\t\tThis is a required flag (STRING)\n" +
-            "    -h, --help          Show this message and exit"))
+        assertThat(output.toString(), equalTo("""Usage: <name> [OPTIONS]
+Options:
+	-a, --anEnum		This is an Enum. Option choice: [a, b] (ANENUM) 
+	-d, --defaulted		This is a defaulted flag. Defaults to "0.0.0" (STRING) 
+	-m, --mapped		This is a mapped flag (INT) 
+	-n, --noValueFlag		This is a no option flag (BOOLEAN) 
+	-r, --required		This is a required flag (STRING) 
+    -h, --help          Show this message and exit"""))
     }
 
     @Test
