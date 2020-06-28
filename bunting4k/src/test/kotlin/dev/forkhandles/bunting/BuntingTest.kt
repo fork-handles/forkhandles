@@ -107,11 +107,11 @@ class BuntingTest {
         }
         assertThat(output.toString(), equalTo("""Usage: <name> [OPTIONS]
 Options:
-	-a, --anEnum		This is an Enum. Option choice: [a, b] (ANENUM) 
-	-d, --defaulted		This is a defaulted flag. Defaults to "0.0.0" (STRING) 
-	-m, --mapped		This is a mapped flag (INT) 
-	-n, --noValueFlag		This is a no option flag (BOOLEAN) 
-	-r, --required		This is a required flag (STRING) 
+	-a, --anEnum		This is an Enum. Option choice: [a, b] (ANENUM)
+	-d, --defaulted		This is a defaulted flag. Defaults to "0.0.0" (STRING)
+	-m, --mapped		This is a mapped flag (INT)
+	-n, --noValueFlag		This is a no option flag
+	-r, --required		This is a required flag (STRING)
     -h, --help          Show this message and exit"""))
     }
 

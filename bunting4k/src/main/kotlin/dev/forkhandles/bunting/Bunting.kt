@@ -18,8 +18,10 @@ abstract class Bunting(internal val args: Array<String>) {
                 .filterIsInstance<BuntingFlag<*>>()
                 .firstOrNull()
                 ?.let {
-                    val s = "${it.description ?: ""} (${p.typeDescription()}) "
-                    p.name to s
+                    p.name to  when(it) {
+                        is NoValueFlag -> it.description
+                        is ValueFlag -> "${it.description} (${p.typeDescription()})"
+                    }
                 }
         }
         .sortedBy { it.first }
