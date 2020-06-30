@@ -36,7 +36,8 @@ object TestTimeSources {
 
         override fun tick(amount: Duration?) = apply {
             amount?.requirePositive()
-            initial.apply { set(get() + (amount ?: tick)) } }
+            initial.apply { set(get() + (amount ?: tick)) }
+        }
 
         private fun Duration.requirePositive() =
             require(!isNegative) { "Time can only tick forwards, not by $this" }
