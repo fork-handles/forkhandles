@@ -4,8 +4,6 @@ import java.time.Duration
 import java.time.Duration.ofSeconds
 import java.time.Instant
 import java.time.Instant.EPOCH
-import java.time.temporal.ChronoUnit.NANOS
-import java.time.temporal.TemporalAmount
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -18,40 +16,36 @@ interface TickableTimeSource : TimeSource {
     fun tick(amount: Duration? = null): TickableTimeSource
 }
 
-object TestTimeSources {
-
-    /**
-     * TimeSource that always returns a fixed time unless advanced with tick().
-     */
-    fun Fixed(
-        time: Instant = EPOCH,
-        tick: Duration = ofSeconds(1)
-    ) = object : TickableTimeSource {
-
-        init {
-            tick.requirePositive()
-        }
-
-        private val initial = AtomicReference(time)
-
-        override fun tick(amount: Duration?) = apply {
-            amount?.requirePositive()
-            initial.apply { set(get() + (amount ?: tick)) }
-        }
-
-        private fun Duration.requirePositive() =
-            require(!isNegative) { "Time can only tick forwards, not by $this" }
-
-        override operator fun invoke() = initial.get()
+/**
+ * TimeSource that always returns a fixed time unless advanced with tick().
+ */
+class FixedTimeSource(
+    time: Instant = EPOCH,
+    private val tick: Duration = ofSeconds(1)
+) : TickableTimeSource {
+    
+    init {
+        tick.requirePositive()
     }
-
-    /**
-     * TimeSource that automatically ticks by a standard amount (default to 1s) when queried.
-     */
-    fun AutoTicking(start: Instant = EPOCH, tickSize: Duration = ofSeconds(1)): TickableTimeSource {
-        val fixed = Fixed(start, tickSize)
-        return object : TickableTimeSource by fixed {
-            override operator fun invoke() = fixed().also { fixed.tick() }
-        }
+    
+    private val initial = AtomicReference(time)
+    
+    override fun tick(amount: Duration?) = apply {
+        amount?.requirePositive()
+        initial.getAndUpdate { it + (amount ?: tick) }
     }
+    
+    private fun Duration.requirePositive() =
+        require(!isNegative) { "Time can only tick forwards, not by $this" }
+    
+    override operator fun invoke(): Instant = initial.get()
+}
+
+/**
+ * TimeSource that automatically ticks by a standard amount (default to 1s) when queried.
+ */
+class AutoTickingTimeSource(private val underlying: TickableTimeSource) : TickableTimeSource by underlying {
+    constructor(time: Instant = EPOCH, tick: Duration = ofSeconds(1)) : this(FixedTimeSource(time, tick))
+    
+    override operator fun invoke() = underlying().also { underlying.tick() }
 }

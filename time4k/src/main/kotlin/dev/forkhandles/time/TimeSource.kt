@@ -4,23 +4,20 @@ import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneId.of
+import java.time.ZoneId.systemDefault
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import java.time.temporal.ChronoUnit.SECONDS
 import java.time.temporal.TemporalUnit
+import java.util.TimeZone
+import java.util.concurrent.TimeUnit
 
 /**
  * Functional Clock interface (which is not an abstract class!)
  */
 typealias TimeSource = () -> Instant
 
-object TimeSources {
-    @JvmField
-    val SystemUTC: TimeSource = Clock.systemUTC()::instant
+val systemTime = Clock.systemUTC()::instant
 
-    /**
-     * TimeSource that truncates down to the latest unit (defaulting to exact seconds).
-     */
-    @JvmStatic
-    fun Ticking(unit: TemporalUnit = SECONDS): TimeSource = { now(of("UTC")).truncatedTo(unit).toInstant() }
-}
+fun TimeSource.ticking(unit: TemporalUnit = SECONDS, tz: ZoneId = systemDefault()) : TimeSource =
+    fun() = this().atZone(tz).truncatedTo(unit).toInstant()
