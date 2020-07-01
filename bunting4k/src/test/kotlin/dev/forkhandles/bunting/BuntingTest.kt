@@ -2,9 +2,7 @@ package dev.forkhandles.bunting
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import com.natpryce.hamkrest.startsWith
 import org.junit.jupiter.api.Test
-import java.lang.IllegalArgumentException
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
 
@@ -16,11 +14,11 @@ class BuntingTest {
     }
 
     class MyTestFlags(args: Array<String>) : Bunting(args) {
-        val noValueFlag by noValueFlag("This is a no option flag")
-        val required by requiredFlag("This is a required flag")
-        val defaulted by defaultedFlag("0.0.0", "This is a defaulted flag")
-        val mapped by requiredFlag("This is a mapped flag").map { it.toInt() }
-        val anEnum by requiredFlag("This is an Enum").enum<AnEnum>()
+        val noValueFlag by switch("This is a no option flag")
+        val required by option("This is a required flag")
+        val defaulted by option("This is a defaulted flag").defaultsTo("0.0.0")
+        val mapped by option("This is a mapped flag").map { it.toInt() }
+        val anEnum by option("This is an Enum").enum<AnEnum>().defaultsTo("b")
     }
 
     @Test
@@ -107,7 +105,7 @@ class BuntingTest {
         }
         assertThat(output.toString(), equalTo("""Usage: <name> [OPTIONS]
 Options:
-	-a, --anEnum		This is an Enum. Option choice: [a, b] (ANENUM)
+	-a, --anEnum		This is an Enum. Option choice: [a, b]. Defaults to "b" (ANENUM)
 	-d, --defaulted		This is a defaulted flag. Defaults to "0.0.0" (STRING)
 	-m, --mapped		This is a mapped flag (INT)
 	-n, --noValueFlag		This is a no option flag
@@ -118,13 +116,13 @@ Options:
     @Test
     fun extensions() {
         class ExtensionFlags(args: Array<String>) : Bunting(args) {
-            val int by requiredFlag().int()
-            val float by requiredFlag().float()
-            val char by requiredFlag().char()
-            val long by requiredFlag().long()
-            val boolean by requiredFlag().boolean()
-            val uuid by requiredFlag().uuid()
-            val anEnum by requiredFlag().enum<AnEnum>()
+            val int by option().int()
+            val float by option().float()
+            val char by option().char()
+            val long by option().long()
+            val boolean by option().boolean()
+            val uuid by option().uuid()
+            val anEnum by option().enum<AnEnum>()
         }
 
         ExtensionFlags(

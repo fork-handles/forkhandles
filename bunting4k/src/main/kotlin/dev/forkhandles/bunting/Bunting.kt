@@ -4,12 +4,8 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.javaField
 
 abstract class Bunting(internal val args: Array<String>) {
-    fun noValueFlag(description: String? = null) = NoValueFlag(description ?: "")
-    fun requiredFlag(description: String? = null) = ValueFlag({ it }, description ?: "", null)
-    fun defaultedFlag(default: String, description: String? = null) =
-        ValueFlag({ it },
-            description?.let { "$it. " } + "Defaults to \"${default}\"",
-            default)
+    fun switch(description: String = "") = Switch(description)
+    fun option(description: String = "") = Option({ it }, description, null)
 
     internal fun description() = this::class.members
         .filterIsInstance<KProperty<*>>()
@@ -18,9 +14,9 @@ abstract class Bunting(internal val args: Array<String>) {
                 .filterIsInstance<BuntingFlag<*>>()
                 .firstOrNull()
                 ?.let {
-                    p.name to  when(it) {
-                        is NoValueFlag -> it.description
-                        is ValueFlag -> "${it.description} (${p.typeDescription()})"
+                    p.name to when (it) {
+                        is Switch -> it.description
+                        is Option -> "${it.description} (${p.typeDescription()})"
                     }
                 }
         }
