@@ -13,7 +13,7 @@ class BuntingTest {
         a, b
     }
 
-    class MyTestFlags(args: Array<String>) : Bunting(args) {
+    class MyTestFlags(args: Array<String>) : Bunting(args, "MyTestFlags") {
         val noValueFlag by switch("This is a no option flag")
         val required by option("This is a required flag")
         val defaulted by option("This is a defaulted flag").defaultsTo("0.0.0")
@@ -50,7 +50,7 @@ class BuntingTest {
         MyTestFlags(arrayOf()).use(output) {
             required
         }
-        assertThat(output.toString(), equalTo("Usage: <name> [OPTIONS]\nMissing --required (STRING) flag"))
+        assertThat(output.toString(), equalTo("Usage: MyTestFlags [OPTIONS]\nMissing --required (STRING) flag"))
     }
 
     @Test
@@ -90,7 +90,7 @@ class BuntingTest {
         MyTestFlags(arrayOf("--mapped", "asd")).use(output) {
             mapped
         }
-        assertThat(output.toString(), equalTo("Usage: <name> [OPTIONS]\nIllegal --mapped (INT) flag: asd"))
+        assertThat(output.toString(), equalTo("Usage: MyTestFlags [OPTIONS]\nIllegal --mapped (INT) flag: asd"))
     }
 
     @Test
@@ -103,7 +103,7 @@ class BuntingTest {
         MyTestFlags(strings).use(output) {
             throw IllegalArgumentException()
         }
-        assertThat(output.toString(), equalTo("""Usage: <name> [OPTIONS]
+        assertThat(output.toString(), equalTo("""Usage: MyTestFlags [OPTIONS]
 Options:
 	-a, --anEnum		This is an Enum. Option choice: [a, b]. Defaults to "b" (ANENUM)
 	-d, --defaulted		This is a defaulted flag. Defaults to "0.0.0" (STRING)

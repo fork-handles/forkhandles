@@ -3,7 +3,7 @@ package dev.forkhandles.bunting
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.javaField
 
-abstract class Bunting(internal val args: Array<String>) {
+abstract class Bunting(internal val args: Array<String>, internal val runnableName: String = System.getProperty("sun.java.command")) {
     fun switch(description: String = "") = Switch(description)
     fun option(description: String = "") = Option({ it }, description, null)
 
@@ -33,5 +33,6 @@ fun <T : Bunting> T.use(out: (String) -> Unit = ::println, fn: T.() -> Unit) =
         if (args.contains("--help") || args.contains("-h")) throw Help(description())
         fn(this)
     } catch (e: BuntingException) {
-        out("Usage: <name> [OPTIONS]\n" + e.localizedMessage)
+        println(System.getProperties())
+        out("Usage: $runnableName [OPTIONS]\n" + e.localizedMessage)
     }
