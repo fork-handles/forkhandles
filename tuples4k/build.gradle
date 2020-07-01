@@ -52,7 +52,7 @@ task generateTupleClasses {
     doLast {
         generateSourceFile("tuples.kt") { out ->
             for (n in 4..maxTupleSize) {
-                out.println("data class ${tupleType(n)}(")
+                out.println("data class ${"Tuple$n<${params("out T",n)}>"}(")
                 for (i in 1..n) {
                     out.print("  val val$i : T$i")
                     if (i < n) out.print(",")
