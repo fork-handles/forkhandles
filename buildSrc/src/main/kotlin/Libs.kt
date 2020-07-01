@@ -52,10 +52,6 @@ object Libs {
             "com.github.kt3k.coveralls:com.github.kt3k.coveralls.gradle.plugin:" +
             Versions.com_github_kt3k_coveralls_gradle_plugin
 
-    const val net_saliman_cobertura_gradle_plugin: String =
-            "net.saliman.cobertura:net.saliman.cobertura.gradle.plugin:" +
-            Versions.net_saliman_cobertura_gradle_plugin
-
     const val com_jfrog_bintray_gradle_plugin: String =
             "com.jfrog.bintray:com.jfrog.bintray.gradle.plugin:" +
             Versions.com_jfrog_bintray_gradle_plugin
@@ -65,17 +61,6 @@ object Libs {
      */
     const val coveralls_gradle_plugin: String = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:" +
             Versions.coveralls_gradle_plugin
-
-    /**
-     * https://github.com/stevesaliman/gradle-cobertura-plugin
-     */
-    const val gradle_cobertura_plugin: String = "net.saliman:gradle-cobertura-plugin:" +
-            Versions.gradle_cobertura_plugin
-
-    /**
-     * http://cobertura.sourceforge.net
-     */
-    const val cobertura: String = "net.sourceforge.cobertura:cobertura:" + Versions.cobertura
 
     /**
      * https://github.com/npryce/hamkrest

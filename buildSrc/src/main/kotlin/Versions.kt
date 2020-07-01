@@ -20,15 +20,9 @@ object Versions {
 
     const val com_github_kt3k_coveralls_gradle_plugin: String = "2.10.1"
 
-    const val net_saliman_cobertura_gradle_plugin: String = "3.0.0"
-
     const val com_jfrog_bintray_gradle_plugin: String = "1.8.5"
 
     const val coveralls_gradle_plugin: String = "2.8.3"
-
-    const val gradle_cobertura_plugin: String = "3.0.0"
-
-    const val cobertura: String = "2.1.1"
 
     const val hamkrest: String = "1.7.0.3"
 
