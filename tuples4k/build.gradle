@@ -29,20 +29,20 @@ task recreateGeneratedSrcDir {
     }
 }
 
-static String params(String prefix, int count) {
-    return params(prefix, 1..count)
+static String params(int count, String prefix, String suffix = "") {
+    return params(1..count, prefix, suffix)
 }
 
-static String params(String prefix, IntRange indices) {
-    return indices.collect { "$prefix$it" }.join(", ")
+static String params(IntRange indices, String prefix, String suffix = "") {
+    return indices.collect { "$prefix$it$suffix" }.join(", ")
 }
 
-static String tupleType(int n) {
-    return tupleType(1..n)
+static String tupleType(int n, String suffix = "") {
+    return tupleType(1..n, suffix)
 }
 
-static String tupleType(IntRange indices) {
-    return "Tuple${indices.size()}<${params("T",indices)}>"
+static String tupleType(IntRange indices, String suffix = "") {
+    return "Tuple${indices.size()}<${params(indices, "T", suffix)}>"
 }
 
 
@@ -52,7 +52,7 @@ task generateTupleClasses {
     doLast {
         generateSourceFile("tuples.kt") { out ->
             for (n in 4..maxTupleSize) {
-                out.println("data class ${"Tuple$n<${params("out T",n)}>"}(")
+                out.println("data class ${"Tuple$n<${params(n, "out T")}>"}(")
                 for (i in 1..n) {
                     out.print("  val val$i : T$i")
                     if (i < n) out.print(",")
@@ -71,13 +71,13 @@ task generateTupleFactoryFunctions {
     doLast {
         generateSourceFile("create.kt") { out ->
             for (n in 2..maxTupleSize) {
-                out.println("fun <${params("T", n)}> tuple(")
+                out.println("fun <${params(n, "T")}> tuple(")
                 for (i in 1..n) {
                     out.print("  val$i : T$i")
                     if (i < n) out.print(",")
                     out.println()
                 }
-                out.println(") = Tuple$n(${params("val", n)})")
+                out.println(") = Tuple$n(${params(n, "val")})")
                 out.println()
             }
         }
@@ -89,10 +89,10 @@ task generateToListFunctions {
     dependsOn "recreateGeneratedSrcDir"
 
     doLast {
-        generateSourceFile("tolist.kt") { out ->
+        generateSourceFile("to-list.kt") { out ->
             for (n in 2..maxTupleSize) {
                 out.println("fun <T> Tuple$n<${(["T"] * n).join(", ")}>.toList(): List<T> =")
-                out.println("  listOf(${params("val", n)})")
+                out.println("  listOf(${params(n, "val")})")
                 out.println()
             }
         }
@@ -113,8 +113,8 @@ task generatePlusFunctions {
 
         generateSourceFile("plus.kt") { out ->
             for (n in 3..maxTupleSize) {
-                for (i in 1..n-1) {
-                    out.println("operator fun <${params("T",n)}> ${operandType(1..i)}.plus(that: ${operandType(i+1..n)}): ${tupleType(n)} =")
+                for (i in 1..n - 1) {
+                    out.println("operator fun <${params(n, "T")}> ${operandType(1..i)}.plus(that: ${operandType(i + 1..n)}): ${tupleType(n)} =")
                     out.print("  tuple(")
 
                     for (x in 1..i) {
@@ -127,10 +127,10 @@ task generatePlusFunctions {
                         }
                     }
 
-                    for (x in i+1..n) {
+                    for (x in i + 1..n) {
                         out.print(", that")
-                        if (i < n-1) {
-                            out.print(".val${x-i}")
+                        if (i < n - 1) {
+                            out.print(".val${x - i}")
                         }
                     }
 
@@ -142,11 +142,32 @@ task generatePlusFunctions {
     }
 }
 
+task generateNonNullFunctions {
+    dependsOn "recreateGeneratedSrcDir"
+
+    doLast {
+        generateSourceFile("non-null.kt") { out ->
+            for (n in 2..maxTupleSize) {
+                out.println("fun <${params(n,"T",":Any")}> ${tupleType(n,"?")}.allNonNull(): ${tupleType(n)}? {")
+                out.println("    return tuple(")
+                for (i in 1..n) {
+                    if (i > 1) out.println(",")
+                    out.print("        val$i ?: return null")
+                }
+                out.println(")")
+                out.println("}")
+                out.println()
+            }
+        }
+    }
+}
+
 task generateSrcMain {
     dependsOn "generateTupleClasses"
     dependsOn "generateTupleFactoryFunctions"
     dependsOn "generateToListFunctions"
     dependsOn "generatePlusFunctions"
+    dependsOn "generateNonNullFunctions"
 }
 
 compileKotlin {
