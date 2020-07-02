@@ -5,6 +5,8 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneId.of
 import java.time.ZoneId.systemDefault
+import java.time.ZoneOffset
+import java.time.ZoneOffset.UTC
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import java.time.temporal.ChronoUnit.SECONDS
@@ -19,5 +21,5 @@ typealias TimeSource = () -> Instant
 
 val systemTime = Clock.systemUTC()::instant
 
-fun TimeSource.ticking(unit: TemporalUnit = SECONDS, tz: ZoneId = systemDefault()) : TimeSource =
+fun TimeSource.ticking(unit: TemporalUnit = SECONDS, tz: ZoneId = UTC) : TimeSource =
     fun() = this().atZone(tz).truncatedTo(unit).toInstant()
