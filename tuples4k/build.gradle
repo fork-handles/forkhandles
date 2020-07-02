@@ -5,6 +5,8 @@ dependencies {
     testApi Config.TestDependencies
 }
 
+// Increasing this requires a minor version increment.
+// Decreasing it is not backward compatible, and so requires a major version increment.
 ext.maxTupleSize = 8
 
 ext.packageName = "dev.forkhandles.tuples"
@@ -12,7 +14,7 @@ ext.packageSubdir = packageName.replace('.', '/')
 ext.generatedSrcDir = new File("$buildDir/generated-src/main/kotlin")
 ext.generatedPackageDir = new File("$generatedSrcDir/$packageSubdir")
 
-def generateSourceFile(name, contents) {
+static def generateSourceFile(name, contents) {
     new File("$generatedPackageDir/$name").withPrintWriter("UTF-8") { out ->
         out.println("// GENERATED CODE: DO NOT EDIT")
         out.println()
