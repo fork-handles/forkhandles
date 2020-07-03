@@ -34,4 +34,14 @@ class TupleExampleTest {
         assertThat(t.allNonNull(), equalTo(t))
         assertThat(t.copy(val2=null).allNonNull(), absent())
     }
+    
+    @Test
+    fun `non-null to null`() {
+        val t1: Tuple4<Int, Int, Int, Int> = tuple(1, 2, 3, 4)
+        val t2 : Tuple4<Int?,Int?,Int?,Int?> = t1
+        val t3 : Tuple4<Int?,Int?,Int?,Int?> = t2.copy(val1=null)
+        val t4 : Tuple4<Int?,Int?,Int?,Int?> = t1.asNullable().copy(val1=null)
+        
+        assertThat(t4, equalTo(t3))
+    }
 }

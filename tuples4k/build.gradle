@@ -184,6 +184,19 @@ task generateNonNullFunctions {
     }
 }
 
+task generateAsNullableFunctions {
+    dependsOn "recreateGeneratedSrcDir"
+
+    doLast {
+        generateSourceFile("as-null.kt") { out ->
+            for (n in 2..maxTupleSize) {
+                out.println("fun <${params(n,"T")}> ${tupleType(n)}.asNullable(): ${tupleType(n,"?")} = this")
+                out.println()
+            }
+        }
+    }
+}
+
 
 task generateSrcMain {
     dependsOn "generateTupleClasses"
@@ -192,6 +205,7 @@ task generateSrcMain {
     dependsOn "generateFromListFunctions"
     dependsOn "generatePlusFunctions"
     dependsOn "generateNonNullFunctions"
+    dependsOn "generateAsNullableFunctions"
 }
 
 compileKotlin {
