@@ -74,27 +74,25 @@ allprojects {
     publishing {
         publications {
             mavenJava(MavenPublication) {
-                mavenJava(MavenPublication) {
-                    artifactId = archivesBaseName
+                artifactId = archivesBaseName
 
-                    pom.withXml {
-                        asNode().appendNode('name', archivesBaseName)
-                        asNode().appendNode('description', description)
-                        asNode().appendNode('url', 'https://forkhandles.dev')
-                        asNode().appendNode('developers')
-                        asNode().appendNode('scm').
+                pom.withXml {
+                    asNode().appendNode('name', archivesBaseName)
+                    asNode().appendNode('description', description)
+                    asNode().appendNode('url', 'https://forkhandles.dev')
+                    asNode().appendNode('developers')
+                    asNode().appendNode('scm').
                             appendNode('url', 'git@github.com:fork-handles/forkhandles.git').parent().
                             appendNode('connection', 'scm:git:git@github.com:fork-handles/forkhandles.git').parent().
                             appendNode('developerConnection', 'scm:git:git@github.com:fork-handles/forkhandles.git')
-                        asNode().appendNode('licenses').appendNode('license').
+                    asNode().appendNode('licenses').appendNode('license').
                             appendNode('name', 'Apache License, Version 2.0').parent().
                             appendNode('url', 'http://www.apache.org/licenses/LICENSE-2.0.html')
-                    }
-                    from components.java
-
-                    artifact sourcesJar
-                    artifact javadocJar
                 }
+                from components.java
+
+                artifact sourcesJar
+                artifact javadocJar
             }
         }
     }
