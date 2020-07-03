@@ -14,7 +14,7 @@ ext.packageSubdir = packageName.replace('.', '/')
 ext.generatedSrcDir = new File("$buildDir/generated-src/main/kotlin")
 ext.generatedPackageDir = new File("$generatedSrcDir/$packageSubdir")
 
-static def generateSourceFile(name, contents) {
+def generateSourceFile(name, contents) {
     new File("$generatedPackageDir/$name").withPrintWriter("UTF-8") { out ->
         out.println("// GENERATED CODE: DO NOT EDIT")
         out.println()
@@ -101,6 +101,26 @@ task generateToListFunctions {
     }
 }
 
+task generateFromListFunctions {
+    dependsOn "recreateGeneratedSrcDir"
+
+    doLast {
+        //Tuple$n<${(["T"] * n).join(", ")}>
+        generateSourceFile("from-list.kt") { out ->
+            for (n in 2..maxTupleSize) {
+                out.println("fun <T> List<T>.toTuple$n(): Tuple$n<${(["T?"] * n).join(", ")}> =")
+                out.print("  tuple(")
+                for (i in 1..n) {
+                    if (i > 1) out.print(", ")
+                    out.print("  getOrNull(${i-1})")
+                }
+                out.println(")")
+                out.println()
+            }
+        }
+    }
+}
+
 task generatePlusFunctions {
     dependsOn "recreateGeneratedSrcDir"
 
@@ -164,10 +184,12 @@ task generateNonNullFunctions {
     }
 }
 
+
 task generateSrcMain {
     dependsOn "generateTupleClasses"
     dependsOn "generateTupleFactoryFunctions"
     dependsOn "generateToListFunctions"
+    dependsOn "generateFromListFunctions"
     dependsOn "generatePlusFunctions"
     dependsOn "generateNonNullFunctions"
 }
