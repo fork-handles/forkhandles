@@ -9,8 +9,9 @@ This nano-library provides a simple way to set command line options using requir
 
 class MyGreatFlags(args: Array<String>) : Bunting(args) {
     enum class Command {
-        first, second
+        list, delete
     }
+
     val command by option("This is a top level command").enum<Command>()
     val verbose by switch("This is a switch")
     val user by option("This is a required option")
@@ -31,19 +32,20 @@ object SingleOption {
 
 object MultiOption {
     @JvmStatic
-    // run the main with: java (...) MultiOptionKt --command a --user foo --password bar
-    fun main(ignored: Array<String>) = MyGreatFlags(arrayOf("--command", "a", "--user", "foo", "-p", "bar")).use {
-        when(command) {
-            first -> {
+    // run the main with: java (...) MultiOptionKt --command list --user foo --password bar
+    fun main(ignored: Array<String>) = MyGreatFlags(arrayOf("--command", "list", "--user", "foo", "-p", "bar")).use {
+        when (command) {
+            list -> {
                 println(verbose)    // false    <-- because not set
                 println(user)       // foo      <-- passed value (full name)
             }
-            second -> {
+            delete -> {
                 println(password)   // bar      <-- passed value (short name)
                 println(version)    // 0        <-- defaulted value
             }
         }
     }
 }
+
 ```
 

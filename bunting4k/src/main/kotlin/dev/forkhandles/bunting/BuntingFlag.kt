@@ -31,7 +31,7 @@ data class Option<T> internal constructor(
             try {
                 fn(it) ?: throw MissingFlag(property)
             } catch (e: Exception) {
-                throw IllegalFlag(property, it, e)
+                throw IllegalFlag(property, "$it. $description", e)
             }
         } ?: throw MissingFlag(property)
     }

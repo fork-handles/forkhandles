@@ -90,7 +90,7 @@ class BuntingTest {
         MyTestFlags(arrayOf("--mapped", "asd")).use(output) {
             mapped
         }
-        assertThat(output.toString(), equalTo("Usage: MyTestFlags [OPTIONS]\nIllegal --mapped (INT) flag: asd"))
+        assertThat(output.toString(), equalTo("Usage: MyTestFlags [OPTIONS]\nIllegal --mapped (INT) flag: asd. This is a mapped flag"))
     }
 
     @Test
