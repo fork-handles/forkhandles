@@ -33,6 +33,5 @@ fun <T : Bunting> T.use(out: (String) -> Unit = ::println, fn: T.() -> Unit) =
         if (args.contains("--help") || args.contains("-h")) throw Help(description())
         fn(this)
     } catch (e: BuntingException) {
-        println(System.getProperties())
         out("Usage: $runnableName [OPTIONS]\n" + e.localizedMessage)
     }
