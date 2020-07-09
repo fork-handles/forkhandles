@@ -30,7 +30,7 @@ object SingleOption {
 
 object MultiOption {
     @JvmStatic
-    // run the main with: java (...) MultiOptionKt --command a --user foo --password bar
+    // run the main with: java (...) MultiOptionKt --command list --user foo --password bar
     fun main(ignored: Array<String>) = MyGreatFlags(arrayOf("--command", "list", "--user", "foo", "-p", "bar")).use {
         when (command) {
             list -> {
