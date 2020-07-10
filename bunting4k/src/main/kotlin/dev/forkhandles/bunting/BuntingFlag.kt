@@ -8,7 +8,7 @@ sealed class BuntingFlag<T>(open val description: String = "") : ReadOnlyPropert
 
 class Switch(description: String = "") : BuntingFlag<Boolean>(description) {
     override fun getValue(thisRef: Bunting, property: KProperty<*>): Boolean =
-        thisRef.args.contains("--${property.name}") || thisRef.args.contains("--${property.name.first()}")
+        thisRef.args.contains("--${property.name}") || thisRef.args.contains("-${property.name.first()}")
 }
 
 data class Option<T> internal constructor(

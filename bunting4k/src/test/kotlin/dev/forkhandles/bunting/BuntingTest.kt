@@ -70,6 +70,14 @@ class BuntingTest {
     }
 
     @Test
+    fun `passing short switch`() {
+        MyTestFlags(arrayOf("-n", "-r", "foo")).use(output) {
+            assertThat(noValueFlag, equalTo(true))
+        }
+        assertThat(output.toString(), equalTo(""))
+    }
+
+    @Test
     fun `passing uneven number of fields`() {
         MyTestFlags(arrayOf("--required", "foo", "other")).use(output) {
             assertThat(required, equalTo("foo"))
