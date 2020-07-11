@@ -13,7 +13,7 @@ class BuntingTest {
         a, b
     }
 
-    class MyTestFlags(args: Array<String>) : Bunting(args, "MyTestFlags") {
+    class MyTestFlags(args: Array<String>) : Bunting(args, baseCommand = "MyTestFlags") {
         val noValueFlag by switch("This is a no option flag")
         val required by option("This is a required flag")
         val defaulted by option("This is a defaulted flag").defaultsTo("0.0.0")
@@ -50,7 +50,7 @@ class BuntingTest {
         MyTestFlags(arrayOf()).use(output) {
             required
         }
-        assertThat(output.toString(), equalTo("Usage: MyTestFlags [OPTIONS]\nMissing --required (STRING) flag"))
+        assertThat(output.toString(), equalTo("Usage: MyTestFlags [flags] [options]\nMissing --required (STRING) flag"))
     }
 
     @Test
@@ -98,7 +98,7 @@ class BuntingTest {
         MyTestFlags(arrayOf("--mapped", "asd")).use(output) {
             mapped
         }
-        assertThat(output.toString(), equalTo("Usage: MyTestFlags [OPTIONS]\nIllegal --mapped (INT) flag: asd. This is a mapped flag"))
+        assertThat(output.toString(), equalTo("Usage: MyTestFlags [flags] [options]\nIllegal --mapped (INT) flag: asd. This is a mapped flag"))
     }
 
     @Test
@@ -111,14 +111,14 @@ class BuntingTest {
         MyTestFlags(strings).use(output) {
             throw IllegalArgumentException()
         }
-        assertThat(output.toString(), equalTo("""Usage: MyTestFlags [OPTIONS]
-Options:
-	-a, --anEnum		This is an Enum. Option choice: [a, b]. Defaults to "b" (ANENUM)
-	-d, --defaulted		This is a defaulted flag. Defaults to "0.0.0" (STRING)
-	-m, --mapped		This is a mapped flag (INT)
-	-n, --noValueFlag		This is a no option flag
-	-r, --required		This is a required flag (STRING)
-    -h, --help          Show this message and exit"""))
+        assertThat(output.toString(), equalTo("""Usage: MyTestFlags [flags] [options]
+[options]:
+  -a, --anEnum           This is an Enum. Option choice: [a, b]. Defaults to "b" (ANENUM)
+  -d, --defaulted        This is a defaulted flag. Defaults to "0.0.0" (STRING)
+  -m, --mapped           This is a mapped flag (INT)
+  -n, --noValueFlag      This is a no option flag
+  -r, --required         This is a required flag (STRING)
+  -h, --help             Show this message and exit"""))
     }
 
     @Test

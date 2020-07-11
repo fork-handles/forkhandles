@@ -4,17 +4,29 @@ import java.util.UUID
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
+/**
+ * A value passed on the command line.
+ */
 sealed class BuntingFlag<T>(open val description: String = "") : ReadOnlyProperty<Bunting, T>
 
+/**
+ * Command flags always appear at the start of a command and are not prefixed with a '-' or '--'.
+ */
 class Command<T : Bunting>(private val args: List<String>, description: String, private val fn: (Array<String>) -> T) : BuntingFlag<T>(description) {
     override fun getValue(thisRef: Bunting, property: KProperty<*>) = fn(args.toTypedArray())
 }
 
+/**
+ * Switch flags are not passed with a value attached and are prefixed with a '-' (short version) or '--' (long version).
+ */
 class Switch(description: String = "") : BuntingFlag<Boolean>(description) {
     override fun getValue(thisRef: Bunting, property: KProperty<*>): Boolean =
         thisRef.args.contains("--${property.name}") || thisRef.args.contains("-${property.name.first()}")
 }
 
+/**
+ * Option flags are passed with a value attached and are prefixed with a '-' (short version) or '--' (long version).
+ */
 data class Option<T> internal constructor(
     internal val fn: (String) -> T,
     override val description: String = "",
