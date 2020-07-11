@@ -3,7 +3,7 @@ package dev.forkhandles.bunting
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.javaField
 
-open class Bunting(internal val args: Array<String>, private val description: String? = null, internal val baseCommand: String = System.getProperty("sun.java.command")) {
+open class Bunting(internal val args: Array<String>, private val description: String? = null, private val baseCommand: String = System.getProperty("sun.java.command")) {
     fun switch(description: String = "") = Switch(description)
     fun option(description: String = "") = Option({ it }, description, null)
     fun <T : Bunting> command(fn: BuntingConstructor<T>, description: String? = null) = Command(description, fn)
