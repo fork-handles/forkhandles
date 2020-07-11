@@ -12,7 +12,6 @@ class SubCommand2(args: Array<String>) : Bunting(args) {
 
 class Global(args: Array<String>) : Bunting(args) {
     val verbose by option()
-
     val command by command(::SubCommand)
 }
 

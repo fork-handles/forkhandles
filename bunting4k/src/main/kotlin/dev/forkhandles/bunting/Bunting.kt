@@ -1,36 +1,22 @@
 package dev.forkhandles.bunting
 
-import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.javaField
 
-abstract class Bunting(internal val args: Array<String>, internal val runnableName: String = System.getProperty("sun.java.command")) {
+open class Bunting(internal val args: Array<String>, internal val baseCommand: String = System.getProperty("sun.java.command")) {
     fun switch(description: String = "") = Switch(description)
     fun option(description: String = "") = Option({ it }, description, null)
+    fun <T : Bunting> command(fn: (Array<String>) -> T, description: String = "") = Command(args.drop(1), description, fn)
 
-    fun <T : Bunting> command(fn: (Array<String>) -> T) =
-        object : ReadOnlyProperty<Bunting, T?> {
-            override fun getValue(thisRef: Bunting, property: KProperty<*>) =
-                fn(args.drop(1).toTypedArray()).takeIf { args.first() == property.name }
-        }
+    internal fun description(indent: Int = 0): String {
+        val commands = members { p, c: Command<*> -> p.name to c.getValue(Bunting(arrayOf(p.name), "$baseCommand ${p.name}"), p).description() }
+        val switches = members { p, s: Switch -> p.name to s.description }
+        val options = members { p, o: Option<*> -> p.name to "${o.description} (${p.typeDescription()})" }
 
-    internal fun description() = this::class.members
-        .filterIsInstance<KProperty<*>>()
-        .mapNotNull { p ->
-            listOf(p.javaField!!.apply { trySetAccessible() }[this]!!)
-                .filterIsInstance<BuntingFlag<*>>()
-                .firstOrNull()
-                ?.let {
-                    p.name to when (it) {
-                        is Switch -> it.description
-                        is Option -> "${it.description} (${p.typeDescription()})"
-                    }
-                }
-        }
-        .sortedBy { it.first }
-        .describe()
+        return (switches + options).sortedBy { it.first }.describeOptions()
+    }
 
-    private fun List<Pair<String, String>>.describe() = """Options:
+    private fun List<Pair<String, String>>.describeOptions() = """Options:
 ${joinToString("\n") { "\t-${it.first.take(1)}, --${it.first}\t\t${it.second}" }}
     -h, --help          Show this message and exit"""
 }
@@ -41,6 +27,14 @@ fun <T : Bunting> T?.use(out: (String) -> Unit = ::println, fn: T.() -> Unit) =
             if (args.contains("--help") || args.contains("-h")) throw Help(description())
             fn(this)
         } catch (e: BuntingException) {
-            out("Usage: $runnableName [OPTIONS]\n" + e.localizedMessage)
+            out("Usage: $baseCommand [OPTIONS]\n" + e.localizedMessage)
         }
+    }
+
+private inline fun <reified F : BuntingFlag<*>> Bunting.members(fn: (KProperty<*>, F) -> Pair<String, String>): List<Pair<String, String>> =
+    this::class.members.filterIsInstance<KProperty<F>>().mapNotNull { p ->
+        (p.javaField!!.apply { trySetAccessible() }[this@members] as? F)
+            ?.let {
+                fn(p, it)
+            }
     }

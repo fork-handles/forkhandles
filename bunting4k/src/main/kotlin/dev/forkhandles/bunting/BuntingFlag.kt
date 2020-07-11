@@ -6,6 +6,10 @@ import kotlin.reflect.KProperty
 
 sealed class BuntingFlag<T>(open val description: String = "") : ReadOnlyProperty<Bunting, T>
 
+class Command<T : Bunting>(private val args: List<String>, description: String, private val fn: (Array<String>) -> T) : BuntingFlag<T>(description) {
+    override fun getValue(thisRef: Bunting, property: KProperty<*>) = fn(args.toTypedArray())
+}
+
 class Switch(description: String = "") : BuntingFlag<Boolean>(description) {
     override fun getValue(thisRef: Bunting, property: KProperty<*>): Boolean =
         thisRef.args.contains("--${property.name}") || thisRef.args.contains("-${property.name.first()}")
