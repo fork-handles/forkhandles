@@ -15,9 +15,9 @@ open class Bunting(internal val args: Array<String>, private val description: St
 
     private fun commandDescriptions(indent: Int): String? {
         val commandDescriptions = members { p, c: Command<*> ->
-            val suffix = (c.getValue(Bunting(arrayOf(p.name), description, "$baseCommand ${p.name}"), p)
+            val suffix = c.getValue(Bunting(arrayOf(p.name), description, "$baseCommand ${p.name}"), p)
                 ?.description(indent + 2)
-                ?.takeIf { it.isNotBlank() }?.let { "\n" + it }) ?: ""
+                ?.takeIf { it.isNotBlank() }?.let { "\n" + it } ?: ""
 
             p.name to c.description + suffix
         }
