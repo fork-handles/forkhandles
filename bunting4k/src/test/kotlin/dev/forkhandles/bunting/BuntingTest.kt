@@ -128,6 +128,34 @@ description
         assertHelpText(arrayOf("-h"))
     }
 
+    @Test
+    fun `commands are only run when they are passed`() {
+        class GrandchildCommand(args: Array<String>) : Bunting(args)
+        class Command(args: Array<String>) : Bunting(args) {
+            val grandchild by command(::GrandchildCommand)
+            val otherGrandchild by command(::GrandchildCommand)
+        }
+        class Foo(args: Array<String>) : Bunting(args, "description", "foo") {
+            val command by command(::Command)
+            val command2 by command(::Command)
+        }
+
+        Foo(arrayOf("command")).use(output) {
+            command.use(output) {
+                grandchild.use {
+                }
+                otherGrandchild.use {
+                    throw IllegalArgumentException()
+                }
+            }
+            command2.use(output) {
+                throw IllegalArgumentException()
+            }
+        }
+
+        assertThat(output.toString(), equalTo(""))
+    }
+
     private fun assertHelpText(strings: Array<String>) {
         MyTestFlags(strings).use(output) {
             throw IllegalArgumentException()

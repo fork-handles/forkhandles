@@ -6,7 +6,7 @@ import kotlin.reflect.jvm.javaField
 open class Bunting(internal val args: Array<String>, private val description: String? = null, internal val baseCommand: String = System.getProperty("sun.java.command")) {
     fun switch(description: String = "") = Switch(description)
     fun option(description: String = "") = Option({ it }, description, null)
-    fun <T : Bunting> command(fn: BuntingConstructor<T>, description: String = "") = Command(args.drop(1), description, fn)
+    fun <T : Bunting> command(fn: BuntingConstructor<T>, description: String = "") = Command(args, description, fn)
 
     fun usage(): String = "$baseCommand [flags] [options]"
 
@@ -18,7 +18,7 @@ open class Bunting(internal val args: Array<String>, private val description: St
             p.name to c.description + "\n" +
                 c.getValue(
                     Bunting(arrayOf(p.name), description, "$baseCommand ${p.name}"), p
-                ).description(indent + 2)
+                )?.description(indent + 2)
         }
 
         return commandDescriptions

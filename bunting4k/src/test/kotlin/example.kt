@@ -38,8 +38,8 @@ object SingleOption {
 
 object SubCommands {
     @JvmStatic
-    // run the main with: java (...) MultiOptionKt --command list --user foo --password bar
-    fun main(ignored: Array<String>) = MyGreatFlags(arrayOf("delete", "--user", "foo", "-p", "bar")).use {
+    // run the main with: java (...) SubCommands --command list --user foo --password bar
+    fun main(ignored: Array<String>) = MyGreatFlags(arrayOf("list", "--user", "foo", "-p", "bar")).use {
         list.use {
             println(insecure)       // false    <-- because not set
             println(user)           // foo      <-- passed value (full name)

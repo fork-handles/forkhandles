@@ -12,8 +12,9 @@ sealed class BuntingFlag<T>(open val description: String = "") : ReadOnlyPropert
 /**
  * Command flags always appear at the start of a command and are not prefixed with a '-' or '--'.
  */
-class Command<T : Bunting>(private val args: List<String>, description: String, private val fn: (Array<String>) -> T) : BuntingFlag<T>(description) {
-    override fun getValue(thisRef: Bunting, property: KProperty<*>) = fn(args.toTypedArray())
+class Command<T : Bunting>(private val args: Array<String>, description: String, private val fn: (Array<String>) -> T) : BuntingFlag<T?>(description) {
+    override fun getValue(thisRef: Bunting, property: KProperty<*>) =
+        if (thisRef.args.firstOrNull() == property.name) fn(thisRef.args.drop(1).toTypedArray()) else null
 }
 
 /**
