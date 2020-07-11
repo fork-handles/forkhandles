@@ -19,7 +19,7 @@ open class Bunting(internal val args: Array<String>, private val description: St
                 ?.description(indent + 2)
                 ?.takeIf { it.isNotBlank() }?.let { "\n" + it } ?: ""
 
-            p.name to c.description + suffix
+            p.name to (c.description ?: "") + suffix
         }
 
         return commandDescriptions

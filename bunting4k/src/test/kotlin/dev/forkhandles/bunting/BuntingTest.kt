@@ -17,7 +17,7 @@ class BuntingTest {
 
     class MyChildFlags(args: Array<String>) : Bunting(args) {
         val noDescription by option().defaultsTo("no value")
-        val grandchild by command(::MyGrandChildFlags, "yet another description")
+        val grandchild by command(::MyGrandChildFlags)
     }
 
     class MyTestFlags(args: Array<String>) : Bunting(args, "some description of all my flags", "MyTestFlags") {
@@ -168,7 +168,7 @@ some description of all my flags
 [flags]:
   command                               This is a command flag
     [sub-flags]:
-      grandchild                        yet another description
+      grandchild                        
     [options]:
       -n, --noDescription               Defaults to "no value" (STRING)
 [options]:
