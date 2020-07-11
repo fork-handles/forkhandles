@@ -8,7 +8,7 @@ open class Bunting(internal val args: Array<String>, private val description: St
     fun option(description: String = "") = Option({ it }, description, null)
     fun <T : Bunting> command(fn: BuntingConstructor<T>, description: String? = null) = Command(description, fn)
 
-    fun usage(): String = "$baseCommand [flags] [options]"
+    internal fun usage(): String = "$baseCommand [flags] [options]"
 
     internal fun description(indent: Int = 0) =
         listOfNotNull(description, commandDescriptions(indent), optionDescriptions(indent)).joinToString("\n")
