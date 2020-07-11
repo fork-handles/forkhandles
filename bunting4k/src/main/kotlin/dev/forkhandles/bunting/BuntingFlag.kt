@@ -61,4 +61,4 @@ fun Option<String>.uuid() = map(UUID::fromString)
 fun Option<String>.char() = map(String::first)
 fun Option<String>.boolean() = map(String::toBoolean)
 inline fun <reified T : Enum<T>> Option<String>.enum() =
-    copy(description = description + ". Option choice: " + enumValues<T>().toList()).map { enumValueOf<T>(it) }
+    copy(description = description.let { if(it.isNotBlank()) "$it. " else it } + "Option choice: " + enumValues<T>().toList()).map { enumValueOf<T>(it) }

@@ -3,7 +3,7 @@
 Simple, typesafe, testable command line flags.
 
 ## Why?
-This nano-library provides a simple way to set command line options using required, defaulted or switch-based options. Use the long or short names to set the options, or pass "--help" for the docs.
+This nano-library provides a simple way to set command line options using required, defaulted or switch-based options. Set commands, use the long or short names to set the options and flags, or pass "--help" for the docs.
 
 ```kotlin
 import dev.forkhandles.bunting.Bunting
@@ -71,5 +71,23 @@ object AskForHelp {
         // doesn't matter
     }
 }
+```
+
+Help output formatted as:
+```
+Usage: AskForHelp [flags] [options]
+[flags]:
+  delete                                delete things
+  list                                  list things
+    [options]:
+      -i, --includeDates                Switch relevant to this mode
+  view                                  view things
+[options]:
+  -i, --insecure                        This is a switch
+  -l, --level                           Option choice: [debug, warn]. Defaults to "warn" (LOGLEVEL)
+  -p, --password                        This is another required option (STRING)
+  -u, --user                            This is a required option (STRING)
+  -v, --version                         Defaults to "0" (INT)
+  -h, --help                            Show this message and exit
 ```
 

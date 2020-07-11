@@ -25,7 +25,7 @@ class BuntingTest {
         val required by option("This is a required flag")
         val defaulted by option("This is a defaulted flag").defaultsTo("0.0.0")
         val mapped by option("This is a mapped flag").map { it.toInt() }
-        val anEnum by option("This is an Enum").enum<AnEnum>().defaultsTo("b")
+        val anEnum by option().enum<AnEnum>().defaultsTo("b")
         val command by command(::MyChildFlags, "This is a command flag")
     }
 
@@ -172,7 +172,7 @@ some description of all my flags
     [options]:
       -n, --noDescription               Defaults to "no value" (STRING)
 [options]:
-  -a, --anEnum                          This is an Enum. Option choice: [a, b]. Defaults to "b" (ANENUM)
+  -a, --anEnum                          Option choice: [a, b]. Defaults to "b" (ANENUM)
   -d, --defaulted                       This is a defaulted flag. Defaults to "0.0.0" (STRING)
   -m, --mapped                          This is a mapped flag (INT)
   -n, --noValueFlag                     This is a no option flag
