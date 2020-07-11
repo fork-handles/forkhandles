@@ -17,7 +17,7 @@ class BuntingTest {
         val noDescription by option().defaultsTo("no value")
     }
 
-    class MyTestFlags(args: Array<String>) : Bunting(args, baseCommand = "MyTestFlags") {
+    class MyTestFlags(args: Array<String>) : Bunting(args, "some description of all my flags", "MyTestFlags") {
         val noValueFlag by switch("This is a no option flag")
         val required by option("This is a required flag")
         val defaulted by option("This is a defaulted flag").defaultsTo("0.0.0")
@@ -32,6 +32,22 @@ class BuntingTest {
             assertThat(noValueFlag, equalTo(true))
         }
         assertThat(output.toString(), equalTo(""))
+    }
+
+    @Test
+    fun `when we run out of space`() {
+        class Foo(args: Array<String>) : Bunting(args, "description", "foo") {
+            val aReallyReallyReallyReallyReallyReallyReallyReallyLongName by option("some description").defaultsTo("foobar")
+        }
+
+        Foo(arrayOf("--help")).use(output) {
+            aReallyReallyReallyReallyReallyReallyReallyReallyLongName
+        }
+        assertThat(output.toString(), equalTo("""Usage: foo [flags] [options]
+description
+[options]:
+  -a, --aReallyReallyReallyReallyReallyReallyReallyReallyLongName    some description. Defaults to "foobar" (STRING)
+  -h, --help                            Show this message and exit"""))
     }
 
     @Test
@@ -117,6 +133,7 @@ class BuntingTest {
             throw IllegalArgumentException()
         }
         assertThat(output.toString(), equalTo("""Usage: MyTestFlags [flags] [options]
+some description of all my flags
 [flags]:
   command                               This is a command flag
     [options]:

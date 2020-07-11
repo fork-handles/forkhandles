@@ -70,4 +70,4 @@ private fun List<Pair<String, String>>.describeOptions(indent: Int) = indent(ind
         (indent(indent + 1) + "-${it.first.take(1)}, --${it.first}").indented(it.second)
     }
 
-private fun String.indented(second: String) = this + " ".repeat(40 - this.length) + second
+private fun String.indented(second: String) = this + " ".repeat(maxOf(40 - length, 4)) + second
