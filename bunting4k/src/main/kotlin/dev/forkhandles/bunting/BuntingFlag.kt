@@ -7,12 +7,12 @@ import kotlin.reflect.KProperty
 /**
  * A value passed on the command line.
  */
-sealed class BuntingFlag<T>(open val description: String = "") : ReadOnlyProperty<Bunting, T>
+sealed class BuntingFlag<T>(open val description: String? = null) : ReadOnlyProperty<Bunting, T>
 
 /**
  * Command flags always appear at the start of a command and are not prefixed with a '-' or '--'.
  */
-class Command<T : Bunting>(private val args: Array<String>, description: String, private val fn: (Array<String>) -> T) : BuntingFlag<T?>(description) {
+class Command<T : Bunting>(description: String?, private val fn: (Array<String>) -> T) : BuntingFlag<T?>(description) {
     override fun getValue(thisRef: Bunting, property: KProperty<*>) =
         if (thisRef.args.firstOrNull() == property.name) fn(thisRef.args.drop(1).toTypedArray()) else null
 }
