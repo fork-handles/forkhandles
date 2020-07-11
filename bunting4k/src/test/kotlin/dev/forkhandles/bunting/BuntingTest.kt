@@ -74,7 +74,7 @@ description
         MyTestFlags(arrayOf()).use(output) {
             required
         }
-        assertThat(output.toString(), equalTo("Usage: MyTestFlags [flags] [options]\nMissing --required (STRING) flag"))
+        assertThat(output.toString(), equalTo("Usage: MyTestFlags [flags] [options]\nMissing --required (STRING) flag. Use --help for docs."))
     }
 
     @Test
@@ -122,7 +122,7 @@ description
         MyTestFlags(arrayOf("--mapped", "asd")).use(output) {
             mapped
         }
-        assertThat(output.toString(), equalTo("Usage: MyTestFlags [flags] [options]\nIllegal --mapped (INT) flag: asd. This is a mapped flag"))
+        assertThat(output.toString(), equalTo("Usage: MyTestFlags [flags] [options]\nIllegal --mapped (INT) flag: asd. Use --help for docs."))
     }
 
     @Test
