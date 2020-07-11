@@ -45,7 +45,7 @@ open class Bunting(internal val args: Array<String>, private val description: St
 
 typealias BuntingConstructor<T> = (Array<String>) -> T
 
-fun <T : Bunting> T?.use(out: (String) -> Unit = ::println, fn: T.() -> Unit) =
+fun <T : Bunting> T?.use(out: (String) -> Unit = ::println, fn: T.() -> Unit) {
     this?.apply {
         try {
             if (args.contains("--help") || args.contains("-h")) throw Help(description())
@@ -54,6 +54,7 @@ fun <T : Bunting> T?.use(out: (String) -> Unit = ::println, fn: T.() -> Unit) =
             out("Usage: ${usage()}\n" + e.localizedMessage)
         }
     }
+}
 
 private inline fun <reified F : BuntingFlag<*>> Bunting.members(fn: (KProperty<*>, F) -> Pair<String, String>): List<Pair<String, String>> =
     this::class.members.filterIsInstance<KProperty<F>>().mapNotNull { p ->
