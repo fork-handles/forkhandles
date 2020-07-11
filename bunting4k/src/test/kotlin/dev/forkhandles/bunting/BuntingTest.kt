@@ -169,7 +169,6 @@ some description of all my flags
   command                               This is a command flag
     [sub-flags]:
       grandchild                        yet another description
-
     [options]:
       -n, --noDescription               Defaults to "no value" (STRING)
 [options]:

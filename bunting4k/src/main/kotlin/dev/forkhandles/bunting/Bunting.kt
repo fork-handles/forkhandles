@@ -10,15 +10,16 @@ open class Bunting(internal val args: Array<String>, private val description: St
 
     fun usage(): String = "$baseCommand [flags] [options]"
 
-    internal fun description(indent: Int = 0): String =
+    internal fun description(indent: Int = 0) =
         listOfNotNull(description, commandDescriptions(indent), optionDescriptions(indent)).joinToString("\n")
 
     private fun commandDescriptions(indent: Int): String? {
         val commandDescriptions = members { p, c: Command<*> ->
-            p.name to c.description + "\n" +
-                c.getValue(
-                    Bunting(arrayOf(p.name), description, "$baseCommand ${p.name}"), p
-                )?.description(indent + 2)
+            val suffix = (c.getValue(Bunting(arrayOf(p.name), description, "$baseCommand ${p.name}"), p)
+                ?.description(indent + 2)
+                ?.takeIf { it.isNotBlank() }?.let { "\n" + it }) ?: ""
+
+            p.name to c.description + suffix
         }
 
         return commandDescriptions
@@ -26,8 +27,7 @@ open class Bunting(internal val args: Array<String>, private val description: St
             ?.let {
                 indent(indent) + (if (indent == 0) "[flags]" else "[sub-flags]") + ":\n" +
                     it.joinToString("\n") {
-                        val base = "${indent(indent)}  ${it.first}"
-                        base.indented(it.second)
+                        "${indent(indent)}  ${it.first}".indented(it.second)
                     }
             }
     }
