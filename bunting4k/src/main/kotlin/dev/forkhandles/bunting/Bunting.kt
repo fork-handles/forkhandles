@@ -6,7 +6,7 @@ import kotlin.reflect.jvm.javaField
 open class Bunting(internal val args: Array<String>, private val description: String? = null, internal val baseCommand: String = System.getProperty("sun.java.command")) {
     fun switch(description: String = "") = Switch(description)
     fun option(description: String = "") = Option({ it }, description, null)
-    fun <T : Bunting> command(fn: (Array<String>) -> T, description: String = "") = Command(args.drop(1), description, fn)
+    fun <T : Bunting> command(fn: BuntingConstructor<T>, description: String = "") = Command(args.drop(1), description, fn)
 
     fun usage(): String = "$baseCommand [flags] [options]"
 
@@ -43,6 +43,8 @@ open class Bunting(internal val args: Array<String>, private val description: St
     }
 }
 
+typealias BuntingConstructor<T> = (Array<String>) -> T
+
 fun <T : Bunting> T?.use(out: (String) -> Unit = ::println, fn: T.() -> Unit) =
     this?.apply {
         try {
@@ -68,4 +70,4 @@ private fun List<Pair<String, String>>.describeOptions(indent: Int) = indent(ind
         (indent(indent + 1) + "-${it.first.take(1)}, --${it.first}").indented(it.second)
     }
 
-private fun String.indented(second: String) = this + " ".repeat(25 - this.length) + second
+private fun String.indented(second: String) = this + " ".repeat(40 - this.length) + second

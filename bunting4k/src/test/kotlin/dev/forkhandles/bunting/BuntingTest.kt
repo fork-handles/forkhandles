@@ -13,12 +13,17 @@ class BuntingTest {
         a, b
     }
 
+    class MyChildFlags(args: Array<String>) : Bunting(args) {
+        val noDescription by option().defaultsTo("no value")
+    }
+
     class MyTestFlags(args: Array<String>) : Bunting(args, baseCommand = "MyTestFlags") {
         val noValueFlag by switch("This is a no option flag")
         val required by option("This is a required flag")
         val defaulted by option("This is a defaulted flag").defaultsTo("0.0.0")
         val mapped by option("This is a mapped flag").map { it.toInt() }
         val anEnum by option("This is an Enum").enum<AnEnum>().defaultsTo("b")
+        val command by command(::MyChildFlags, "This is a command flag")
     }
 
     @Test
@@ -112,13 +117,17 @@ class BuntingTest {
             throw IllegalArgumentException()
         }
         assertThat(output.toString(), equalTo("""Usage: MyTestFlags [flags] [options]
+[flags]:
+  command                               This is a command flag
+    [options]:
+      -n, --noDescription               Defaults to "no value" (STRING)
 [options]:
-  -a, --anEnum           This is an Enum. Option choice: [a, b]. Defaults to "b" (ANENUM)
-  -d, --defaulted        This is a defaulted flag. Defaults to "0.0.0" (STRING)
-  -m, --mapped           This is a mapped flag (INT)
-  -n, --noValueFlag      This is a no option flag
-  -r, --required         This is a required flag (STRING)
-  -h, --help             Show this message and exit"""))
+  -a, --anEnum                          This is an Enum. Option choice: [a, b]. Defaults to "b" (ANENUM)
+  -d, --defaulted                       This is a defaulted flag. Defaults to "0.0.0" (STRING)
+  -m, --mapped                          This is a mapped flag (INT)
+  -n, --noValueFlag                     This is a no option flag
+  -r, --required                        This is a required flag (STRING)
+  -h, --help                            Show this message and exit"""))
     }
 
     @Test
