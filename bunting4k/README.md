@@ -6,46 +6,70 @@ Simple, typesafe, testable command line flags.
 This nano-library provides a simple way to set command line options using required, defaulted or switch-based options. Use the long or short names to set the options, or pass "--help" for the docs.
 
 ```kotlin
+import dev.forkhandles.bunting.Bunting
+import dev.forkhandles.bunting.enum
+import dev.forkhandles.bunting.int
+import dev.forkhandles.bunting.use
 
+// Top level command flags
 class MyGreatFlags(args: Array<String>) : Bunting(args) {
-    enum class Command {
-        list, delete
+    val view by command(::ViewFlags, "view things")
+    val list by command(::ListFlags, "list things")
+    val delete by command(::DeleteFlags, "delete things")
+
+    enum class LogLevel {
+        debug, warn
     }
 
-    val command by option("This is a top level command").enum<Command>()
-    val verbose by switch("This is a switch")
+    val insecure by switch("This is a switch")
     val user by option("This is a required option")
     val password by option("This is another required option")
     val version by option().int().defaultsTo("0")
+    val level by option().enum<LogLevel>().defaultsTo("warn")
 }
+
+// Some sub commands - these can define their own flags
+class ViewFlags(args: Array<String>) : Bunting(args)
+class ListFlags(args: Array<String>) : Bunting(args) {
+    val includeDates by switch("Switch relevant to this mode")
+}
+class DeleteFlags(args: Array<String>) : Bunting(args)
 
 object SingleOption {
     @JvmStatic
     // run the main with: java (...) SingleOption --user foo --password bar
     fun main(ignored: Array<String>) = MyGreatFlags(arrayOf("--user", "foo", "-p", "bar")).use {
-        println(verbose)    // false    <-- because not set
+        println(insecure)   // false    <-- because not set
         println(user)       // foo      <-- passed value (full name)
         println(password)   // bar      <-- passed value (short name)
         println(version)    // 0        <-- defaulted value
+        println(level)      // warn        <-- defaulted value
     }
 }
 
-object MultiOption {
+object SubCommands {
     @JvmStatic
-    // run the main with: java (...) MultiOptionKt --command list --user foo --password bar
-    fun main(ignored: Array<String>) = MyGreatFlags(arrayOf("--command", "list", "--user", "foo", "-p", "bar")).use {
-        when (command) {
-            list -> {
-                println(verbose)    // false    <-- because not set
-                println(user)       // foo      <-- passed value (full name)
-            }
-            delete -> {
-                println(password)   // bar      <-- passed value (short name)
-                println(version)    // 0        <-- defaulted value
-            }
+    // run the main with: java (...) SubCommands --command list --user foo --password bar
+    fun main(ignored: Array<String>) = MyGreatFlags(arrayOf("list", "--user", "foo", "-p", "bar")).use {
+        list.use {
+            println(insecure)       // false    <-- because not set
+            println(user)           // foo      <-- passed value (full name)
+            println(includeDates)   // false    <-- local switch
+        }
+
+        delete.use {
+            println(password)           // bar      <-- passed value (short name)
+            println(version)            // 0        <-- defaulted value
         }
     }
 }
 
+object AskForHelp {
+    @JvmStatic
+    // run the main with: java (...) AskForHelp --help
+    fun main(ignored: Array<String>) = MyGreatFlags(arrayOf("--help")).use {
+        // doesn't matter
+    }
+}
 ```
 

@@ -3,6 +3,7 @@ import dev.forkhandles.bunting.enum
 import dev.forkhandles.bunting.int
 import dev.forkhandles.bunting.use
 
+// Top level command flags
 class MyGreatFlags(args: Array<String>) : Bunting(args) {
     val view by command(::ViewFlags, "view things")
     val list by command(::ListFlags, "list things")
@@ -21,7 +22,6 @@ class MyGreatFlags(args: Array<String>) : Bunting(args) {
 
 // Some sub commands - these can define their own flags
 class ViewFlags(args: Array<String>) : Bunting(args)
-
 class ListFlags(args: Array<String>) : Bunting(args) {
     val includeDates by switch("Switch relevant to this mode")
 }
