@@ -166,7 +166,8 @@ description
         assertThat(output.toString(), equalTo("""Usage: MyTestFlags [commands] [options]
 some description of all my commands
 [commands]:
-  command                               This is a command flag
+  command                               
+    This is a command flag
     [sub-commands]:
       grandchild                        
     [options]:
