@@ -66,9 +66,9 @@ data class Optional<T> internal constructor(internal val fn: (String) -> T, over
  * Defaulted flags are passed with a value attached and are prefixed with a '-' (short version) or '--' (long version).
  */
 data class Defaulted<T> internal constructor(internal val fn: (String) -> T, override val description: String, private val default: T)
-    : BuntingFlag<T?>(description) {
+    : BuntingFlag<T>(description) {
 
-    override fun getValue(thisRef: Bunting, property: KProperty<*>): T? = thisRef.retrieve(property)?.let {
+    override fun getValue(thisRef: Bunting, property: KProperty<*>): T = thisRef.retrieve(property)?.let {
         try {
             fn(it)
         } catch (e: Exception) {

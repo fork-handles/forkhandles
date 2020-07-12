@@ -24,7 +24,7 @@ class BuntingTest {
         val noValueFlag by switch("This is a no option flag")
         val optional by option("This is an optional flag").required()
         val required by option("This is a required flag").required()
-        val defaulted by option("This is a defaulted flag").defaultsTo("0.0.0")
+        val defaulted: String by option("This is a defaulted flag").defaultsTo("0.0.0")
         val mapped: Int by option("This is a mapped flag").map { it.toInt() }.required()
         val anEnum by option().enum<AnEnum>().defaultsTo(AnEnum.b)
         val command by command(::MyChildFlags)
@@ -50,7 +50,7 @@ class BuntingTest {
         assertThat(output.toString(), equalTo("""Usage: foo [commands] [options]
 description
 [options]:
-  -a, --aReallyReallyReallyReallyReallyReallyReallyReallyLongName    some description. Defaults to "foobar" (STRING?)
+  -a, --aReallyReallyReallyReallyReallyReallyReallyReallyLongName    some description. Defaults to "foobar" (STRING)
   -h, --help                            Show this message and exit"""))
     }
 
@@ -173,10 +173,10 @@ some description of all my commands
     [subcommands]:
       grandchild                        
     [options]:
-      -n, --noDescription               Defaults to "no description default" (STRING?)
+      -n, --noDescription               Defaults to "no description default" (STRING)
 [options]:
-  -a, --anEnum                          Option choice: [a, b]. Defaults to "b" (ANENUM?)
-  -d, --defaulted                       This is a defaulted flag. Defaults to "0.0.0" (STRING?)
+  -a, --anEnum                          Option choice: [a, b]. Defaults to "b" (ANENUM)
+  -d, --defaulted                       This is a defaulted flag. Defaults to "0.0.0" (STRING)
   -m, --mapped                          This is a mapped flag (INT)
   -n, --noValueFlag                     This is a no option flag
   -o, --optional                        This is an optional flag (STRING)
