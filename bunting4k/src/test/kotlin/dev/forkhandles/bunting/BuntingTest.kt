@@ -20,7 +20,7 @@ class BuntingTest {
         val grandchild by command(::MyGrandChildFlags)
     }
 
-    class MyTestFlags(args: Array<String>) : Bunting(args, "some description of all my flags", "MyTestFlags") {
+    class MyTestFlags(args: Array<String>) : Bunting(args, "some description of all my commands", "MyTestFlags") {
         val noValueFlag by switch("This is a no option flag")
         val required by option("This is a required flag")
         val defaulted by option("This is a defaulted flag").defaultsTo("0.0.0")
@@ -46,7 +46,7 @@ class BuntingTest {
         Foo(arrayOf("--help")).use(output) {
             aReallyReallyReallyReallyReallyReallyReallyReallyLongName
         }
-        assertThat(output.toString(), equalTo("""Usage: foo [flags] [options]
+        assertThat(output.toString(), equalTo("""Usage: foo [commands] [options]
 description
 [options]:
   -a, --aReallyReallyReallyReallyReallyReallyReallyReallyLongName    some description. Defaults to "foobar" (STRING)
@@ -74,7 +74,7 @@ description
         MyTestFlags(arrayOf()).use(output) {
             required
         }
-        assertThat(output.toString(), equalTo("Usage: MyTestFlags [flags] [options]\nMissing --required (STRING) flag. Use --help for docs."))
+        assertThat(output.toString(), equalTo("Usage: MyTestFlags [commands] [options]\nMissing --required (STRING) flag. Use --help for docs."))
     }
 
     @Test
@@ -122,7 +122,7 @@ description
         MyTestFlags(arrayOf("--mapped", "asd")).use(output) {
             mapped
         }
-        assertThat(output.toString(), equalTo("Usage: MyTestFlags [flags] [options]\nIllegal --mapped (INT) flag: asd. Use --help for docs."))
+        assertThat(output.toString(), equalTo("Usage: MyTestFlags [commands] [options]\nIllegal --mapped (INT) flag: asd. Use --help for docs."))
     }
 
     @Test
@@ -163,11 +163,11 @@ description
         MyTestFlags(strings).use(output) {
             throw IllegalArgumentException()
         }
-        assertThat(output.toString(), equalTo("""Usage: MyTestFlags [flags] [options]
-some description of all my flags
-[flags]:
+        assertThat(output.toString(), equalTo("""Usage: MyTestFlags [commands] [options]
+some description of all my commands
+[commands]:
   command                               This is a command flag
-    [sub-flags]:
+    [sub-commands]:
       grandchild                        
     [options]:
       -n, --noDescription               Defaults to "no value" (STRING)

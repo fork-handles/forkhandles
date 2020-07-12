@@ -8,7 +8,7 @@ open class Bunting(internal val args: Array<String>, private val description: St
     fun option(description: String = "") = Option({ it }, description, null)
     fun <T : Bunting> command(fn: BuntingConstructor<T>, description: String? = null) = Command(description, fn)
 
-    internal fun usage(): String = "$baseCommand [flags] [options]"
+    internal fun usage(): String = "$baseCommand [commands] [options]"
 
     internal fun description(indent: Int = 0) =
         listOfNotNull(description, commandDescriptions(indent), optionDescriptions(indent)).joinToString("\n")
@@ -25,7 +25,7 @@ open class Bunting(internal val args: Array<String>, private val description: St
         return commandDescriptions
             .takeIf { it.isNotEmpty() }
             ?.let {
-                indent(indent) + (if (indent == 0) "[flags]" else "[sub-flags]") + ":\n" +
+                indent(indent) + (if (indent == 0) "[commands]" else "[sub-commands]") + ":\n" +
                     it.joinToString("\n") {
                         "${indent(indent)}  ${it.first}".indented(it.second)
                     }
