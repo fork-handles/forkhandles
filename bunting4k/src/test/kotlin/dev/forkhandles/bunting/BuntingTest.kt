@@ -22,10 +22,10 @@ class BuntingTest {
 
     class MyTestFlags(args: Array<String>) : Bunting(args, "some description of all my commands", "MyTestFlags") {
         val noValueFlag by switch("This is a no option flag")
-        val required by option("This is a required flag")
+        val required by option("This is a required flag").required()
         val defaulted by option("This is a defaulted flag").defaultsTo("0.0.0")
-        val mapped by option("This is a mapped flag").map { it.toInt() }
-        val anEnum by option().enum<AnEnum>().defaultsTo("b")
+        val mapped by option("This is a mapped flag").map { it.toInt() }.required()
+        val anEnum by option().enum<AnEnum>().defaultsTo(AnEnum.b)
         val command by command(::MyChildFlags)
     }
 
@@ -49,7 +49,7 @@ class BuntingTest {
         assertThat(output.toString(), equalTo("""Usage: foo [commands] [options]
 description
 [options]:
-  -a, --aReallyReallyReallyReallyReallyReallyReallyReallyLongName    some description. Defaults to "foobar" (STRING)
+  -a, --aReallyReallyReallyReallyReallyReallyReallyReallyLongName    some description. Defaults to "foobar" (STRING?)
   -h, --help                            Show this message and exit"""))
     }
 
@@ -138,6 +138,7 @@ description
             val grandchild by command(::GrandchildCommand)
             val otherGrandchild by command(::GrandchildCommand)
         }
+
         class Foo(args: Array<String>) : Bunting(args, "description", "foo") {
             val command by command(::Command)
             val command2 by command(::Command)
@@ -168,14 +169,14 @@ some description of all my commands
 [commands]:
   command                               
     This is a command flag
-    [sub-commands]:
+    [subcommands]:
       grandchild                        
     [options]:
-      -n, --noDescription               Defaults to "no value" (STRING)
+      -n, --noDescription               Defaults to "no value" (STRING?)
 [options]:
-  -a, --anEnum                          Option choice: [a, b]. Defaults to "b" (ANENUM)
-  -d, --defaulted                       This is a defaulted flag. Defaults to "0.0.0" (STRING)
-  -m, --mapped                          This is a mapped flag (INT)
+  -a, --anEnum                          Option choice: [a, b]. Defaults to "b" (ANENUM?)
+  -d, --defaulted                       This is a defaulted flag. Defaults to "0.0.0" (STRING?)
+  -m, --mapped                          This is a mapped flag (INT?)
   -n, --noValueFlag                     This is a no option flag
   -r, --required                        This is a required flag (STRING)
   -h, --help                            Show this message and exit"""))
@@ -210,7 +211,7 @@ some description of all my commands
             assertThat(float, equalTo(1.23F))
             assertThat(boolean, equalTo(true))
             assertThat(anEnum, equalTo(AnEnum.a))
-            assertThat(uuid, equalTo(UUID(0,0)))
+            assertThat(uuid, equalTo(UUID(0, 0)))
         }
         assertThat(output.toString(), equalTo(""))
     }

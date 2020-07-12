@@ -5,7 +5,7 @@ import kotlin.reflect.jvm.javaField
 
 open class Bunting(internal val args: Array<String>, private val description: String? = null, private val baseCommand: String = System.getProperty("sun.java.command")) {
     fun switch(description: String = "") = Switch(description)
-    fun option(description: String = "") = Option({ it }, description, null)
+    fun option(description: String = "") = Optional({ it }, description)
     fun <T : Bunting> command(fn: BuntingConstructor<T>) = Command(fn)
 
     internal fun usage(): String = "$baseCommand [commands] [options]"
@@ -24,7 +24,7 @@ open class Bunting(internal val args: Array<String>, private val description: St
         return commandDescriptions
             .takeIf { it.isNotEmpty() }
             ?.let {
-                indent(indent) + (if (indent == 0) "[commands]" else "[sub-commands]") + ":\n" +
+                indent(indent) + (if (indent == 0) "[commands]" else "[subcommands]") + ":\n" +
                     it.joinToString("\n") {
                         "${indent(indent)}  ${it.first}".indented(it.second)
                     }
@@ -33,9 +33,10 @@ open class Bunting(internal val args: Array<String>, private val description: St
 
     private fun optionDescriptions(indent: Int): String? {
         val switches = members { p, s: Switch -> p.name to (s.description ?: "") }
-        val options = members { p, o: Option<*> -> p.name to "${o.description} (${p.typeDescription()})" }
+        val optional = members { p, o: Optional<*> -> p.name to "${o.description} (${p.typeDescription()})" }
+        val required = members { p, o: Required<*> -> p.name to "${o.description} (${p.typeDescription()})" }
 
-        val sortedOptions = (switches + options).sortedBy { it.first }
+        val sortedOptions = (switches + optional + required).sortedBy { it.first }
         val allOptions = if (indent > 0) sortedOptions else sortedOptions + listOf("help" to "Show this message and exit")
 
         return allOptions.takeIf { it.isNotEmpty() }?.describeOptions(indent)

@@ -1,3 +1,4 @@
+import MyGreatFlags.LogLevel.*
 import dev.forkhandles.bunting.Bunting
 import dev.forkhandles.bunting.enum
 import dev.forkhandles.bunting.int
@@ -14,10 +15,10 @@ class MyGreatFlags(args: Array<String>) : Bunting(args) {
     }
 
     val insecure by switch("This is a switch")
-    val user by option("This is a required option")
-    val password by option("This is another required option")
-    val version by option().int().defaultsTo("0")
-    val level by option().enum<LogLevel>().defaultsTo("warn")
+    val user by option("This is optional")
+    val password by option("This is a required option").required()
+    val version by option().int().defaultsTo(0)
+    val level by option().enum<LogLevel>().defaultsTo(warn)
 }
 
 // Some sub commands - these can define their own flags
@@ -30,12 +31,12 @@ class DeleteFlags(args: Array<String>) : Bunting(args, "delete things")
 object SingleOption {
     @JvmStatic
     // run the main with: java (...) SingleOption --user foo --password bar
-    fun main(ignored: Array<String>) = MyGreatFlags(arrayOf("--user", "foo", "-p", "bar")).use {
+    fun main(ignored: Array<String>) = MyGreatFlags(arrayOf("-p", "bar")).use {
         println(insecure)   // false    <-- because not set
         println(user)       // foo      <-- passed value (full name)
         println(password)   // bar      <-- passed value (short name)
         println(version)    // 0        <-- defaulted value
-        println(level)      // warn        <-- defaulted value
+        println(level)      // warn     <-- defaulted value
     }
 }
 
@@ -51,6 +52,9 @@ object SubCommands {
 
         delete.use {
             println(password)           // bar      <-- passed value (short name)
+        }
+
+        view.use {
             println(version)            // 0        <-- defaulted value
         }
     }
