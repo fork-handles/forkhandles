@@ -34,10 +34,7 @@ data class Required<T> internal constructor(internal val fn: (String) -> T, over
         try {
             fn(it)
         } catch (e: Exception) {
-            when (e) {
-                is BuntingException -> throw e
-                else -> throw IllegalFlag(property, it, e)
-            }
+            throw IllegalFlag(property, it, e)
         }
     } ?: throw MissingFlag(property)
 }
@@ -60,10 +57,7 @@ data class Optional<T> internal constructor(internal val fn: (String) -> T, over
         try {
             fn(it)
         } catch (e: Exception) {
-            when (e) {
-                is BuntingException -> throw e
-                else -> throw IllegalFlag(property, it, e)
-            }
+            throw IllegalFlag(property, it, e)
         }
     }
 }
@@ -78,10 +72,7 @@ data class Defaulted<T> internal constructor(internal val fn: (String) -> T, ove
         try {
             fn(it)
         } catch (e: Exception) {
-            when (e) {
-                is BuntingException -> throw e
-                else -> throw IllegalFlag(property, it, e)
-            }
+            throw IllegalFlag(property, it, e)
         }
     } ?: default
 }
