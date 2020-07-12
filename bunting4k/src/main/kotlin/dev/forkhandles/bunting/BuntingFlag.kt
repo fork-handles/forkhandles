@@ -28,15 +28,16 @@ class Switch(description: String = "") : BuntingFlag<Boolean>(description) {
 /**
  * Required flags are passed with a value attached and are prefixed with a '-' (short version) or '--' (long version).
  */
-data class Required<T> internal constructor(
-    internal val fn: (String) -> T,
-    override val description: String = ""
-) : BuntingFlag<T>(description) {
+data class Required<T> internal constructor(internal val fn: (String) -> T, override val description: String = "")
+    : BuntingFlag<T>(description) {
     override fun getValue(thisRef: Bunting, property: KProperty<*>): T = thisRef.retrieve(property)?.let {
         try {
             fn(it)
         } catch (e: Exception) {
-            throw IllegalFlag(property, it, e)
+            when (e) {
+                is BuntingException -> throw e
+                else -> throw IllegalFlag(property, it, e)
+            }
         }
     } ?: throw MissingFlag(property)
 }
@@ -44,22 +45,36 @@ data class Required<T> internal constructor(
 /**
  * Optional flags are passed with a value attached and are prefixed with a '-' (short version) or '--' (long version).
  */
-data class Optional<T> internal constructor(
-    internal val fn: (String) -> T,
-    override val description: String = "",
-    private val default: T? = null
-) : BuntingFlag<T?>(description) {
+data class Optional<T> internal constructor(internal val fn: (String) -> T, override val description: String)
+    : BuntingFlag<T?>(description) {
 
-    fun required() = Required({ fn(it)!! }, description)
+    fun required() = Required(fn, description)
 
-    fun defaultsTo(default: T): Optional<T> = Optional(
-        { fn(it) },
-        default = default,
-        description = (description.takeIf { it.isNotBlank() }?.let { "$it. " } ?: "") + "Defaults to \"${default}\"")
+    fun defaultsTo(default: T) = Defaulted(fn,
+            (description.takeIf { it.isNotBlank() }?.let { "$it. " } ?: "") + "Defaults to \"${default}\"",
+            default)
 
-    fun <NEXT> map(nextFn: (T) -> NEXT): Optional<NEXT> = Optional({ nextFn(fn(it)) }, description)
+    fun <NEXT> map(nextFn: (T) -> NEXT) = Optional({ nextFn(fn(it)) }, description)
 
     override fun getValue(thisRef: Bunting, property: KProperty<*>) = thisRef.retrieve(property)?.let {
+        try {
+            fn(it)
+        } catch (e: Exception) {
+            when (e) {
+                is BuntingException -> throw e
+                else -> throw IllegalFlag(property, it, e)
+            }
+        }
+    }
+}
+
+/**
+ * Defaulted flags are passed with a value attached and are prefixed with a '-' (short version) or '--' (long version).
+ */
+data class Defaulted<T> internal constructor(internal val fn: (String) -> T, override val description: String, private val default: T)
+    : BuntingFlag<T?>(description) {
+
+    override fun getValue(thisRef: Bunting, property: KProperty<*>): T? = thisRef.retrieve(property)?.let {
         try {
             fn(it)
         } catch (e: Exception) {

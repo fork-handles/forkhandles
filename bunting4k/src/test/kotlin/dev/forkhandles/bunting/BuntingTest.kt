@@ -22,6 +22,7 @@ class BuntingTest {
 
     class MyTestFlags(args: Array<String>) : Bunting(args, "some description of all my commands", "MyTestFlags") {
         val noValueFlag by switch("This is a no option flag")
+        val optional by option("This is an optional flag").required()
         val required by option("This is a required flag").required()
         val defaulted by option("This is a defaulted flag").defaultsTo("0.0.0")
         val mapped: Int by option("This is a mapped flag").map { it.toInt() }.required()
@@ -178,6 +179,7 @@ some description of all my commands
   -d, --defaulted                       This is a defaulted flag. Defaults to "0.0.0" (STRING?)
   -m, --mapped                          This is a mapped flag (INT)
   -n, --noValueFlag                     This is a no option flag
+  -o, --optional                        This is an optional flag (STRING)
   -r, --required                        This is a required flag (STRING)
   -h, --help                            Show this message and exit"""))
     }
