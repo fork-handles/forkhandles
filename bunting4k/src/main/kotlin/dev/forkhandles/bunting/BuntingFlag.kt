@@ -50,9 +50,10 @@ data class Optional<T> internal constructor(
     private val default: T? = null
 ) : BuntingFlag<T?>(description) {
 
-    fun required() = Required(fn, description)
+    fun required() = Required({ fn(it)!! }, description)
 
-    fun defaultsTo(default: T) = copy(
+    fun defaultsTo(default: T): Optional<T> = Optional(
+        { fn(it) },
         default = default,
         description = (description.takeIf { it.isNotBlank() }?.let { "$it. " } ?: "") + "Defaults to \"${default}\"")
 

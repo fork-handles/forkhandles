@@ -16,7 +16,7 @@ class BuntingTest {
     class MyGrandChildFlags(args: Array<String>) : Bunting(args)
 
     class MyChildFlags(args: Array<String>) : Bunting(args, "This is a command flag") {
-        val noDescription by option().defaultsTo("no value")
+        val noDescription by option().defaultsTo("no description default")
         val grandchild by command(::MyGrandChildFlags)
     }
 
@@ -172,7 +172,7 @@ some description of all my commands
     [subcommands]:
       grandchild                        
     [options]:
-      -n, --noDescription               Defaults to "no value" (STRING?)
+      -n, --noDescription               Defaults to "no description default" (STRING?)
 [options]:
   -a, --anEnum                          Option choice: [a, b]. Defaults to "b" (ANENUM?)
   -d, --defaulted                       This is a defaulted flag. Defaults to "0.0.0" (STRING?)
