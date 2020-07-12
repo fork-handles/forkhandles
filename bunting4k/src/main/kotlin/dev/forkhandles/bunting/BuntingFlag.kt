@@ -57,7 +57,7 @@ data class Optional<T> internal constructor(
         default = default,
         description = (description.takeIf { it.isNotBlank() }?.let { "$it. " } ?: "") + "Defaults to \"${default}\"")
 
-    fun <NEXT> map(nextFn: (T) -> NEXT) = Optional({ fn(it)?.let(nextFn) }, description)
+    fun <NEXT> map(nextFn: (T) -> NEXT): Optional<NEXT> = Optional({ nextFn(fn(it)) }, description)
 
     override fun getValue(thisRef: Bunting, property: KProperty<*>) = thisRef.retrieve(property)?.let {
         try {
