@@ -26,7 +26,7 @@ class Switch(description: String = "") : BuntingFlag<Boolean>(description) {
 }
 
 /**
- * Option flags are passed with a value attached and are prefixed with a '-' (short version) or '--' (long version).
+ * Required flags are passed with a value attached and are prefixed with a '-' (short version) or '--' (long version).
  */
 data class Required<T> internal constructor(
     internal val fn: (String) -> T,
@@ -41,6 +41,9 @@ data class Required<T> internal constructor(
     } ?: throw MissingFlag(property)
 }
 
+/**
+ * Optional flags are passed with a value attached and are prefixed with a '-' (short version) or '--' (long version).
+ */
 data class Optional<T> internal constructor(
     internal val fn: (String) -> T,
     override val description: String = "",
