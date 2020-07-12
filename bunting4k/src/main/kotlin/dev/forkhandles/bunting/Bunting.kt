@@ -6,19 +6,18 @@ import kotlin.reflect.jvm.javaField
 open class Bunting(internal val args: Array<String>, private val description: String? = null, private val baseCommand: String = System.getProperty("sun.java.command")) {
     fun switch(description: String = "") = Switch(description)
     fun option(description: String = "") = Option({ it }, description, null)
-    fun <T : Bunting> command(fn: BuntingConstructor<T>, description: String? = null) = Command(description, fn)
+    fun <T : Bunting> command(fn: BuntingConstructor<T>) = Command(fn)
 
     internal fun usage(): String = "$baseCommand [commands] [options]"
 
     internal fun description(indent: Int = 0) =
-        listOfNotNull(description, commandDescriptions(indent), optionDescriptions(indent)).joinToString("\n")
+        listOfNotNull(description?.let { indent(indent) + it }, commandDescriptions(indent), optionDescriptions(indent)).joinToString("\n")
 
     private fun commandDescriptions(indent: Int): String? {
         val commandDescriptions = members { p, c: Command<*> ->
             val suffix = c.getValue(Bunting(arrayOf(p.name), description, "$baseCommand ${p.name}"), p)
                 ?.description(indent + 2)
                 ?.takeIf { it.isNotBlank() }?.let { "\n" + it } ?: ""
-
             p.name to (c.description ?: "") + suffix
         }
 

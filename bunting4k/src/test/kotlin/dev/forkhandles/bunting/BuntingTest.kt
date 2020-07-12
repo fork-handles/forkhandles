@@ -15,7 +15,7 @@ class BuntingTest {
 
     class MyGrandChildFlags(args: Array<String>) : Bunting(args)
 
-    class MyChildFlags(args: Array<String>) : Bunting(args) {
+    class MyChildFlags(args: Array<String>) : Bunting(args, "This is a command flag") {
         val noDescription by option().defaultsTo("no value")
         val grandchild by command(::MyGrandChildFlags)
     }
@@ -26,7 +26,7 @@ class BuntingTest {
         val defaulted by option("This is a defaulted flag").defaultsTo("0.0.0")
         val mapped by option("This is a mapped flag").map { it.toInt() }
         val anEnum by option().enum<AnEnum>().defaultsTo("b")
-        val command by command(::MyChildFlags, "This is a command flag")
+        val command by command(::MyChildFlags)
     }
 
     @Test
@@ -166,7 +166,8 @@ description
         assertThat(output.toString(), equalTo("""Usage: MyTestFlags [commands] [options]
 some description of all my commands
 [commands]:
-  command                               This is a command flag
+  command                               
+    This is a command flag
     [sub-commands]:
       grandchild                        
     [options]:
