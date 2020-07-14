@@ -52,6 +52,7 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
         }
         
         head?.apply { delay -= remaining }
+        currentTime += remaining
     }
     
     fun tick(duration: Long, timeUnit: TimeUnit) {

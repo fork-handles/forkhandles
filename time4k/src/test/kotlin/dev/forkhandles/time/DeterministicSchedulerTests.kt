@@ -195,6 +195,8 @@ class DeterministicSchedulerTests {
         scheduler.tick(5, SECONDS)
         
         assertEquals(listOf("task1", "task2", "task3"), invoked)
+    
+        assertEquals(Instant.ofEpochSecond(6), now())
     }
     
     @Test
