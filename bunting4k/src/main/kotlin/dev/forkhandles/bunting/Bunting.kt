@@ -10,7 +10,9 @@ open class Bunting(
     internal val io: IO = ConsoleIO
 ) {
     fun switch(description: String = "") = Switch(description)
-    fun option(description: String = "") = Optional({ it }, description, io)
+    fun option(description: String = "") = Optional({
+
+        it }, description, io)
     fun <T : Bunting> command(fn: BuntingConstructor<T>) = Command(fn)
 
     internal fun usage(): String = "$baseCommand [commands] [options]"

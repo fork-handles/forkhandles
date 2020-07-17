@@ -36,9 +36,9 @@ class Required<T> internal constructor(internal val fn: (String) -> T,
         try {
             fn(it)
         } catch (e: Exception) {
-            throw IllegalFlag(property, it, e).apply { io.write(localizedMessage) }
+            throw IllegalFlag(property, it, e)
         }
-    } ?: throw MissingFlag(property).apply { io.write(localizedMessage) }
+    } ?: throw MissingFlag(property)
 }
 
 /**
@@ -61,7 +61,7 @@ data class Optional<T> internal constructor(internal val fn: (String) -> T,
         try {
             fn(it)
         } catch (e: Exception) {
-            throw IllegalFlag(property, it, e).apply { io.write(localizedMessage) }
+            throw IllegalFlag(property, it, e)
         }
     }
 }
