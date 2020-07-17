@@ -21,14 +21,15 @@ class BuntingTest {
     }
 
     class MyTestFlags(args: Array<String>, io: IO) : Bunting(args, "some description of all my commands", "MyTestFlags", io = io) {
-        val noValueFlag by switch("This is a no option flag")
-        val optional by option("This is an optional flag").required()
-        val required by option("This is a required flag").required()
-        val prompted by option("This is a prompted flag").prompted()
+        val noValueFlag: Boolean by switch("This is a no option flag")
+        val optional: String by option("This is an optional flag").required()
+        val required: String by option("This is a required flag").required()
+        val prompted: String by option("This is a prompted flag").prompted()
+        val secret by option("This is a secret flag").int().secret().prompted()
         val defaulted: String by option("This is a defaulted flag").defaultsTo("0.0.0")
         val mapped: Int by option("This is a mapped flag").map { it.toInt() }.required()
-        val anEnum by option().enum<AnEnum>().defaultsTo(AnEnum.b)
-        val command by command { MyChildFlags(it, io) }
+        val anEnum: AnEnum by option().enum<AnEnum>().defaultsTo(AnEnum.b)
+        val command: MyChildFlags? by command { MyChildFlags(it, io) }
     }
 
     @Test
@@ -78,6 +79,32 @@ description
             assertThat(prompted, equalTo("foobar"))
         }
         assertThat(io.toString(), equalTo(""))
+    }
+
+    @Test
+    fun `prompted secret flag is prompted for`() {
+        val promptedIo = TestIO("1")
+        MyTestFlags(arrayOf(), promptedIo).use {
+            assertThat(secret, equalTo(1))
+        }
+        assertThat(promptedIo.toString(), equalTo("Enter value for \"This is a secret flag\": "))
+    }
+
+    @Test
+    fun `prompted secret flag is present`() {
+        MyTestFlags(arrayOf("-s", "1"), io).use {
+            assertThat(secret, equalTo(1))
+        }
+        assertThat(io.toString(), equalTo(""))
+    }
+
+    @Test
+    fun `illegal prompted secret flag does not leak value`() {
+        MyTestFlags(arrayOf("-s", "foobar"), io).use {
+            secret
+        }
+        assertThat(io.toString(), equalTo("Usage: MyTestFlags [commands] [options]\n" +
+            "Illegal --secret (INT) flag: ******. Use --help for docs."))
     }
 
     @Test
@@ -200,6 +227,7 @@ some description of all my commands
   -o, --optional                        This is an optional flag (STRING)
   -p, --prompted                        This is a prompted flag (STRING)
   -r, --required                        This is a required flag (STRING)
+  -s, --secret                          This is a secret flag (INT)
   -h, --help                            Show this message and exit"""))
     }
 
@@ -237,6 +265,19 @@ some description of all my commands
         }
         assertThat(io.toString(), equalTo(""))
     }
+
+    @Test
+    fun `illegal extension blows up`() {
+        class ExtensionFlags(args: Array<String>, io: IO) : Bunting(args, io = io, baseCommand = "foo") {
+            val boolean by option().boolean()
+        }
+
+        ExtensionFlags(arrayOf("--boolean", "foobar"), io).use {
+            boolean
+        }
+        assertThat(io.toString(), equalTo("Usage: foo [commands] [options]\n" +
+            "Illegal --boolean (BOOLEAN) flag: foobar. Use --help for docs."))
+    }
 }
 
 private class TestIO(vararg answers: String) : IO {
@@ -245,7 +286,7 @@ private class TestIO(vararg answers: String) : IO {
 
     private val captured = AtomicReference<String>(null)
 
-    override fun read(): String = input.removeAt(0)
+    override fun read(masked: Boolean): String = input.removeAt(0)
 
     override fun write(message: String) = captured.set(message)
 

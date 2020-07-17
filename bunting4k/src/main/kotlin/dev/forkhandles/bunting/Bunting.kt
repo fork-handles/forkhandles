@@ -10,7 +10,7 @@ open class Bunting(
     internal val io: IO = ConsoleIO
 ) {
     fun switch(description: String = "") = Switch(description)
-    fun option(description: String = "") = Optional({ it }, description, io)
+    fun option(description: String = "") = Optional({ it }, description, { it }, io)
     fun <T : Bunting> command(fn: BuntingConstructor<T>) = Command(fn)
 
     internal fun usage(): String = "$baseCommand [commands] [options]"
@@ -38,10 +38,10 @@ open class Bunting(
 
     private fun optionDescriptions(indent: Int): String? {
         val switches = members { p, s: Switch -> p.name to (s.description ?: "") }
-        val optional = members { p, o: Optional<*> -> p.name to p.asd(o) }
-        val required = members { p, o: Required<*> -> p.name to p.asd(o) }
-        val defaulted = members { p, o: Defaulted<*> -> p.name to p.asd(o) }
-        val prompted = members { p, o: Prompted<*> -> p.name to p.asd(o) }
+        val optional = members { p, o: Optional<*> -> p.name to p.description(o) }
+        val required = members { p, o: Required<*> -> p.name to p.description(o) }
+        val defaulted = members { p, o: Defaulted<*> -> p.name to p.description(o) }
+        val prompted = members { p, o: Prompted<*> -> p.name to p.description(o) }
 
         val sortedOptions = (switches + optional + required + defaulted + prompted).sortedBy { it.first }
         val allOptions = if (indent > 0) sortedOptions else sortedOptions + listOf("help" to "Show this message and exit")
@@ -50,7 +50,7 @@ open class Bunting(
     }
 }
 
-private fun KProperty<*>.asd(o: BuntingFlag<*>) = "${o.description} (${typeDescription()})"
+private fun KProperty<*>.description(o: BuntingFlag<*>) = "${o.description} (${typeDescription()})"
 
 typealias BuntingConstructor<T> = (Array<String>) -> T
 

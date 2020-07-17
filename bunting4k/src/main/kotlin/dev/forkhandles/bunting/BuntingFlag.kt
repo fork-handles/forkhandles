@@ -30,13 +30,12 @@ class Switch(description: String = "") : BuntingFlag<Boolean>(description) {
  */
 class Required<T> internal constructor(internal val fn: (String) -> T,
                                        override val description: String = "",
-                                       private val io: IO)
-    : BuntingFlag<T>(description) {
+                                       private val output: (String) -> String) : BuntingFlag<T>(description) {
     override fun getValue(thisRef: Bunting, property: KProperty<*>): T = thisRef.retrieve(property)?.let {
         try {
             fn(it)
         } catch (e: Exception) {
-            throw IllegalFlag(property, it, e)
+            throw IllegalFlag(property, output(it), e)
         }
     } ?: throw MissingFlag(property)
 }
@@ -46,18 +45,22 @@ class Required<T> internal constructor(internal val fn: (String) -> T,
  */
 data class Optional<T> internal constructor(internal val fn: (String) -> T,
                                             override val description: String,
-                                            private val io: IO)
-    : BuntingFlag<T?>(description) {
+                                            private val output: (String) -> String,
+                                            private val io: IO) : BuntingFlag<T?>(description) {
 
-    fun required() = Required(fn, description, io)
+    fun secret() = copy(output = { "*".repeat(it.length) })
 
-    fun prompted() = Prompted(fn, description, io)
+    fun required() = Required(fn, description, output)
+
+    fun prompted() = Prompted(fn, description, output, io, false)
 
     fun defaultsTo(default: T) = Defaulted(fn,
-        (description.takeIf { it.isNotBlank() }?.let { "$it. " } ?: "") + "Defaults to \"${default}\"",
+        (description.takeIf { it.isNotBlank() }?.let { "$it. " }
+            ?: "") + "Defaults to \"${output(default.toString())}\"",
+        output,
         default)
 
-    fun <NEXT> map(nextFn: (T) -> NEXT) = Optional({ nextFn(fn(it)) }, description, io)
+    fun <NEXT> map(nextFn: (T) -> NEXT) = Optional({ nextFn(fn(it)) }, description, output, io)
 
     override fun getValue(thisRef: Bunting, property: KProperty<*>) = thisRef.retrieve(property)?.let {
         try {
@@ -73,35 +76,40 @@ data class Optional<T> internal constructor(internal val fn: (String) -> T,
  */
 data class Defaulted<T> internal constructor(internal val fn: (String) -> T,
                                              override val description: String,
-                                             private val default: T)
-    : BuntingFlag<T>(description) {
+                                             private val output: (String) -> String,
+                                             private val default: T) : BuntingFlag<T>(description) {
 
     override fun getValue(thisRef: Bunting, property: KProperty<*>): T = thisRef.retrieve(property)?.let {
         try {
             fn(it)
         } catch (e: Exception) {
-            throw IllegalFlag(property, it, e)
+            throw IllegalFlag(property, output(it), e)
         }
     } ?: default
 }
 
-class Prompted<T> internal constructor(internal val fn: (String) -> T,
-                                       override val description: String,
-                                       private val io: IO) : BuntingFlag<T>(description) {
+/**
+ * Defaulted flags cause a prompt from user if missing and are prefixed with a '-' (short version) or '--' (long version).
+ */
+data class Prompted<T> internal constructor(internal val fn: (String) -> T,
+                                            override val description: String,
+                                            private val output: (String) -> String,
+                                            private val io: IO,
+                                            private val masked: Boolean
+) : BuntingFlag<T>(description) {
 
-    override fun getValue(thisRef: Bunting, property: KProperty<*>): T {
-        val value = thisRef.retrieve(property) ?: promptForValue()
-
-        return try {
-            fn(value)
-        } catch (e: Exception) {
-            throw IllegalFlag(property, value, e)
+    override fun getValue(thisRef: Bunting, property: KProperty<*>): T =
+        with(thisRef.retrieve(property) ?: promptForValue()) {
+            try {
+                fn(this)
+            } catch (e: Exception) {
+                throw IllegalFlag(property, output(this), e)
+            }
         }
-    }
 
     private fun promptForValue() = io.run {
         write("Enter value for \"$description\": ")
-        read()
+        read(masked)
     }
 }
 
@@ -115,6 +123,13 @@ fun Optional<String>.float() = map(String::toFloat)
 fun Optional<String>.long() = map(String::toLong)
 fun Optional<String>.uuid() = map(UUID::fromString)
 fun Optional<String>.char() = map(String::first)
-fun Optional<String>.boolean() = map(String::toBoolean)
+fun Optional<String>.boolean() = map {
+    when {
+        it.toBoolean() -> it.toBoolean()
+        it.toLowerCase() != false.toString() -> throw IllegalArgumentException()
+        else -> false
+    }
+}
+
 inline fun <reified T : Enum<T>> Optional<String>.enum() =
     copy(description = description.let { if (it.isNotBlank()) "$it. " else it } + "Option choice: " + enumValues<T>().toList()).map { enumValueOf<T>(it) }
