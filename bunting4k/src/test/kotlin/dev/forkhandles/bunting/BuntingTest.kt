@@ -7,7 +7,7 @@ import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
 
 class BuntingTest {
-    private val output = Output()
+    private val output = TestIO()
 
     enum class AnEnum {
         a, b
@@ -219,10 +219,12 @@ some description of all my commands
     }
 }
 
-private class Output : (String) -> Unit {
+private class TestIO : IO {
     private val captured = AtomicReference<String>(null)
 
-    override fun invoke(p1: String) = captured.set(p1)
+    override fun read(): String = TODO("Not yet implemented")
+
+    override fun write(message: String) = captured.set(message)
 
     override fun toString() = captured.get()?.toString() ?: ""
 }

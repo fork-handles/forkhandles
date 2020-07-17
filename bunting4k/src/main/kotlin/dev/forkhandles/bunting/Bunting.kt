@@ -46,13 +46,13 @@ open class Bunting(internal val args: Array<String>, private val description: St
 
 typealias BuntingConstructor<T> = (Array<String>) -> T
 
-fun <T : Bunting> T?.use(out: (String) -> Unit = ::println, fn: T.() -> Unit) {
+fun <T : Bunting> T?.use(out: IO = ConsoleIO, fn: T.() -> Unit) {
     this?.apply {
         try {
             if (args.contains("--help") || args.contains("-h")) throw Help(description())
             fn(this)
         } catch (e: BuntingException) {
-            out("Usage: ${usage()}\n" + e.localizedMessage)
+            out.write("Usage: ${usage()}\n" + e.localizedMessage)
         }
     }
 }
