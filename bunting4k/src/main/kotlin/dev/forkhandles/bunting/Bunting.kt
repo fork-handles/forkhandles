@@ -3,9 +3,14 @@ package dev.forkhandles.bunting
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.javaField
 
-open class Bunting(internal val args: Array<String>, private val description: String? = null, private val baseCommand: String = System.getProperty("sun.java.command")) {
+open class Bunting(
+    internal val args: Array<String>,
+    private val description: String? = null,
+    private val baseCommand: String = System.getProperty("sun.java.command"),
+    internal val io: IO = ConsoleIO
+) {
     fun switch(description: String = "") = Switch(description)
-    fun option(description: String = "") = Optional({ it }, description)
+    fun option(description: String = "") = Optional({ it }, description, io)
     fun <T : Bunting> command(fn: BuntingConstructor<T>) = Command(fn)
 
     internal fun usage(): String = "$baseCommand [commands] [options]"
@@ -46,13 +51,13 @@ open class Bunting(internal val args: Array<String>, private val description: St
 
 typealias BuntingConstructor<T> = (Array<String>) -> T
 
-fun <T : Bunting> T?.use(out: IO = ConsoleIO, fn: T.() -> Unit) {
+fun <T : Bunting> T?.use(fn: T.() -> Unit) {
     this?.apply {
         try {
             if (args.contains("--help") || args.contains("-h")) throw Help(description())
             fn(this)
         } catch (e: BuntingException) {
-            out.write("Usage: ${usage()}\n" + e.localizedMessage)
+            io.write("Usage: ${usage()}\n" + e.localizedMessage)
         }
     }
 }
