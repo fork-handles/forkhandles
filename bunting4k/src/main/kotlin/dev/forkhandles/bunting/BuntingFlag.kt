@@ -45,11 +45,13 @@ class Required<T> internal constructor(internal val fn: (String) -> T,
  * Optional flags are passed with a value attached and are prefixed with a '-' (short version) or '--' (long version).
  */
 data class Optional<T> internal constructor(internal val fn: (String) -> T,
-                                       override val description: String,
-                                       private val io: IO)
+                                            override val description: String,
+                                            private val io: IO)
     : BuntingFlag<T?>(description) {
 
     fun required() = Required(fn, description, io)
+
+    fun prompted() = Prompted(fn, description, io)
 
     fun defaultsTo(default: T) = Defaulted(fn,
         (description.takeIf { it.isNotBlank() }?.let { "$it. " } ?: "") + "Defaults to \"${default}\"",
@@ -81,6 +83,26 @@ data class Defaulted<T> internal constructor(internal val fn: (String) -> T,
             throw IllegalFlag(property, it, e)
         }
     } ?: default
+}
+
+class Prompted<T> internal constructor(internal val fn: (String) -> T,
+                                       override val description: String,
+                                       private val io: IO) : BuntingFlag<T>(description) {
+
+    override fun getValue(thisRef: Bunting, property: KProperty<*>): T {
+        val value = thisRef.retrieve(property) ?: promptForValue()
+
+        return try {
+            fn(value)
+        } catch (e: Exception) {
+            throw IllegalFlag(property, value, e)
+        }
+    }
+
+    private fun promptForValue() = io.run {
+        write("Enter value for \"$description\": ")
+        read()
+    }
 }
 
 private fun Bunting.retrieve(property: KProperty<*>): String? {

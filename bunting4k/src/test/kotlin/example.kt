@@ -18,6 +18,7 @@ class MyGreatFlags(args: Array<String>) : Bunting(args) {
     val user by option("This is optional")
     val password by option("This is a required option").required()
     val version by option().int().defaultsTo(0)
+    val prompt by option("this is prompted value").prompted()
     val level by option().enum<LogLevel>().defaultsTo(warn)
 }
 
@@ -51,11 +52,11 @@ object SubCommands {
         }
 
         delete.use {
-            println(password)           // bar      <-- passed value (short name)
+            println(password)       // bar      <-- passed value (short name)
         }
 
         view.use {
-            println(version)            // 0        <-- defaulted value
+            println(version)        // 0        <-- defaulted value
         }
     }
 }
@@ -65,5 +66,13 @@ object AskForHelp {
     // run the main with: java (...) AskForHelp --help
     fun main(ignored: Array<String>) = MyGreatFlags(arrayOf("--help")).use {
         // doesn't matter
+    }
+}
+
+object PromptedForValue {
+    @JvmStatic
+    // run the main with: java (...) PromptedForValue
+    fun main(ignored: Array<String>) = MyGreatFlags(arrayOf()).use {
+        println(prompt)
     }
 }

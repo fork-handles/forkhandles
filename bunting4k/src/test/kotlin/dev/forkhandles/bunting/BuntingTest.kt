@@ -24,6 +24,7 @@ class BuntingTest {
         val noValueFlag by switch("This is a no option flag")
         val optional by option("This is an optional flag").required()
         val required by option("This is a required flag").required()
+        val prompted by option("This is a prompted flag").prompted()
         val defaulted: String by option("This is a defaulted flag").defaultsTo("0.0.0")
         val mapped: Int by option("This is a mapped flag").map { it.toInt() }.required()
         val anEnum by option().enum<AnEnum>().defaultsTo(AnEnum.b)
@@ -58,6 +59,23 @@ description
     fun `required flag is parsed`() {
         MyTestFlags(arrayOf("--required", "foo"), io).use {
             assertThat(required, equalTo("foo"))
+        }
+        assertThat(io.toString(), equalTo(""))
+    }
+
+    @Test
+    fun `prompted flag is prompted for`() {
+        val promptedIo = TestIO("foobar")
+        MyTestFlags(arrayOf(), promptedIo).use {
+            assertThat(prompted, equalTo("foobar"))
+        }
+        assertThat(promptedIo.toString(), equalTo("Enter value for \"This is a prompted flag\": "))
+    }
+
+    @Test
+    fun `prompted flag is present`() {
+        MyTestFlags(arrayOf("-p", "foobar"), io).use {
+            assertThat(prompted, equalTo("foobar"))
         }
         assertThat(io.toString(), equalTo(""))
     }
@@ -180,6 +198,7 @@ some description of all my commands
   -m, --mapped                          This is a mapped flag (INT)
   -n, --noValueFlag                     This is a no option flag
   -o, --optional                        This is an optional flag (STRING)
+  -p, --prompted                        This is a prompted flag (STRING)
   -r, --required                        This is a required flag (STRING)
   -h, --help                            Show this message and exit"""))
     }
@@ -220,10 +239,13 @@ some description of all my commands
     }
 }
 
-private class TestIO : IO {
+private class TestIO(vararg answers: String) : IO {
+
+    private val input = answers.toMutableList()
+
     private val captured = AtomicReference<String>(null)
 
-    override fun read(): String = TODO("Not yet implemented")
+    override fun read(): String = input.removeAt(0)
 
     override fun write(message: String) = captured.set(message)
 
