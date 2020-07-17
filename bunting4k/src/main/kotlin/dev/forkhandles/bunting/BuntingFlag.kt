@@ -89,7 +89,7 @@ data class Defaulted<T> internal constructor(internal val fn: (String) -> T,
 }
 
 /**
- * Defaulted flags cause a prompt from user if missing and are prefixed with a '-' (short version) or '--' (long version).
+ * Prompted flags cause a prompt from user if missing and are prefixed with a '-' (short version) or '--' (long version).
  */
 data class Prompted<T> internal constructor(internal val fn: (String) -> T,
                                             override val description: String,
