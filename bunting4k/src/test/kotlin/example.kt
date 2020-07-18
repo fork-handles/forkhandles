@@ -1,6 +1,5 @@
 import MyGreatFlags.LogLevel.warn
 import dev.forkhandles.bunting.Bunting
-import dev.forkhandles.bunting.boolean
 import dev.forkhandles.bunting.enum
 import dev.forkhandles.bunting.int
 import dev.forkhandles.bunting.use

@@ -9,7 +9,7 @@ interface IO {
 }
 
 object ConsoleIO : IO {
-    override fun read(visibility: Visibility): String = when(visibility) {
+    override fun read(visibility: Visibility): String = when (visibility) {
         Secret -> System.console()?.readPassword()?.let { String(it) } ?: read(Public)
         Public -> readLine() ?: throw IllegalArgumentException("Failed to read input")
     }
