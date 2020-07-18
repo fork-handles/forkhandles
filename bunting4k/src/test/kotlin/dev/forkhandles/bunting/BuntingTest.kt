@@ -4,7 +4,6 @@ import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import org.junit.jupiter.api.Test
 import java.util.UUID
-import java.util.concurrent.atomic.AtomicReference
 
 class BuntingTest {
     private val io = TestIO()
@@ -207,6 +206,8 @@ description
     }
 
     private fun assertHelpText(strings: Array<String>) {
+        val io = TestIO()
+
         MyTestFlags(strings, io).use {
             throw IllegalArgumentException()
         }
@@ -284,11 +285,13 @@ private class TestIO(vararg answers: String) : IO {
 
     private val input = answers.toMutableList()
 
-    private val captured = AtomicReference<String>(null)
+    private val captured = mutableListOf<String>()
 
     override fun read(masked: Boolean): String = input.removeAt(0)
 
-    override fun write(message: String) = captured.set(message)
+    override fun write(message: String) {
+        captured.add(message)
+    }
 
-    override fun toString() = captured.get()?.toString() ?: ""
+    override fun toString() = captured.joinToString("\n")
 }
