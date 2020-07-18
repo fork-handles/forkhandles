@@ -58,11 +58,10 @@ typealias BuntingConstructor<T> = (Array<String>) -> T
 fun <T : Bunting> T?.use(fn: T.() -> Unit) {
     this?.apply {
         try {
-            if (args.contains("--help") || args.contains("-h")) throw Help("")
+            if (args.contains("--help") || args.contains("-h")) throw Help(description())
             fn(this)
         } catch (e: BuntingException) {
-            io.write(e.localizedMessage)
-            io.write("Usage: ${usage()}\n" + description())
+            io.write("Usage: ${usage()}\n" + e.localizedMessage)
         }
     }
 }

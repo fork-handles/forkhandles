@@ -102,7 +102,8 @@ description
         MyTestFlags(arrayOf("-s", "foobar"), io).use {
             secret
         }
-        assertThat(io.toString(), equalTo("Illegal --secret (INT) flag: ******.\n$helpText")) }
+        assertThat(io.toString(), equalTo("Usage: MyTestFlags [commands] [options]\n" +
+            "Illegal --secret (INT) flag: ******. Use --help for docs.")) }
 
     @Test
     fun `no value then required flag is parsed`() {
@@ -117,7 +118,8 @@ description
         MyTestFlags(arrayOf(), io).use {
             required
         }
-        assertThat(io.toString(), equalTo("Missing --required (STRING) flag.\n$helpText"))
+        assertThat(io.toString(), equalTo("""Usage: MyTestFlags [commands] [options]
+Missing --required (STRING) flag. Use --help for docs."""))
     }
 
     @Test
@@ -165,7 +167,8 @@ description
         MyTestFlags(arrayOf("--mapped", "asd"), io).use {
             mapped
         }
-        assertThat(io.toString(), equalTo("Illegal --mapped (INT) flag: asd.\n$helpText"))
+        assertThat(io.toString(), equalTo("Usage: MyTestFlags [commands] [options]\n" +
+            "Illegal --mapped (INT) flag: asd. Use --help for docs."))
     }
 
     @Test
@@ -201,6 +204,26 @@ description
         }
 
         assertThat(io.toString(), equalTo(""))
+    }
+
+    @Test
+    fun `failure in command`() {
+        class Command(args: Array<String>, io: IO) : Bunting(args, "command description", "base", io = io) {
+            val required by option("required").required()
+        }
+
+        class Foo(args: Array<String>, io: IO) : Bunting(args, "top description", "foo", io = io) {
+            val command by command { Command(it, io) }
+        }
+
+        Foo(arrayOf("command"), io).use {
+            command.use {
+                required
+            }
+        }
+
+        assertThat(io.toString(), equalTo("""Usage: base [commands] [options]
+Missing --required (STRING) flag. Use --help for docs."""))
     }
 
     private fun assertHelpText(strings: Array<String>) {
@@ -257,11 +280,8 @@ description
         ExtensionFlags(arrayOf("--boolean", "foobar"), io).use {
             boolean
         }
-        assertThat(io.toString(), equalTo("""Illegal --boolean (BOOLEAN) flag: foobar.
-Usage: foo [commands] [options]
-[options]:
-  -b, --boolean                         (BOOLEAN?)
-  -h, --help                            Show this message and exit"""))
+        assertThat(io.toString(), equalTo("""Usage: foo [commands] [options]
+Illegal --boolean (BOOLEAN) flag: foobar. Use --help for docs."""))
     }
 
     private val helpText = """Usage: MyTestFlags [commands] [options]
