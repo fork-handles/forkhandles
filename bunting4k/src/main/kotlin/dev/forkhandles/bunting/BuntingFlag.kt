@@ -1,5 +1,7 @@
 package dev.forkhandles.bunting
 
+import dev.forkhandles.bunting.Visibility.Public
+import dev.forkhandles.bunting.Visibility.Secret
 import java.util.UUID
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
@@ -8,7 +10,7 @@ import kotlin.reflect.KProperty
  * A value passed on the command line which are normally passed with a `-` (short) or `--`  (long) prefix.
  */
 sealed class BuntingFlag<T>(val description: String? = null,
-                            internal val masking: (String) -> String = { it }) : ReadOnlyProperty<Bunting, T>
+                            internal val visibility: Visibility = Public) : ReadOnlyProperty<Bunting, T>
 
 /**
  * Command flags always appear at the start of a command and are not prefixed with a '-' or '--'.
@@ -31,14 +33,23 @@ class Switch internal constructor(description: String?) : BuntingFlag<Boolean>(d
  */
 class Required<T> internal constructor(internal val fn: (String) -> T,
                                        description: String?,
-                                       masking: (String) -> String) : BuntingFlag<T>(description, masking) {
+                                       visibility: Visibility) : BuntingFlag<T>(description, visibility) {
     override fun getValue(thisRef: Bunting, property: KProperty<*>): T = thisRef.retrieve(property)?.let {
         try {
             fn(it)
         } catch (e: Exception) {
-            throw IllegalFlag(property, masking(it), e)
+            throw IllegalFlag(property, visibility(it), e)
         }
     } ?: throw MissingFlag(property)
+}
+
+enum class Visibility : (String) -> String {
+    Public {
+        override operator fun invoke(value: String): String = value
+    },
+    Secret {
+        override operator fun invoke(value: String): String = "*".repeat(value.length)
+    };
 }
 
 /**
@@ -46,24 +57,24 @@ class Required<T> internal constructor(internal val fn: (String) -> T,
  */
 class Optional<T> internal constructor(internal val fn: (String) -> T,
                                        description: String?,
-                                       masking: (String) -> String,
-                                       private val io: IO) : BuntingFlag<T?>(description, masking) {
+                                       visibility: Visibility,
+                                       private val io: IO) : BuntingFlag<T?>(description, visibility) {
 
-    fun secret() = Optional(fn, description, { "*".repeat(it.length) }, io)
+    fun secret() = Optional(fn, description, Secret, io)
 
-    fun required() = Required(fn, description, masking)
+    fun required() = Required(fn, description, visibility)
 
-    fun prompted() = Prompted(fn, description, masking, io, false)
+    fun prompted() = Prompted(fn, description, visibility, io)
 
     fun defaultsTo(default: T) = Defaulted(fn,
         (description?.takeIf { it.isNotBlank() }?.let { "$it. " }
-            ?: "") + "Defaults to \"${masking(default.toString())}\"",
-        masking,
+            ?: "") + "Defaults to \"${visibility(default.toString())}\"",
+        visibility,
         default)
 
-    fun described(new: String): Optional<T> = Optional(fn, new, masking, io)
+    fun described(new: String): Optional<T> = Optional(fn, new, visibility, io)
 
-    fun <NEXT> map(nextFn: (T) -> NEXT) = Optional({ nextFn(fn(it)) }, description, masking, io)
+    fun <NEXT> map(nextFn: (T) -> NEXT) = Optional({ nextFn(fn(it)) }, description, visibility, io)
 
     override fun getValue(thisRef: Bunting, property: KProperty<*>) = thisRef.retrieve(property)?.let {
         try {
@@ -79,14 +90,14 @@ class Optional<T> internal constructor(internal val fn: (String) -> T,
  */
 class Defaulted<T> internal constructor(internal val fn: (String) -> T,
                                         description: String?,
-                                        output: (String) -> String,
-                                        private val default: T) : BuntingFlag<T>(description, output) {
+                                        visibility: Visibility,
+                                        private val default: T) : BuntingFlag<T>(description, visibility) {
 
     override fun getValue(thisRef: Bunting, property: KProperty<*>): T = thisRef.retrieve(property)?.let {
         try {
             fn(it)
         } catch (e: Exception) {
-            throw IllegalFlag(property, masking(it), e)
+            throw IllegalFlag(property, visibility(it), e)
         }
     } ?: default
 }
@@ -96,23 +107,22 @@ class Defaulted<T> internal constructor(internal val fn: (String) -> T,
  */
 class Prompted<T> internal constructor(internal val fn: (String) -> T,
                                        description: String?,
-                                       masking: (String) -> String,
-                                       private val io: IO,
-                                       private val masked: Boolean
-) : BuntingFlag<T>(description, masking) {
+                                       visibility: Visibility,
+                                       private val io: IO
+) : BuntingFlag<T>(description, visibility) {
 
     override fun getValue(thisRef: Bunting, property: KProperty<*>): T =
         with(thisRef.retrieve(property) ?: promptForValue()) {
             try {
                 fn(this)
             } catch (e: Exception) {
-                throw IllegalFlag(property, masking(this), e)
+                throw IllegalFlag(property, visibility(this), e)
             }
         }
 
     private fun promptForValue() = io.run {
         write("Enter value for \"$description\": ")
-        read(masked)
+        read(visibility)
     }
 }
 

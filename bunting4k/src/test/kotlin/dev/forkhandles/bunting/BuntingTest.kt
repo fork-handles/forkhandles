@@ -2,6 +2,8 @@ package dev.forkhandles.bunting
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
+import dev.forkhandles.bunting.Visibility.Public
+import dev.forkhandles.bunting.Visibility.Secret
 import org.junit.jupiter.api.Test
 import java.util.UUID
 
@@ -65,7 +67,7 @@ description
 
     @Test
     fun `prompted flag is prompted for`() {
-        val promptedIo = TestIO("foobar")
+        val promptedIo = TestIO(listOf("foobar"))
         MyTestFlags(arrayOf(), promptedIo).use {
             assertThat(prompted, equalTo("foobar"))
         }
@@ -82,7 +84,7 @@ description
 
     @Test
     fun `prompted secret flag is prompted for`() {
-        val promptedIo = TestIO("1")
+        val promptedIo = TestIO(secrets = listOf("1"))
         MyTestFlags(arrayOf(), promptedIo).use {
             assertThat(secret, equalTo(1))
         }
@@ -103,7 +105,8 @@ description
             secret
         }
         assertThat(testIo.toString(), equalTo("Usage: MyTestFlags [commands] [options]\n" +
-            "Illegal --secret (INT) flag: ******. Use --help for docs.")) }
+            "Illegal --secret (INT) flag: ******. Use --help for docs."))
+    }
 
     @Test
     fun `no value then required flag is parsed`() {
@@ -325,13 +328,17 @@ some description of all my commands
   -h, --help                            Show this message and exit"""
 }
 
-private class TestIO(vararg answers: String) : IO {
+private class TestIO(answers: List<String> = emptyList(), secrets: List<String> = emptyList()) : IO {
 
-    private val input = answers.toMutableList()
+    private val answers = answers.toMutableList()
+    private val secrets = secrets.toMutableList()
 
     private val captured = mutableListOf<String>()
 
-    override fun read(masked: Boolean): String = input.removeAt(0)
+    override fun read(visibility: Visibility): String = when (visibility) {
+        Public -> answers
+        Secret -> secrets
+    }.removeAt(0)
 
     override fun write(message: String) {
         if (message.isNotBlank()) captured.add(message)

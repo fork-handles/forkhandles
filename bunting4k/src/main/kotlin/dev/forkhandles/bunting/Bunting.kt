@@ -1,5 +1,6 @@
 package dev.forkhandles.bunting
 
+import dev.forkhandles.bunting.Visibility.Public
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.javaField
 
@@ -10,7 +11,7 @@ open class Bunting(
     internal val io: IO = ConsoleIO
 ) {
     fun switch(description: String? = null) = Switch(description)
-    fun option(description: String? = null) = Optional({ it }, description, { it }, io)
+    fun option(description: String? = null) = Optional({ it }, description, Public, io)
     fun <T : Bunting> command(fn: BuntingConstructor<T>) = Command(fn)
 
     internal fun usage(): String = "$baseCommand [commands] [options]"
