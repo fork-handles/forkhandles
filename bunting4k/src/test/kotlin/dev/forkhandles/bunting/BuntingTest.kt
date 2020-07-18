@@ -20,7 +20,7 @@ class BuntingTest {
     }
 
     class MyTestFlags(args: Array<String>, io: IO) : Bunting(args, "some description of all my commands", "MyTestFlags", io = io) {
-        val noValueFlag: Boolean by switch("This is a no option flag")
+        val switch: Boolean by switch("This is a switch")
         val optional: String by option("This is an optional flag").required()
         val required: String by option("This is a required flag").required()
         val prompted: String by option("This is a prompted flag").prompted()
@@ -33,8 +33,8 @@ class BuntingTest {
 
     @Test
     fun `no value flag is parsed`() {
-        MyTestFlags(arrayOf("--noValueFlag"), io).use {
-            assertThat(noValueFlag, equalTo(true))
+        MyTestFlags(arrayOf("--switch"), io).use {
+            assertThat(switch, equalTo(true))
         }
         assertThat(io.toString(), equalTo(""))
     }
@@ -107,7 +107,7 @@ description
 
     @Test
     fun `no value then required flag is parsed`() {
-        MyTestFlags(arrayOf("--noValueFlag", "--required", "foo", "--noValueFlag2", "--required2", "foo2"), io).use {
+        MyTestFlags(arrayOf("--switch      ", "--required", "foo", "--switch      2", "--required2", "foo2"), io).use {
             assertThat(required, equalTo("foo"))
         }
         assertThat(io.toString(), equalTo(""))
@@ -140,8 +140,8 @@ Missing --required (STRING) flag. Use --help for docs."""))
 
     @Test
     fun `passing short switch`() {
-        MyTestFlags(arrayOf("-n", "-r", "foo"), io).use {
-            assertThat(noValueFlag, equalTo(true))
+        MyTestFlags(arrayOf("-s", "-r", "foo"), io).use {
+            assertThat(switch, equalTo(true))
         }
         assertThat(io.toString(), equalTo(""))
     }
@@ -297,11 +297,11 @@ some description of all my commands
   -a, --anEnum                          Option choice: [a, b]. Defaults to "b" (ANENUM)
   -d, --defaulted                       This is a defaulted flag. Defaults to "0.0.0" (STRING)
   -m, --mapped                          This is a mapped flag (INT)
-  -n, --noValueFlag                     This is a no option flag
   -o, --optional                        This is an optional flag (STRING)
   -p, --prompted                        This is a prompted flag (STRING)
   -r, --required                        This is a required flag (STRING)
   -s, --secret                          This is a secret flag (INT)
+  -s, --switch                          This is a switch
   -h, --help                            Show this message and exit"""
 }
 
