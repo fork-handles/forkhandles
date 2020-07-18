@@ -5,7 +5,7 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 /**
- * A value passed on the command line.
+ * A value passed on the command line which are normally passed with a `-` (short) or `--`  (long) prefix.
  */
 sealed class BuntingFlag<T>(open val description: String? = null) : ReadOnlyProperty<Bunting, T>
 
@@ -18,7 +18,7 @@ class Command<T : Bunting>(private val fn: BuntingConstructor<T>) : BuntingFlag<
 }
 
 /**
- * Switch flags are not passed with a value attached and are prefixed with a '-' (short version) or '--' (long version).
+ * Switch flags are optional but not passed with a value attached. They resolve to a boolean.
  */
 class Switch(description: String = "") : BuntingFlag<Boolean>(description) {
     override fun getValue(thisRef: Bunting, property: KProperty<*>): Boolean =
@@ -26,7 +26,7 @@ class Switch(description: String = "") : BuntingFlag<Boolean>(description) {
 }
 
 /**
- * Required flags are passed with a value attached and are prefixed with a '-' (short version) or '--' (long version).
+ * Required flags cause a failure when missing..
  */
 class Required<T> internal constructor(internal val fn: (String) -> T,
                                        override val description: String = "",
@@ -41,7 +41,7 @@ class Required<T> internal constructor(internal val fn: (String) -> T,
 }
 
 /**
- * Optional flags are passed with a value attached and are prefixed with a '-' (short version) or '--' (long version).
+ * Optional flags just return null when missing.
  */
 data class Optional<T> internal constructor(internal val fn: (String) -> T,
                                             override val description: String,
@@ -72,7 +72,7 @@ data class Optional<T> internal constructor(internal val fn: (String) -> T,
 }
 
 /**
- * Defaulted flags are passed with a value attached and are prefixed with a '-' (short version) or '--' (long version).
+ * Defaulted flags fall back to a passed value when missing.
  */
 data class Defaulted<T> internal constructor(internal val fn: (String) -> T,
                                              override val description: String,
@@ -89,7 +89,7 @@ data class Defaulted<T> internal constructor(internal val fn: (String) -> T,
 }
 
 /**
- * Prompted flags cause a prompt from user if missing and are prefixed with a '-' (short version) or '--' (long version).
+ * Prompted flags cause a prompt to be displayed to the user when missing.
  */
 data class Prompted<T> internal constructor(internal val fn: (String) -> T,
                                             override val description: String,
