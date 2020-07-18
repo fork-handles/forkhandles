@@ -9,8 +9,8 @@ open class Bunting(
     private val baseCommand: String = System.getProperty("sun.java.command"),
     internal val io: IO = ConsoleIO
 ) {
-    fun switch(description: String = "") = Switch(description)
-    fun option(description: String = "") = Optional({ it }, description, { it }, io)
+    fun switch(description: String? = null) = Switch(description)
+    fun option(description: String? = null) = Optional({ it }, description, { it }, io)
     fun <T : Bunting> command(fn: BuntingConstructor<T>) = Command(fn)
 
     internal fun usage(): String = "$baseCommand [commands] [options]"
@@ -50,27 +50,27 @@ open class Bunting(
     }
 }
 
-private fun KProperty<*>.description(o: BuntingFlag<*>) = "${o.description} (${typeDescription()})"
+private fun KProperty<*>.description(o: BuntingFlag<*>) =
+    listOfNotNull(o.description, "(" + typeDescription() + ")").joinToString(" ")
 
 typealias BuntingConstructor<T> = (Array<String>) -> T
 
 fun <T : Bunting> T?.use(fn: T.() -> Unit) {
     this?.apply {
         try {
-            if (args.contains("--help") || args.contains("-h")) throw Help(description())
+            if (args.contains("--help") || args.contains("-h")) throw Help("")
             fn(this)
         } catch (e: BuntingException) {
-            io.write("Usage: ${usage()}\n" + e.localizedMessage)
+            io.write(e.localizedMessage)
+            io.write("Usage: ${usage()}\n" + description())
         }
     }
 }
 
-private inline fun <reified F : BuntingFlag<*>> Bunting.members(fn: (KProperty<*>, F) -> Pair<String, String>): List<Pair<String, String>> =
+private inline fun <reified F : BuntingFlag<*>> Bunting.members(fn: (KProperty<*>, F) -> Pair<String, String>) =
     this::class.members.filterIsInstance<KProperty<F>>().mapNotNull { p ->
         (p.javaField!!.apply { trySetAccessible() }[this@members] as? F)
-            ?.let {
-                fn(p, it)
-            }
+            ?.let { fn(p, it) }
     }
 
 private fun indent(indent: Int) = "  ".repeat(indent)

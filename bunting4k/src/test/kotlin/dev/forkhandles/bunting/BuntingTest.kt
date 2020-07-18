@@ -102,9 +102,7 @@ description
         MyTestFlags(arrayOf("-s", "foobar"), io).use {
             secret
         }
-        assertThat(io.toString(), equalTo("Usage: MyTestFlags [commands] [options]\n" +
-            "Illegal --secret (INT) flag: ******. Use --help for docs."))
-    }
+        assertThat(io.toString(), equalTo("Illegal --secret (INT) flag: ******.\n$helpText")) }
 
     @Test
     fun `no value then required flag is parsed`() {
@@ -119,7 +117,7 @@ description
         MyTestFlags(arrayOf(), io).use {
             required
         }
-        assertThat(io.toString(), equalTo("Usage: MyTestFlags [commands] [options]\nMissing --required (STRING) flag. Use --help for docs."))
+        assertThat(io.toString(), equalTo("Missing --required (STRING) flag.\n$helpText"))
     }
 
     @Test
@@ -167,7 +165,7 @@ description
         MyTestFlags(arrayOf("--mapped", "asd"), io).use {
             mapped
         }
-        assertThat(io.toString(), equalTo("Usage: MyTestFlags [commands] [options]\nIllegal --mapped (INT) flag: asd. Use --help for docs."))
+        assertThat(io.toString(), equalTo("Illegal --mapped (INT) flag: asd.\n$helpText"))
     }
 
     @Test
@@ -211,25 +209,8 @@ description
         MyTestFlags(strings, io).use {
             throw IllegalArgumentException()
         }
-        assertThat(io.toString(), equalTo("""Usage: MyTestFlags [commands] [options]
-some description of all my commands
-[commands]:
-  command                               
-    This is a command flag
-    [subcommands]:
-      grandchild                        
-    [options]:
-      -n, --noDescription               Defaults to "no description default" (STRING)
-[options]:
-  -a, --anEnum                          Option choice: [a, b]. Defaults to "b" (ANENUM)
-  -d, --defaulted                       This is a defaulted flag. Defaults to "0.0.0" (STRING)
-  -m, --mapped                          This is a mapped flag (INT)
-  -n, --noValueFlag                     This is a no option flag
-  -o, --optional                        This is an optional flag (STRING)
-  -p, --prompted                        This is a prompted flag (STRING)
-  -r, --required                        This is a required flag (STRING)
-  -s, --secret                          This is a secret flag (INT)
-  -h, --help                            Show this message and exit"""))
+
+        assertThat(io.toString(), equalTo(helpText))
     }
 
     @Test
@@ -276,9 +257,32 @@ some description of all my commands
         ExtensionFlags(arrayOf("--boolean", "foobar"), io).use {
             boolean
         }
-        assertThat(io.toString(), equalTo("Usage: foo [commands] [options]\n" +
-            "Illegal --boolean (BOOLEAN) flag: foobar. Use --help for docs."))
+        assertThat(io.toString(), equalTo("""Illegal --boolean (BOOLEAN) flag: foobar.
+Usage: foo [commands] [options]
+[options]:
+  -b, --boolean                         (BOOLEAN?)
+  -h, --help                            Show this message and exit"""))
     }
+
+    private val helpText = """Usage: MyTestFlags [commands] [options]
+some description of all my commands
+[commands]:
+  command                               
+    This is a command flag
+    [subcommands]:
+      grandchild                        
+    [options]:
+      -n, --noDescription               Defaults to "no description default" (STRING)
+[options]:
+  -a, --anEnum                          Option choice: [a, b]. Defaults to "b" (ANENUM)
+  -d, --defaulted                       This is a defaulted flag. Defaults to "0.0.0" (STRING)
+  -m, --mapped                          This is a mapped flag (INT)
+  -n, --noValueFlag                     This is a no option flag
+  -o, --optional                        This is an optional flag (STRING)
+  -p, --prompted                        This is a prompted flag (STRING)
+  -r, --required                        This is a required flag (STRING)
+  -s, --secret                          This is a secret flag (INT)
+  -h, --help                            Show this message and exit"""
 }
 
 private class TestIO(vararg answers: String) : IO {
@@ -290,7 +294,7 @@ private class TestIO(vararg answers: String) : IO {
     override fun read(masked: Boolean): String = input.removeAt(0)
 
     override fun write(message: String) {
-        captured.add(message)
+        if (message.isNotBlank()) captured.add(message)
     }
 
     override fun toString() = captured.joinToString("\n")

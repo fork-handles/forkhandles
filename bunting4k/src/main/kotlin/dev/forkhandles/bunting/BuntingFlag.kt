@@ -20,7 +20,7 @@ class Command<T : Bunting>(private val fn: BuntingConstructor<T>) : BuntingFlag<
 /**
  * Switch flags are optional but not passed with a value attached. They resolve to a boolean.
  */
-class Switch(description: String = "") : BuntingFlag<Boolean>(description) {
+class Switch(description: String?) : BuntingFlag<Boolean>(description) {
     override fun getValue(thisRef: Bunting, property: KProperty<*>): Boolean =
         thisRef.args.contains("--${property.name}") || thisRef.args.contains("-${property.name.first()}")
 }
@@ -29,7 +29,7 @@ class Switch(description: String = "") : BuntingFlag<Boolean>(description) {
  * Required flags cause a failure when missing..
  */
 class Required<T> internal constructor(internal val fn: (String) -> T,
-                                       override val description: String = "",
+                                       override val description: String?,
                                        private val output: (String) -> String) : BuntingFlag<T>(description) {
     override fun getValue(thisRef: Bunting, property: KProperty<*>): T = thisRef.retrieve(property)?.let {
         try {
@@ -44,7 +44,7 @@ class Required<T> internal constructor(internal val fn: (String) -> T,
  * Optional flags just return null when missing.
  */
 data class Optional<T> internal constructor(internal val fn: (String) -> T,
-                                            override val description: String,
+                                            override val description: String?,
                                             private val output: (String) -> String,
                                             private val io: IO) : BuntingFlag<T?>(description) {
 
@@ -55,7 +55,7 @@ data class Optional<T> internal constructor(internal val fn: (String) -> T,
     fun prompted() = Prompted(fn, description, output, io, false)
 
     fun defaultsTo(default: T) = Defaulted(fn,
-        (description.takeIf { it.isNotBlank() }?.let { "$it. " }
+        (description?.takeIf { it.isNotBlank() }?.let { "$it. " }
             ?: "") + "Defaults to \"${output(default.toString())}\"",
         output,
         default)
@@ -75,7 +75,7 @@ data class Optional<T> internal constructor(internal val fn: (String) -> T,
  * Defaulted flags fall back to a passed value when missing.
  */
 data class Defaulted<T> internal constructor(internal val fn: (String) -> T,
-                                             override val description: String,
+                                             override val description: String?,
                                              private val output: (String) -> String,
                                              private val default: T) : BuntingFlag<T>(description) {
 
@@ -92,7 +92,7 @@ data class Defaulted<T> internal constructor(internal val fn: (String) -> T,
  * Prompted flags cause a prompt to be displayed to the user when missing.
  */
 data class Prompted<T> internal constructor(internal val fn: (String) -> T,
-                                            override val description: String,
+                                            override val description: String?,
                                             private val output: (String) -> String,
                                             private val io: IO,
                                             private val masked: Boolean
@@ -132,4 +132,5 @@ fun Optional<String>.boolean() = map {
 }
 
 inline fun <reified T : Enum<T>> Optional<String>.enum() =
-    copy(description = description.let { if (it.isNotBlank()) "$it. " else it } + "Option choice: " + enumValues<T>().toList()).map { enumValueOf<T>(it) }
+    copy(description = (description?.let { "$it. " } ?: "")
+        + "Option choice: " + enumValues<T>().toList()).map { enumValueOf<T>(it) }
