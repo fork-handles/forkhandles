@@ -27,7 +27,7 @@ class MyGreatFlags(args: Array<String>) : Bunting(args) {
 // Some sub commands - these can define their own flags
 class ViewFlags(args: Array<String>) : Bunting(args, "View things")
 class ListFlags(args: Array<String>) : Bunting(args, "List things") {
-    val includeDates by switch("Switch relevant to this mode")
+    val dates by switch("Switch relevant to this mode")
 }
 
 class DeleteFlags(args: Array<String>) : Bunting(args, "delete things")
@@ -51,7 +51,7 @@ object SubCommands {
         list.use {
             println(insecure)       // false    <-- because not set
             println(user)           // foo      <-- passed value (full name)
-            println(includeDates)   // false    <-- local switch
+            println(dates)          // false    <-- local switch
         }
 
         delete.use {

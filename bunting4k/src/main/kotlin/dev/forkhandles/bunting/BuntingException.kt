@@ -8,5 +8,7 @@ class Help(message: String) : BuntingException(message)
 
 class MissingFlag(property: KProperty<*>) : BuntingException("Missing --${property.name} (${property.typeDescription()}) flag. Use --help for docs.")
 
+class UnknownCommand(value: String) : BuntingException("Unknown command $value. Use --help for docs.")
+
 class IllegalFlag(property: KProperty<*>, value: String, cause: Throwable) :
     BuntingException("Illegal --${property.name} (${property.typeDescription().removeSuffix("?")}) flag: $value. Use --help for docs.", cause)

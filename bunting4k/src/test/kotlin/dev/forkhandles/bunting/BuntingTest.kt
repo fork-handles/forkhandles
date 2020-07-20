@@ -6,15 +6,15 @@ import org.junit.jupiter.api.Test
 import java.util.UUID
 
 class BuntingTest {
-    private val io = TestIO()
+    private val testIo = TestIO()
 
     enum class AnEnum {
         a, b
     }
 
-    class MyGrandChildFlags(args: Array<String>, io: IO) : Bunting(args, io = io)
+    class MyGrandChildFlags(args: Array<String>, io: IO) : Bunting(args, io = io, baseCommand = "MyTestFlags")
 
-    class MyChildFlags(args: Array<String>, io: IO) : Bunting(args, "This is a command flag") {
+    class MyChildFlags(args: Array<String>, io: IO) : Bunting(args, "This is a command flag", "MyTestFlags", io) {
         val noDescription by option().defaultsTo("no description default")
         val grandchild by command { MyGrandChildFlags(it, io) }
     }
@@ -28,15 +28,15 @@ class BuntingTest {
         val defaulted: String by option("This is a defaulted flag").defaultsTo("0.0.0")
         val mapped: Int by option("This is a mapped flag").map { it.toInt() }.required()
         val anEnum: AnEnum by option().enum<AnEnum>().defaultsTo(AnEnum.b)
-        val command: MyChildFlags? by command { MyChildFlags(it, io) }
+        val command: MyChildFlags? by command { MyChildFlags(it, this.io) }
     }
 
     @Test
-    fun `no value flag is parsed`() {
-        MyTestFlags(arrayOf("--switch"), io).use {
+    fun `switch is parsed`() {
+        MyTestFlags(arrayOf("--switch"), testIo).use {
             assertThat(switch, equalTo(true))
         }
-        assertThat(io.toString(), equalTo(""))
+        assertThat(testIo.toString(), equalTo(""))
     }
 
     @Test
@@ -45,10 +45,10 @@ class BuntingTest {
             val aReallyReallyReallyReallyReallyReallyReallyReallyLongName by option("some description").defaultsTo("foobar")
         }
 
-        Foo(arrayOf("--help"), io).use {
+        Foo(arrayOf("--help"), testIo).use {
             aReallyReallyReallyReallyReallyReallyReallyReallyLongName
         }
-        assertThat(io.toString(), equalTo("""Usage: foo [commands] [options]
+        assertThat(testIo.toString(), equalTo("""Usage: foo [commands] [options]
 description
 [options]:
   -a, --aReallyReallyReallyReallyReallyReallyReallyReallyLongName    some description. Defaults to "foobar" (STRING)
@@ -57,10 +57,10 @@ description
 
     @Test
     fun `required flag is parsed`() {
-        MyTestFlags(arrayOf("--required", "foo"), io).use {
+        MyTestFlags(arrayOf("--required", "foo"), testIo).use {
             assertThat(required, equalTo("foo"))
         }
-        assertThat(io.toString(), equalTo(""))
+        assertThat(testIo.toString(), equalTo(""))
     }
 
     @Test
@@ -74,10 +74,10 @@ description
 
     @Test
     fun `prompted flag is present`() {
-        MyTestFlags(arrayOf("-p", "foobar"), io).use {
+        MyTestFlags(arrayOf("-p", "foobar"), testIo).use {
             assertThat(prompted, equalTo("foobar"))
         }
-        assertThat(io.toString(), equalTo(""))
+        assertThat(testIo.toString(), equalTo(""))
     }
 
     @Test
@@ -91,83 +91,103 @@ description
 
     @Test
     fun `prompted secret flag is present`() {
-        MyTestFlags(arrayOf("-s", "1"), io).use {
+        MyTestFlags(arrayOf("-s", "1"), testIo).use {
             assertThat(secret, equalTo(1))
         }
-        assertThat(io.toString(), equalTo(""))
+        assertThat(testIo.toString(), equalTo(""))
     }
 
     @Test
     fun `illegal prompted secret flag does not leak value`() {
-        MyTestFlags(arrayOf("-s", "foobar"), io).use {
+        MyTestFlags(arrayOf("-s", "foobar"), testIo).use {
             secret
         }
-        assertThat(io.toString(), equalTo("Usage: MyTestFlags [commands] [options]\n" +
+        assertThat(testIo.toString(), equalTo("Usage: MyTestFlags [commands] [options]\n" +
             "Illegal --secret (INT) flag: ******. Use --help for docs.")) }
 
     @Test
     fun `no value then required flag is parsed`() {
-        MyTestFlags(arrayOf("--switch      ", "--required", "foo", "--switch      2", "--required2", "foo2"), io).use {
+        MyTestFlags(arrayOf("--switch", "--required", "foo", "--switch      2", "--required2", "foo2"), testIo).use {
             assertThat(required, equalTo("foo"))
         }
-        assertThat(io.toString(), equalTo(""))
+        assertThat(testIo.toString(), equalTo(""))
     }
 
     @Test
-    fun `missing required flag blows`() {
-        MyTestFlags(arrayOf(), io).use {
+    fun `missing required flag rejected`() {
+        MyTestFlags(arrayOf(), testIo).use {
             required
         }
-        assertThat(io.toString(), equalTo("""Usage: MyTestFlags [commands] [options]
+        assertThat(testIo.toString(), equalTo("""Usage: MyTestFlags [commands] [options]
 Missing --required (STRING) flag. Use --help for docs."""))
     }
 
     @Test
+    fun `unknown command is rejected`() {
+        MyTestFlags(arrayOf("foobar"), testIo).use {
+            throw IllegalArgumentException()
+        }
+        assertThat(testIo.toString(), equalTo("Usage: MyTestFlags [commands] [options]\n" +
+            "Unknown command foobar. Use --help for docs."))
+    }
+
+    @Test
+    fun `unknown subcommand is rejected`() {
+        MyTestFlags(arrayOf("command", "foobar", "-n", "noDescription"), testIo).use {
+            command.use {
+                throw IllegalArgumentException()
+            }
+        }
+        assertThat(testIo.toString(), equalTo("Usage: MyTestFlags [commands] [options]\n" +
+            "Unknown command foobar. Use --help for docs."))
+    }
+
+    @Test
     fun `missing defaulted flag is defaulted`() {
-        MyTestFlags(arrayOf(), io).use {
+        MyTestFlags(arrayOf(), testIo).use {
             assertThat(defaulted, equalTo("0.0.0"))
         }
-        assertThat(io.toString(), equalTo(""))
+        assertThat(testIo.toString(), equalTo(""))
     }
 
     @Test
     fun `passing short flag`() {
-        MyTestFlags(arrayOf("-r", "foo"), io).use {
+        MyTestFlags(arrayOf("-r", "foo"), testIo).use {
             assertThat(required, equalTo("foo"))
         }
-        assertThat(io.toString(), equalTo(""))
+        assertThat(testIo.toString(), equalTo(""))
     }
 
     @Test
     fun `passing short switch`() {
-        MyTestFlags(arrayOf("-s", "-r", "foo"), io).use {
+        MyTestFlags(arrayOf("-s", "-r", "foo"), testIo).use {
             assertThat(switch, equalTo(true))
         }
-        assertThat(io.toString(), equalTo(""))
+        assertThat(testIo.toString(), equalTo(""))
     }
 
     @Test
     fun `passing uneven number of fields`() {
-        MyTestFlags(arrayOf("--required", "foo", "other"), io).use {
+        MyTestFlags(arrayOf("--required", "foo", "other"), testIo).use {
             assertThat(required, equalTo("foo"))
         }
-        assertThat(io.toString(), equalTo(""))
+        assertThat(testIo.toString(), equalTo(""))
     }
 
     @Test
     fun `mapped flag`() {
-        MyTestFlags(arrayOf("--mapped", "123"), io).use {
+        MyTestFlags(arrayOf("--mapped", "123"), testIo).use {
             assertThat(mapped, equalTo(123))
         }
-        assertThat(io.toString(), equalTo(""))
+        assertThat(testIo.toString(), equalTo(""))
     }
 
     @Test
     fun `illegal value flag`() {
-        MyTestFlags(arrayOf("--mapped", "asd"), io).use {
+        MyTestFlags(arrayOf("--mapped", "asd"), testIo).use {
             mapped
         }
-        assertThat(io.toString(), equalTo("Usage: MyTestFlags [commands] [options]\n" +
+        assertThat(testIo.toString(), equalTo("Usage: MyTestFlags [commands] [options]\n" +
             "Illegal --mapped (INT) flag: asd. Use --help for docs."))
     }
 
@@ -190,7 +210,7 @@ Missing --required (STRING) flag. Use --help for docs."""))
             val command2 by command { Command(it, io) }
         }
 
-        Foo(arrayOf("command"), io).use {
+        Foo(arrayOf("command"), testIo).use {
             command.use {
                 grandchild.use {
                 }
@@ -203,7 +223,7 @@ Missing --required (STRING) flag. Use --help for docs."""))
             }
         }
 
-        assertThat(io.toString(), equalTo(""))
+        assertThat(testIo.toString(), equalTo(""))
     }
 
     @Test
@@ -216,13 +236,13 @@ Missing --required (STRING) flag. Use --help for docs."""))
             val command by command { Command(it, io) }
         }
 
-        Foo(arrayOf("command"), io).use {
+        Foo(arrayOf("command"), testIo).use {
             command.use {
                 required
             }
         }
 
-        assertThat(io.toString(), equalTo("""Usage: base [commands] [options]
+        assertThat(testIo.toString(), equalTo("""Usage: base [commands] [options]
 Missing --required (STRING) flag. Use --help for docs."""))
     }
 
@@ -258,7 +278,7 @@ Missing --required (STRING) flag. Use --help for docs."""))
                 "--anEnum", "a",
                 "--uuid", "00000000-0000-0000-0000-000000000000"
             ),
-            io
+            testIo
         ).use {
             assertThat(int, equalTo(123))
             assertThat(char, equalTo('t'))
@@ -268,7 +288,7 @@ Missing --required (STRING) flag. Use --help for docs."""))
             assertThat(anEnum, equalTo(AnEnum.a))
             assertThat(uuid, equalTo(UUID(0, 0)))
         }
-        assertThat(io.toString(), equalTo(""))
+        assertThat(testIo.toString(), equalTo(""))
     }
 
     @Test
@@ -277,10 +297,10 @@ Missing --required (STRING) flag. Use --help for docs."""))
             val boolean by option().boolean()
         }
 
-        ExtensionFlags(arrayOf("--boolean", "foobar"), io).use {
+        ExtensionFlags(arrayOf("--boolean", "foobar"), testIo).use {
             boolean
         }
-        assertThat(io.toString(), equalTo("""Usage: foo [commands] [options]
+        assertThat(testIo.toString(), equalTo("""Usage: foo [commands] [options]
 Illegal --boolean (BOOLEAN) flag: foobar. Use --help for docs."""))
     }
 

@@ -59,6 +59,9 @@ fun <T : Bunting> T?.use(fn: T.() -> Unit) {
     this?.apply {
         try {
             if (args.contains("--help") || args.contains("-h")) throw Help(description())
+
+            handleUnknownCommand(args)
+
             fn(this)
         } catch (e: BuntingException) {
             io.write("Usage: ${usage()}\n" + e.localizedMessage)
@@ -66,7 +69,20 @@ fun <T : Bunting> T?.use(fn: T.() -> Unit) {
     }
 }
 
-private inline fun <reified F : BuntingFlag<*>> Bunting.members(fn: (KProperty<*>, F) -> Pair<String, String>) =
+private fun <T : Bunting> T.handleUnknownCommand(args: Array<String>) {
+    args.firstOrNull()
+        ?.takeIf { !it.startsWith("-") }
+        ?.let {
+            if (unknownCommand(it)) throw UnknownCommand(it)
+        }
+}
+
+private fun <T : Bunting> T.unknownCommand(it: String): Boolean {
+    val commandNames = members { p, c: Command<*> -> p.name }
+    return commandNames.isNotEmpty() && !commandNames.contains(it)
+}
+
+private inline fun <reified F : BuntingFlag<*>, OUT : Any> Bunting.members(fn: (KProperty<*>, F) -> OUT) =
     this::class.members.filterIsInstance<KProperty<F>>().mapNotNull { p ->
         (p.javaField!!.apply { trySetAccessible() }[this@members] as? F)
             ?.let { fn(p, it) }
