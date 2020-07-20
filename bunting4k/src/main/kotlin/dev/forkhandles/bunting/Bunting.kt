@@ -79,7 +79,7 @@ private fun <T : Bunting> T.handleUnknownCommand(args: Array<String>) {
 }
 
 private fun <T : Bunting> T.unknownCommand(it: String): Boolean {
-    val commandNames = members { p, c: Command<*> -> p.name }
+    val commandNames = members { p, _: Command<*> -> p.name }
     return commandNames.isNotEmpty() && !commandNames.contains(it)
 }
 
