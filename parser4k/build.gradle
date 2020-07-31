@@ -1,0 +1,12 @@
+description = 'ForkHandles Parser Combinator library'
+
+dependencies {
+    api Libs.kotlin_stdlib_jdk8
+    testApi Config.TestDependencies
+}
+
+tasks.configureEach {
+	if (it instanceof Test) {
+		it.jvmArgs("-Xss10M")
+	}
+}
