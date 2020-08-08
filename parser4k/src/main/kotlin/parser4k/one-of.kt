@@ -8,7 +8,7 @@ fun oneOf(vararg chars: Char): Parser<Char> = oneOf(chars.map { char(it) })
 
 fun <T> oneOf(vararg parsers: Parser<T>): Parser<T> = oneOf(parsers.toList())
 
-fun <T> oneOf(parsers: List<Parser<T>>) = object : Parser<T> {
+fun <T> oneOf(parsers: Iterable<Parser<T>>) = object : Parser<T> {
     override fun parse(input: Input): Output<T>? {
         parsers.forEach { parser ->
             val output = parser.parse(input)
