@@ -2,6 +2,9 @@ package parser4k
 
 import java.util.*
 
+fun oneOf(charRange: CharRange): Parser<Char> = oneOf(charRange.map { char(it) })
+
+fun oneOf(vararg chars: Char): Parser<Char> = oneOf(chars.map { char(it) })
 
 fun <T> oneOf(vararg parsers: Parser<T>): Parser<T> = oneOf(parsers.toList())
 

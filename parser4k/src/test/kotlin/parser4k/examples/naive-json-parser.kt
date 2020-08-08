@@ -14,7 +14,7 @@ private object NaiveJsonParser {
     private val obj = inOrder(token("{"), ref { property }.joinedWith(token(",")), token("}")).skipWrapper().map { it.toMap() }
     private val array = inOrder(token("["), ref { term }.joinedWith(token(",")), token("]")).skipWrapper()
     private val term: Parser<Any> = oneOf(integer, string, obj, array)
-    private val identifier = inOrder(str("\""), repeat(oneOf(digit, letter, noneOf('"'))), str("\"")).skipWrapper().map { it.joinToString("") }
+    private val identifier = inOrder(str("\""), repeat(oneOf(digit, letter, anyCharExcept('"'))), str("\"")).skipWrapper().map { it.joinToString("") }
     private val property = inOrder(identifier, token(":"), term).map { (id, _, term) -> Pair(id, term) }
     private val json = oneOf(obj, array)
 

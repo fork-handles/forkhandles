@@ -6,9 +6,9 @@ import parser4k.*
 import parser4k.commonparsers.Tokens.whitespace
 
 object Tokens {
-    val whitespace: Parser<String> = oneOf(' ', '\t', '\r', '\n')
-    val digit: Parser<String> = oneOf('0'..'9')
-    val letter: Parser<String> = oneOf(oneOf('a'..'z'), oneOf('A'..'Z'))
+    val whitespace: Parser<Char> = oneOf(' ', '\t', '\r', '\n')
+    val digit: Parser<Char> = oneOf('0'..'9')
+    val letter: Parser<Char> = oneOf(oneOf('a'..'z'), oneOf('A'..'Z'))
 
     val integer: Parser<String> = oneOrMore(digit).map { it.joinToString("") }
 
@@ -20,7 +20,7 @@ object Tokens {
     val identifier: Parser<String> = inOrder(letter, repeat(oneOf(letter, digit, oneOf('$', '_'))))
         .map { (letter, lettersAndDigits) -> letter + lettersAndDigits.joinToString("") }
 
-    val string: Parser<String> = inOrder(str("\""), repeat(oneOf(str("\\\""), noneOf('"', '\n', '\r'))), str("\""))
+    val string: Parser<String> = inOrder(str("\""), repeat(oneOf(str("\\\""), anyCharExcept('"', '\n', '\r'))), str("\""))
         .map { (_, it, _) -> it.joinToString("") }
 }
 

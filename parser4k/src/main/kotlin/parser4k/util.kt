@@ -4,22 +4,6 @@ import dev.forkhandles.tuples.Tuple3
 import dev.forkhandles.tuples.val1
 import dev.forkhandles.tuples.val3
 
-
-fun oneOf(charRange: CharRange): Parser<String> = oneOf(charRange.map { str(it.toString()) })
-
-fun oneOf(vararg chars: Char): Parser<String> = oneOf(chars.map { str(it.toString()) })
-
-fun noneOf(vararg chars: Char): Parser<String> = object : Parser<String> {
-    val parser: Parser<String> = oneOf(*chars)
-
-    override fun parse(input: Input): Output<String>? =
-        if (parser.parse(input) != null) null
-        else Output(
-            payload = input.value[input.offset].toString(),
-            nextInput = input.copy(offset = input.offset + 1)
-        )
-}
-
 fun <T1, T3, R> ((T1, T3) -> R).asBinary() = { tuple: Tuple3<T1, *, T3> ->
     this(tuple.val1, tuple.val3)
 }
