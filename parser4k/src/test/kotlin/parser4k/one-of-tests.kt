@@ -1,5 +1,7 @@
 package parser4k
 
+import dev.forkhandles.tuples.val1
+import dev.forkhandles.tuples.val2
 import org.junit.jupiter.api.Test
 
 class OneOfTests {
@@ -38,8 +40,8 @@ class OneOfLongestTests {
     }
 
     @Test fun `recursive example`() = object {
-        val fooField = inOrder(ref { parser }, str(".foo")).map { it.value1 + it.value2 }
-        val fooFunc = inOrder(ref { parser }, str(".foo()")).map { it.value1 + it.value2 }
+        val fooField = inOrder(ref { parser }, str(".foo")).map { it.val1 + it.val2 }
+        val fooFunc = inOrder(ref { parser }, str(".foo()")).map { it.val1 + it.val2 }
         val parser: Parser<String> = oneOf(
             oneOfLongest(
                 fooField, // when fooFunc calls `parser` recursively it should avoid using fooField

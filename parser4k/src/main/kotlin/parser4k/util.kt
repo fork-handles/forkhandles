@@ -1,5 +1,9 @@
 package parser4k
 
+import dev.forkhandles.tuples.Tuple3
+import dev.forkhandles.tuples.val1
+import dev.forkhandles.tuples.val3
+
 
 fun oneOf(charRange: CharRange): Parser<String> = oneOf(charRange.map { str(it.toString()) })
 
@@ -16,8 +20,8 @@ fun noneOf(vararg chars: Char): Parser<String> = object : Parser<String> {
         )
 }
 
-fun <T1, T3, R> ((T1, T3) -> R).asBinary() = { list: List3<T1, *, T3> ->
-    this(list.value1, list.value3)
+fun <T1, T3, R> ((T1, T3) -> R).asBinary() = { tuple: Tuple3<T1, *, T3> ->
+    this(tuple.val1, tuple.val3)
 }
 
 fun <T> Parser<*>.skip(): Parser<T> = object : Parser<T> {

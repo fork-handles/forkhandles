@@ -1,5 +1,7 @@
 package parser4k.commonparsers
 
+import dev.forkhandles.tuples.val1
+import dev.forkhandles.tuples.val2
 import parser4k.*
 import parser4k.commonparsers.Tokens.whitespace
 
@@ -12,7 +14,7 @@ object Tokens {
 
     val number: Parser<String> = inOrder(oneOrMore(digit), optional(inOrder(str("."), oneOrMore(digit))))
         .map { (digits, optional) ->
-            digits.joinToString("") + (optional?.let { it.value1 + it.value2.joinToString("") } ?: "")
+            digits.joinToString("") + (optional?.let { it.val1 + it.val2.joinToString("") } ?: "")
         }
 
     val identifier: Parser<String> = inOrder(letter, repeat(oneOf(letter, digit, oneOf('$', '_'))))
@@ -31,6 +33,6 @@ fun <T> Parser<T>.joinedWith(separator: Parser<*>): Parser<List<T>> =
             if (optional == null) emptyList()
             else {
                 val (head, tail) = optional
-                listOf(head) + tail.map { it.value2 }
+                listOf(head) + tail.map { it.val2 }
             }
         }

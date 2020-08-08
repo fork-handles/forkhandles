@@ -1,5 +1,6 @@
 package parser4k
 
+import dev.forkhandles.tuples.Tuple3
 import org.junit.jupiter.api.Test
 
 class LogTests {
@@ -23,7 +24,7 @@ class LogTests {
     private val expr: Parser<Any> = oneOfWithPrecedence(or, and, boolean)
 
     @Test fun `boolean literal`() {
-        "true || false".parseWith(expr) shouldEqual List3("true", " || ", "false")
+        "true || false".parseWith(expr) shouldEqual Tuple3("true", " || ", "false")
         logEvents.joinToString("\n") { it.toDebugString() } shouldEqual """
             "true || false" or:0
             "true || false" or:0 left:0
