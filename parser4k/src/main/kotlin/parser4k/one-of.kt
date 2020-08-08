@@ -2,9 +2,9 @@ package parser4k
 
 import java.util.*
 
-fun oneOf(charRange: CharRange): Parser<Char> = oneOf(charRange.map { char(it) })
-
 fun oneOf(vararg chars: Char): Parser<Char> = oneOf(chars.map { char(it) })
+
+fun oneOf(vararg strings: String): Parser<String> = oneOf(strings.map { str(it) })
 
 fun <T> oneOf(vararg parsers: Parser<T>): Parser<T> = oneOf(parsers.toList())
 
@@ -15,6 +15,23 @@ fun <T> oneOf(parsers: Iterable<Parser<T>>) = object : Parser<T> {
             if (output != null) return output
         }
         return null
+    }
+}
+
+fun oneOf(charRange: CharRange): Parser<Char> = object : Parser<Char> {
+    override fun parse(input: Input): Output<Char>? = input.run {
+        if (offset == value.length || value[offset] !in charRange) null
+        else Output(value[offset], copy(offset = offset + 1))
+    }
+}
+
+fun <T> Parser<T>.except(vararg chars: Char): Parser<T> = except(chars.map { char(it) })
+
+fun <T> Parser<T>.except(parsers: Iterable<Parser<*>>): Parser<T> = object : Parser<T> {
+    override fun parse(input: Input): Output<T>? {
+        val output = this@except.parse(input) ?: return null
+        if (parsers.any { it.parse(input) != null }) return null
+        return output
     }
 }
 

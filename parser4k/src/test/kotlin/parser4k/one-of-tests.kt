@@ -6,19 +6,38 @@ import org.junit.jupiter.api.Test
 
 class OneOfTests {
     @Test fun `it works`() {
-        val abParser = oneOf(str("a"), str("b"))
+        val parser = oneOf(str("a"), str("b"))
 
         // not enough input
-        abParser.parse(Input("")) shouldEqual null
-        abParser.parse(Input("a", offset = 1)) shouldEqual null
-        abParser.parse(Input("b", offset = 1)) shouldEqual null
+        parser.parse(Input("")) shouldEqual null
+        parser.parse(Input("a", offset = 1)) shouldEqual null
+        parser.parse(Input("b", offset = 1)) shouldEqual null
 
         // input mismatch
-        abParser.parse(Input("c")) shouldEqual null
+        parser.parse(Input("c")) shouldEqual null
 
         // match
-        abParser.parse(Input("ab")) shouldEqual Output("a", Input("ab", offset = 1))
-        abParser.parse(Input("ba")) shouldEqual Output("b", Input("ba", offset = 1))
+        parser.parse(Input("ab")) shouldEqual Output("a", Input("ab", offset = 1))
+        parser.parse(Input("ba")) shouldEqual Output("b", Input("ba", offset = 1))
+    }
+}
+
+class OneOfCharRangeTests {
+    @Test fun `it works`() {
+        val parser = oneOf('a'..'z').except('x')
+
+        // not enough input
+        parser.parse(Input("")) shouldEqual null
+        parser.parse(Input("a", offset = 1)) shouldEqual null
+
+        // input mismatch
+        parser.parse(Input("_")) shouldEqual null
+        parser.parse(Input("x")) shouldEqual null
+
+        // match
+        parser.parse(Input("ab")) shouldEqual Output('a', Input("ab", offset = 1))
+        parser.parse(Input("ba")) shouldEqual Output('b', Input("ba", offset = 1))
+        parser.parse(Input("az", offset = 1)) shouldEqual Output('z', Input("az", offset = 2))
     }
 }
 
