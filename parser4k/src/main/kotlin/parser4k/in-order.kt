@@ -5,11 +5,11 @@ class InOrder<T>(val parsers: List<Parser<T>>) : Parser<List<T>> {
         if (index == 0) nonRecursive(parser) else parser
     }
 
-    override fun invoke(input: Input): Output<List<T>>? {
+    override fun parse(input: Input): Output<List<T>>? {
         val payload = ArrayList<T>(allParsers.size)
         var nextInput = input
         allParsers.forEach { parser ->
-            val output = parser.invoke(nextInput) ?: return null
+            val output = parser.parse(nextInput) ?: return null
             nextInput = output.nextInput
             payload.add(output.payload)
         }

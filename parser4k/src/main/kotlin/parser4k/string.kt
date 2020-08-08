@@ -1,7 +1,7 @@
 package parser4k
 
 fun str(s: String) = object : Parser<String> {
-    override fun invoke(input: Input): Output<String>? = input.run {
+    override fun parse(input: Input): Output<String>? = input.run {
         val newOffset = offset + s.length
         if (newOffset > value.length) null
         else {

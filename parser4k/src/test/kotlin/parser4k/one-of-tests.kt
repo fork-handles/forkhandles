@@ -7,16 +7,16 @@ class OneOfTests {
         val abParser = oneOf(str("a"), str("b"))
 
         // not enough input
-        abParser.invoke(Input("")) shouldEqual null
-        abParser.invoke(Input("a", offset = 1)) shouldEqual null
-        abParser.invoke(Input("b", offset = 1)) shouldEqual null
+        abParser.parse(Input("")) shouldEqual null
+        abParser.parse(Input("a", offset = 1)) shouldEqual null
+        abParser.parse(Input("b", offset = 1)) shouldEqual null
 
         // input mismatch
-        abParser.invoke(Input("c")) shouldEqual null
+        abParser.parse(Input("c")) shouldEqual null
 
         // match
-        abParser.invoke(Input("ab")) shouldEqual Output("a", Input("ab", offset = 1))
-        abParser.invoke(Input("ba")) shouldEqual Output("b", Input("ba", offset = 1))
+        abParser.parse(Input("ab")) shouldEqual Output("a", Input("ab", offset = 1))
+        abParser.parse(Input("ba")) shouldEqual Output("b", Input("ba", offset = 1))
     }
 }
 
@@ -25,16 +25,16 @@ class OneOfLongestTests {
         val parser = oneOfLongest(str("ab"), str("abc"))
 
         // not enough input
-        parser.invoke(Input("")) shouldEqual null
-        parser.invoke(Input("a", offset = 1)) shouldEqual null
+        parser.parse(Input("")) shouldEqual null
+        parser.parse(Input("a", offset = 1)) shouldEqual null
 
         // input mismatch
-        parser.invoke(Input("b")) shouldEqual null
-        parser.invoke(Input("c")) shouldEqual null
+        parser.parse(Input("b")) shouldEqual null
+        parser.parse(Input("c")) shouldEqual null
 
         // match
-        parser.invoke(Input("ab"))?.payload shouldEqual "ab"
-        parser.invoke(Input("abc"))?.payload shouldEqual "abc"
+        parser.parse(Input("ab"))?.payload shouldEqual "ab"
+        parser.parse(Input("abc"))?.payload shouldEqual "abc"
     }
 
     @Test fun `recursive example`() = object {
@@ -48,7 +48,7 @@ class OneOfLongestTests {
             str("1")
         )
     }.run {
-        parser.invoke(Input("1.foo"))?.payload shouldEqual "1.foo"
-        parser.invoke(Input("1.foo()"))?.payload shouldEqual "1.foo()"
+        parser.parse(Input("1.foo"))?.payload shouldEqual "1.foo"
+        parser.parse(Input("1.foo()"))?.payload shouldEqual "1.foo()"
     }
 }

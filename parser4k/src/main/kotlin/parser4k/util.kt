@@ -8,8 +8,8 @@ fun oneOf(vararg chars: Char): Parser<String> = oneOf(chars.map { str(it.toStrin
 fun noneOf(vararg chars: Char): Parser<String> = object : Parser<String> {
     val parser: Parser<String> = oneOf(*chars)
 
-    override fun invoke(input: Input): Output<String>? =
-        if (parser.invoke(input) != null) null
+    override fun parse(input: Input): Output<String>? =
+        if (parser.parse(input) != null) null
         else Output(
             payload = input.value[input.offset].toString(),
             nextInput = input.copy(offset = input.offset + 1)
@@ -21,15 +21,15 @@ fun <T1, T3, R> ((T1, T3) -> R).asBinary() = { list: List3<T1, *, T3> ->
 }
 
 fun <T> Parser<*>.skip(): Parser<T> = object : Parser<T> {
-    override fun invoke(input: Input): Output<T>? {
-        val (_, nextInput) = this@skip.invoke(input) ?: return null
+    override fun parse(input: Input): Output<T>? {
+        val (_, nextInput) = this@skip.parse(input) ?: return null
         @Suppress("UNCHECKED_CAST")
         return Output(null as T, nextInput)
     }
 }
 
 fun <T> String.parseWith(parser: Parser<T>): T {
-    val output = parser.invoke(Input(this)) ?: throw NoMatchingParsers(this)
+    val output = parser.parse(Input(this)) ?: throw NoMatchingParsers(this)
     if (output.nextInput.offset < output.nextInput.value.length) throw InputIsNotConsumed(output)
     return output.payload
 }
