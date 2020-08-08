@@ -8,10 +8,8 @@ fun char(char: Char): Parser<Char> = object : Parser<Char> {
 }
 
 fun anyCharExcept(vararg chars: Char): Parser<Char> = object : Parser<Char> {
-    private val oneOfChars: Parser<Char> = oneOf(*chars)
-
     override fun parse(input: Input): Output<Char>? = input.run {
-        if (offset == value.length || oneOfChars.parse(input) != null) null
+        if (offset == value.length || value[offset] in chars) null
         else Output(value[offset], copy(offset = offset + 1))
     }
 }

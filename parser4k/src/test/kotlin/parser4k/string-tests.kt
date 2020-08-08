@@ -42,7 +42,6 @@ class CharTests {
     }
 }
 
-
 class AnyCharTests {
     @Test fun `it works`() {
         val parser = anyCharExcept('x')
