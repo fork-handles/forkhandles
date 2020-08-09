@@ -22,6 +22,7 @@ echo "Attempting to release $LOCAL_VERSION (old version $BINTRAY_VERSION)"
 
 ./gradlew -PreleaseVersion=$LOCAL_VERSION clean javadocJar assemble \
     :bunting4k:bintrayUpload \
+    :parser4k:bintrayUpload \
     :time4k:bintrayUpload \
     :tuples4k:bintrayUpload \
     :forkhandles-bom:bintrayUpload
