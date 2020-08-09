@@ -12,7 +12,7 @@ fun <T> oneOf(vararg parsers: Parser<T>): OneOf<T> = oneOf(parsers.toList())
 
 fun <T> oneOf(parsers: Iterable<Parser<T>>): OneOf<T> = OneOf(parsers)
 
-class OneOf<T>(val parsers: Iterable<Parser<T>>): Parser<T> {
+class OneOf<out T>(val parsers: Iterable<Parser<T>>): Parser<T> {
     override fun parse(input: Input): Output<T>? {
         parsers.forEach { parser ->
             val output = parser.parse(input)
@@ -107,6 +107,7 @@ interface OneOfExtensions {
     @Suppress("INAPPLICABLE_JVM_NAME") @JvmName("orString")
     infix fun <T> OneOf<T>.or(that: String): OneOf<Any?> = oneOf(parsers + str(that))
 
+    infix fun <T> OneOf<T>.or(that: OneOf<T>): OneOf<T> = oneOf(parsers + that)
     infix fun <T> OneOf<T>.or(that: Parser<T>): OneOf<T> = oneOf(parsers + that)
     infix fun <T> Parser<T>.or(that: Parser<T>): OneOf<T> = oneOf(this, that)
 }

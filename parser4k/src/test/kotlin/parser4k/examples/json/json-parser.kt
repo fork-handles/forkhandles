@@ -1,6 +1,5 @@
 package parser4k.examples.json
 
-import dev.forkhandles.tuples.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
 import parser4k.*
@@ -59,14 +58,19 @@ private object JsonParser : OneOfExtensions, InOrderExtensions {
         ('[' + ws + ']').map { emptyList<Any>() } or
         ('[' + ref { element }.joinedWith(",") + ']').skipWrapper()
 
-    private val value: Parser<Any?> =
+    private val `true` = str("true").map { true }
+    private val `false` = str("false").map { false }
+    private val `null` = str("null").map { null }
+
+    private val value: Parser<Any?> = (
         obj or
         array or
         string or
         number or
-        str("true").map { true } or
-        str("false").map { false } or
-        str("null").map { null }
+        `true` or
+        `false` or
+        `null`
+    )
 
     private val element = (ws + value + ws).skipWrapper()
 
@@ -83,9 +87,6 @@ private object JsonParser : OneOfExtensions, InOrderExtensions {
         }
 }
 
-private fun <T1, T2> Tuple2<T1, T2>.joinToString(): String = val1.toString() + val2
-private fun <T1, T2, T3> Tuple3<T1, T2, T3>.joinToString(): String = val1.toString() + val2 + val3
-private fun <T1, T2, T3, T4> Tuple4<T1, T2, T3, T4>.joinToString(): String = val1.toString() + val2 + val3 + val4
 
 class JsonParserTests {
     private val emptyObject = emptyMap<String, Any>()
