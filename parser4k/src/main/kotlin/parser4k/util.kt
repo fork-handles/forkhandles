@@ -36,7 +36,3 @@ class InputIsNotConsumed(override val message: String) : ParsingError(message) {
 operator fun <T> List<T>.component6(): T = this[5]
 operator fun <T> List<T>.component7(): T = this[6]
 operator fun <T> List<T>.component8(): T = this[7]
-
-fun <T1, T2> Tuple2<T1, T2>.joinToString(): String = val1.toString() + val2
-fun <T1, T2, T3> Tuple3<T1, T2, T3>.joinToString(): String = val1.toString() + val2 + val3
-fun <T1, T2, T3, T4> Tuple4<T1, T2, T3, T4>.joinToString(): String = val1.toString() + val2 + val3 + val4

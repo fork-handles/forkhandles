@@ -31,3 +31,11 @@ fun <T2, T3, T4, T5> InOrder6<*, T2, T3, T4, T5, *>.skipWrapper(): Parser<Tuple4
 fun <T2, T3, T4, T5, T6> InOrder7<*, T2, T3, T4, T5, T6, *>.skipWrapper(): Parser<Tuple5<T2, T3, T4, T5, T6>> = map { (_, it2, it3, it4, it5, it6, _) -> Tuple5(it2, it3, it4, it5, it6) }
 fun <T2, T3, T4, T5, T6, T7> InOrder8<*, T2, T3, T4, T5, T6, T7, *>.skipWrapper(): Parser<Tuple6<T2, T3, T4, T5, T6, T7>> = map { (_, it2, it3, it4, it5, it6, it7, _) -> Tuple6(it2, it3, it4, it5, it6, it7) }
 
+fun <T1, T2> Tuple2<T1, T2>.joinToString(): String = val1.toString() + val2
+fun <T1, T2, T3> Tuple3<T1, T2, T3>.joinToString(): String = val1.toString() + val2 + val3
+fun <T1, T2, T3, T4> Tuple4<T1, T2, T3, T4>.joinToString(): String = val1.toString() + val2 + val3 + val4
+fun <T1, T2, T3, T4, T5> Tuple5<T1, T2, T3, T4, T5>.joinToString(): String = val1.toString() + val2 + val3 + val4 + val5
+fun <T1, T2, T3, T4, T5, T6> Tuple6<T1, T2, T3, T4, T5, T6>.joinToString(): String = val1.toString() + val2 + val3 + val4 + val5 + val6
+fun <T1, T2, T3, T4, T5, T6, T7> Tuple7<T1, T2, T3, T4, T5, T6, T7>.joinToString(): String = val1.toString() + val2 + val3 + val4 + val5 + val6 + val7
+fun <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>.joinToString(): String = val1.toString() + val2 + val3 + val4 + val5 + val6 + val7 + val8
+

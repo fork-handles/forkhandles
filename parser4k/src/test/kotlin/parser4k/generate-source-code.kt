@@ -24,6 +24,7 @@ fun main() {
             generateSkipFirst()
             generateSkipLast()
             generateSkipWrapper()
+            generateTupleJoinToString()
         }
     }
 }
@@ -140,6 +141,18 @@ private fun Generator.generateSkipWrapper() {
         val ts = (2..n).joinToString { "T$it" }
         val its = (2..n).joinToString { "it$it" }
         println("fun <$ts> InOrder${n + 1}<*, $ts, *>.skipWrapper(): Parser<Tuple${n - 1}<$ts>> = map { (_, $its, _) -> Tuple${n - 1}($its) }")
+    }
+    println("")
+}
+
+private fun Generator.generateTupleJoinToString() {
+    // For example:
+    // fun <T1, T2, T3> Tuple3<T1, T2, T3>.joinToString(): String = val1.toString() + val2 + val3
+
+    (2..maxN).forEach { n ->
+        val ts = (1..n).joinToString { "T$it" }
+        val values = (2..n).joinToString(" + ") { "val$it" }
+        println("fun <$ts> Tuple$n<$ts>.joinToString(): String = val1.toString() + $values")
     }
     println("")
 }
