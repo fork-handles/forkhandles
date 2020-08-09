@@ -27,6 +27,8 @@ object Tokens {
 fun token(s: String): Parser<String> =
     inOrder(zeroOrMore(whitespace), str(s), zeroOrMore(whitespace)).skipWrapper()
 
+fun <T> Parser<T>.joinedWith(separator: String): Parser<List<T>> = joinedWith(str(separator))
+
 fun <T> Parser<T>.joinedWith(separator: Parser<*>): Parser<List<T>> =
     optional(inOrder(this, repeat(inOrder(separator, this))))
         .map { optional ->

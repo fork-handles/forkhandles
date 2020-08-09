@@ -1,4 +1,4 @@
-package parser4k.examples
+package parser4k.examples.json
 
 import org.junit.jupiter.api.Test
 import parser4k.*
@@ -8,7 +8,7 @@ import parser4k.commonparsers.Tokens.letter
 import parser4k.commonparsers.Tokens.string
 import parser4k.commonparsers.joinedWith
 import parser4k.commonparsers.token
-import parser4k.examples.NaiveJsonParser.parse
+import parser4k.examples.json.NaiveJsonParser.parse
 
 private object NaiveJsonParser {
     private val obj = inOrder(token("{"), ref { property }.joinedWith(token(",")), token("}")).skipWrapper().map { it.toMap() }
