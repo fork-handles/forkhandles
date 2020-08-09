@@ -90,6 +90,7 @@ interface OneOfExtensions {
     infix fun OneOf<Char>.or(that: Char): OneOf<Char> = oneOf(parsers + char(that))
     @Suppress("INAPPLICABLE_JVM_NAME") @JvmName("orChar")
     infix fun <T> OneOf<T>.or(that: Char): OneOf<Any?> = oneOf(parsers + char(that))
+    infix fun <T> Parser<T>.or(that: Char): OneOf<Any?> = oneOf(this, char(that))
 
     infix fun CharRange.or(that: Char): OneOf<Char> = oneOf(oneOf(this), char(that))
     infix fun CharRange.or(that: CharRange): OneOf<Char> = oneOf(oneOf(this), oneOf(that))
@@ -98,6 +99,7 @@ interface OneOfExtensions {
     infix fun OneOf<CharRange>.or(that: CharRange): OneOf<Any> = oneOf(parsers + oneOf(that))
     @Suppress("INAPPLICABLE_JVM_NAME") @JvmName("orCharRange")
     infix fun <T> OneOf<T>.or(that: CharRange): OneOf<Any?> = oneOf(parsers + oneOf(that))
+    infix fun <T> Parser<T>.or(that: CharRange): OneOf<Any?> = oneOf(this, oneOf(that))
 
     infix fun String.or(that: Char): OneOf<String> = oneOf(str(this), char(that).map { it.toString() })
     infix fun String.or(that: CharRange): OneOf<String> = oneOf(str(this), oneOf(that).map { it.toString() })
@@ -106,6 +108,7 @@ interface OneOfExtensions {
     infix fun OneOf<String>.or(that: String): OneOf<String> = oneOf(parsers + str(that))
     @Suppress("INAPPLICABLE_JVM_NAME") @JvmName("orString")
     infix fun <T> OneOf<T>.or(that: String): OneOf<Any?> = oneOf(parsers + str(that))
+    infix fun <T> Parser<T>.or(that: String): OneOf<Any?> = oneOf(this, str(that))
 
     infix fun <T> OneOf<T>.or(that: OneOf<T>): OneOf<T> = oneOf(parsers + that)
     infix fun <T> OneOf<T>.or(that: Parser<T>): OneOf<T> = oneOf(parsers + that)
