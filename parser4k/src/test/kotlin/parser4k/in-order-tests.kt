@@ -4,38 +4,37 @@ import dev.forkhandles.tuples.*
 import org.junit.jupiter.api.Test
 
 class InOrderTests {
-    @Test fun `it works`() {
-        val abParser = inOrder(str("a"), str("b"))
+    private val abParser = inOrder(str("a"), str("b"))
 
-        // not enough input
+    @Test fun `not enough input`() {
         abParser.parse(Input("")) shouldEqual null
         abParser.parse(Input("a")) shouldEqual null
         abParser.parse(Input("ab", offset = 1)) shouldEqual null
+    }
 
-        // input mismatch
+    @Test fun `input mismatch`() {
         abParser.parse(Input("foo")) shouldEqual null
         abParser.parse(Input("aa")) shouldEqual null
+    }
 
-        // match
-        abParser.parse(Input("ab__")) shouldEqual Output(Tuple2("a", "b"), Input("ab__", offset = 2))
-        abParser.parse(Input("_ab_", offset = 1)) shouldEqual Output(Tuple2("a", "b"), Input("_ab_", offset = 3))
-        abParser.parse(Input("__ab", offset = 2)) shouldEqual Output(Tuple2("a", "b"), Input("__ab", offset = 4))
+    @Test fun `input match`() {
+        abParser.parse(Input("ab__")) shouldEqual Output(Pair("a", "b"), Input("ab__", offset = 2))
+        abParser.parse(Input("_ab_", offset = 1)) shouldEqual Output(Pair("a", "b"), Input("_ab_", offset = 3))
+        abParser.parse(Input("__ab", offset = 2)) shouldEqual Output(Pair("a", "b"), Input("__ab", offset = 4))
+    }
 
-        // match lists
+    @Test fun `input match with list as payload`() {
         inOrder(str("a")).parse(Input("ab")) shouldEqual Output(
-            listOf("a"),
-            Input("ab", offset = 1)
+            payload = listOf("a"),
+            nextInput = Input("ab", offset = 1)
         )
         inOrder("abcdefghk".map { str(it.toString()) }).parse(Input("abcdefghk")) shouldEqual Output(
-            listOf("a", "b", "c", "d", "e", "f", "g", "h", "k"),
-            Input("abcdefghk", offset = 9)
+            payload = listOf("a", "b", "c", "d", "e", "f", "g", "h", "k"),
+            nextInput = Input("abcdefghk", offset = 9)
         )
+    }
 
-        // match typed lists
-        inOrder(str("a"), str("b")).parse(Input("ab")) shouldEqual Output(
-            Tuple2("a", "b"),
-            Input("ab", offset = 2)
-        )
+    @Test fun `input match with tuple as payload`() {
         inOrder(str("a"), str("b"), str("c")).parse(Input("abc")) shouldEqual Output(
             Tuple3("a", "b", "c"),
             Input("abc", offset = 3)

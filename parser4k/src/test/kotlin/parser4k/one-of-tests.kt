@@ -5,36 +5,38 @@ import dev.forkhandles.tuples.val2
 import org.junit.jupiter.api.Test
 
 class OneOfTests {
-    @Test fun `it works`() {
-        val parser = oneOf(str("a"), str("b"))
+    private val parser = oneOf(str("a"), str("b"))
 
-        // not enough input
+    @Test fun `not enough input`() {
         parser.parse(Input("")) shouldEqual null
         parser.parse(Input("a", offset = 1)) shouldEqual null
         parser.parse(Input("b", offset = 1)) shouldEqual null
+    }
 
-        // input mismatch
+    @Test fun `input mismatch`() {
         parser.parse(Input("c")) shouldEqual null
+    }
 
-        // match
+    @Test fun `input match`() {
         parser.parse(Input("ab")) shouldEqual Output("a", Input("ab", offset = 1))
         parser.parse(Input("ba")) shouldEqual Output("b", Input("ba", offset = 1))
     }
 }
 
 class OneOfCharRangeTests {
-    @Test fun `it works`() {
-        val parser = oneOf('a'..'z').except('x')
+    private val parser = oneOf('a'..'z').except('x')
 
-        // not enough input
+    @Test fun `not enough input`() {
         parser.parse(Input("")) shouldEqual null
         parser.parse(Input("a", offset = 1)) shouldEqual null
+    }
 
-        // input mismatch
+    @Test fun `input mismatch`() {
         parser.parse(Input("_")) shouldEqual null
         parser.parse(Input("x")) shouldEqual null
+    }
 
-        // match
+    @Test fun `input match`() {
         parser.parse(Input("ab")) shouldEqual Output('a', Input("ab", offset = 1))
         parser.parse(Input("ba")) shouldEqual Output('b', Input("ba", offset = 1))
         parser.parse(Input("az", offset = 1)) shouldEqual Output('z', Input("az", offset = 2))
@@ -42,18 +44,19 @@ class OneOfCharRangeTests {
 }
 
 class OneOfLongestTests {
-    @Test fun `basic examples`() {
-        val parser = oneOfLongest(str("ab"), str("abc"))
+    val parser = oneOfLongest(str("ab"), str("abc"))
 
-        // not enough input
+    @Test fun `not enough input`() {
         parser.parse(Input("")) shouldEqual null
         parser.parse(Input("a", offset = 1)) shouldEqual null
+    }
 
-        // input mismatch
+    @Test fun `input mismatch`() {
         parser.parse(Input("b")) shouldEqual null
         parser.parse(Input("c")) shouldEqual null
+    }
 
-        // match
+    @Test fun `input match`() {
         parser.parse(Input("ab"))?.payload shouldEqual "ab"
         parser.parse(Input("abc"))?.payload shouldEqual "abc"
     }
