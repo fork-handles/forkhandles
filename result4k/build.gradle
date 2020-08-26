@@ -1,8 +1,8 @@
-description = 'A friendly Kotlin Result type'
-
 plugins {
     id "me.champeau.gradle.jmh" version "0.5.0"
 }
+
+description = 'A friendly Kotlin Result type'
 
 dependencies {
     api Libs.kotlin_stdlib_jdk8
