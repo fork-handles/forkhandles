@@ -1,4 +1,3 @@
-import kotlin.String
 import org.gradle.plugin.use.PluginDependenciesSpec
 import org.gradle.plugin.use.PluginDependencySpec
 
@@ -12,13 +11,15 @@ import org.gradle.plugin.use.PluginDependencySpec
  * YOU are responsible for updating manually the dependency version.
  */
 object Versions {
-    const val org_jetbrains_kotlin: String = "1.3.72"
+    const val org_jetbrains_kotlin: String = "1.3.72" // available: "1.4.0"
 
     const val org_junit_jupiter: String = "5.6.2"
 
     const val de_fayard_buildsrcversions_gradle_plugin: String = "0.7.0"
 
-    const val com_github_kt3k_coveralls_gradle_plugin: String = "2.10.1"
+    const val com_github_kt3k_coveralls_gradle_plugin: String = "2.10.2"
+
+    const val me_champeau_gradle_jmh_gradle_plugin: String = "0.5.1"
 
     const val com_jfrog_bintray_gradle_plugin: String = "1.8.5"
 
@@ -27,11 +28,11 @@ object Versions {
     const val hamkrest: String = "1.7.0.3"
 
     /**
-     * Current version: "6.1.1"
+     * Current version: "6.5.1"
      * See issue 19: How to update Gradle itself?
      * https://github.com/jmfayard/buildSrcVersions/issues/19
      */
-    const val gradleLatestVersion: String = "6.5"
+    const val gradleLatestVersion: String = "6.6.1"
 }
 
 /**
