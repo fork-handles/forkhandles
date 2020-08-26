@@ -140,6 +140,14 @@ allprojects {
             xml.enabled = true
         }
     }
+
+    jar {
+        manifest {
+            attributes 'Implementation-Title': project.name,
+                       'Implementation-Vendor': 'dev.forkhandles',
+                       'Implementation-Version': project.version
+        }
+    }
 }
 
 compileTestKotlin.kotlinOptions {

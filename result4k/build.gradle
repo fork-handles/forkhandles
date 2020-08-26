@@ -1,0 +1,31 @@
+
+plugins {
+    id "me.champeau.gradle.jmh" version "0.5.0"
+}
+
+dependencies {
+    api Libs.kotlin_stdlib_jdk8
+    testApi Config.TestDependencies
+    testApi Libs.kotlin_test
+}
+
+
+test {
+    include 'dev/forkhandles/**'
+    scanForTestClasses true
+    reports {
+        junitXml.enabled = true
+        html.enabled = true
+    }
+
+    beforeTest { desc ->
+        print "${desc.className.substring("dev.forkhandles.".length())}: ${desc.name.replace("_", " ")}"
+    }
+    afterTest { desc, result ->
+        println " -> ${result.resultType}"
+    }
+}
+
+artifacts {
+    archives sourcesJar, javadocJar
+}
