@@ -25,6 +25,7 @@ class LogTests {
 
     @Test fun `boolean literal`() {
         "true || false".parseWith(expr) shouldEqual Tuple3("true", " || ", "false")
+
         logEvents.joinToString("\n") { it.toDebugString() } shouldEqual """
             "true || false" or:0
             "true || false" or:0 left:0
