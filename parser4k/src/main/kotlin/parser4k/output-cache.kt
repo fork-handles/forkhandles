@@ -6,7 +6,7 @@ fun <T> Parser<T>.with(outputCache: OutputCache<T>): Parser<T> = object : Parser
     override fun parse(input: Input): Output<T>? {
         val parser = this@with
         val key = Key(parser, input.offset, input.leftPayload)
-        if (outputCache.contains(key)) return outputCache[key]
+        if (key in outputCache) return outputCache[key]
         outputCache[key] = null // Mark parser at offset as work-in-progress
 
         val output = parser.parse(input)
@@ -33,7 +33,7 @@ fun <T> Parser<T>.reset(outputCache: OutputCache<T>) = object : Parser<T> {
 class OutputCache<T> {
     private val map = HashMap<Key<T>, Output<T>?>()
 
-    fun contains(key: Key<T>) = map.containsKey(key)
+    operator fun contains(key: Key<T>) = map.containsKey(key)
 
     operator fun get(key: Key<T>) = map[key]
 
