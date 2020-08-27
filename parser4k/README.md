@@ -100,3 +100,6 @@ In Gradle, install the BOM and then any other modules in the dependency block:
 implementation platform("dev.forkhandles:forkhandles-bom:X.Y.Z")
 implementation "dev.forkhandles:parser4k"
 ```
+
+## See also
+ - [Parser combinator koans](https://github.com/dkandalov/parser-combinator-koans)
