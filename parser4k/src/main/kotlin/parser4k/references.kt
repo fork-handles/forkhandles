@@ -7,7 +7,7 @@ fun <T> ref(f: () -> Parser<T>): Parser<T> = object : Parser<T> {
     override fun parse(input: Input) = parser.parse(input)
 }
 
-fun <T> KProperty0<Parser<T>>.ref(): Parser<T> = ref { get() }
+val <T> KProperty0<Parser<T>>.ref: Parser<T> get() = ref { get() }
 
 fun <T> nonRecursive(parser: Parser<T>): Parser<T> = object : Parser<T> {
     val offsets: HashSet<Int> = HashSet()
