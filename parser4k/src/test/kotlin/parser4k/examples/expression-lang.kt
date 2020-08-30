@@ -104,9 +104,9 @@ private object ExpressionLang {
         data class Not(val value: Expr) : Expr()
         data class IfThenElse(val cond: Expr, val ifTrue: Expr, val ifFalse: Expr) : Expr()
 
-        data class InArray(val left: Expr, val right: Expr) : Expr()
-        data class NotInArray(val left: Expr, val right: Expr) : Expr()
-        data class ArrayAccess(val left: Expr, val right: Expr) : Expr()
+        data class InArray(val elementExpr: Expr, val arrayExpr: Expr) : Expr()
+        data class NotInArray(val elementExpr: Expr, val arrayExpr: Expr) : Expr()
+        data class ArrayAccess(val arrayExpr: Expr, val indexExpr: Expr) : Expr()
 
         data class FieldAccess(val left: Expr, val name: String) : Expr()
         data class FunctionCall(val left: Expr, val name: String, val args: List<Expr> = emptyList()) : Expr()
@@ -131,9 +131,9 @@ private object ExpressionLang {
             is Divide        -> (left.eval() as Int) / (right.eval() as Int)
             is UnaryMinus    -> -(value.eval() as Int)
 
-            is InArray       -> left.eval() in (right.eval() as List<*>)
-            is NotInArray    -> left.eval() !in (right.eval() as List<*>)
-            is ArrayAccess   -> (left.eval() as List<*>)[right.eval() as Int]!!
+            is InArray       -> elementExpr.eval() in (arrayExpr.eval() as List<*>)
+            is NotInArray    -> elementExpr.eval() !in (arrayExpr.eval() as List<*>)
+            is ArrayAccess   -> (arrayExpr.eval() as List<*>)[indexExpr.eval() as Int]!!
 
             is And           -> (left.eval() as Boolean) && (right.eval() as Boolean)
             is Or            -> (left.eval() as Boolean) || (right.eval() as Boolean)
@@ -210,6 +210,7 @@ class ExpressionLangTests {
         evaluate("[1, 2, 3][1]") shouldEqual 2
         evaluate("[1, 2, 3][2]") shouldEqual 3
         evaluate("[1, 2, 3][3 - 1]") shouldEqual 3
+        evaluate("[1, 2, 3][[1, 2, 3][1]]") shouldEqual 3
 
         evaluate("[[123]][0]") shouldEqual listOf(123)
         evaluate("[[123]][0][0]") shouldEqual 123
@@ -261,6 +262,11 @@ class ExpressionLangTests {
 
         parse("1.foo") shouldEqual FieldAccess(IntLiteral(1), "foo")
         parse("1.foo.bar") shouldEqual FieldAccess(FieldAccess(IntLiteral(1), "foo"), "bar")
+
+        parse("1.foo - 2.bar") shouldEqual Minus(
+            FieldAccess(IntLiteral(1), "foo"),
+            FieldAccess(IntLiteral(2), "bar")
+        )
     }
 
     @Test fun `function call expressions`() {
