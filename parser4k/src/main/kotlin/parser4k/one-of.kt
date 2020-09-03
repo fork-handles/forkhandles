@@ -14,6 +14,7 @@ fun <T> oneOf(parsers: Iterable<Parser<T>>): OneOf<T> = OneOf(parsers)
 
 class OneOf<out T>(val parsers: Iterable<Parser<T>>): Parser<T> {
     override fun parse(input: Input): Output<T>? {
+        if (input.offset == input.value.length) return null
         parsers.forEach { parser ->
             val output = parser.parse(input)
             if (output != null) return output
