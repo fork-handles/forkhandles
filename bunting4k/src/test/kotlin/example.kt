@@ -1,11 +1,13 @@
 import MyGreatFlags.LogLevel.warn
 import dev.forkhandles.bunting.Bunting
+import dev.forkhandles.bunting.Config
+import dev.forkhandles.bunting.InMemoryConfig
 import dev.forkhandles.bunting.enum
 import dev.forkhandles.bunting.int
 import dev.forkhandles.bunting.use
 
 // Top level command flags
-class MyGreatFlags(args: Array<String>) : Bunting(args) {
+class MyGreatFlags(args: Array<String>) : Bunting(args, config = InMemoryConfig().apply { set("foo.bar", "configured value") }) {
     val view by command(::ViewFlags)
     val list by command(::ListFlags)
     val delete by command(::DeleteFlags)
@@ -19,6 +21,7 @@ class MyGreatFlags(args: Array<String>) : Bunting(args) {
     val file by option("This is a required option").required()
     val version by option().int().defaultsTo(0)
     val prompt by option("This is prompted value").prompted()
+    val configured by option("This is config value").configuredAs("foo.bar")
     val secret by option("This is secret value").int().secret().prompted()
     val level by option().enum<LogLevel>().defaultsTo(warn)
 }
@@ -76,6 +79,15 @@ object SecretValue {
     // run the main with: java (...) SecretValue (note that when run in IDE, the masking will not work. Run from command line is ok...
     fun main(ignored: Array<String>) = MyGreatFlags(arrayOf("-s", "123")).use {
         println(secret)
+    }
+}
+
+
+object ConfigValue {
+    @JvmStatic
+    // run the main with: java (...) SecretValue (note that when run in IDE, the masking will not work. Run from command line is ok...
+    fun main(ignored: Array<String>) = MyGreatFlags(emptyArray()).use {
+        println(configured)
     }
 }
 

@@ -58,9 +58,10 @@ enum class Visibility : (String) -> String {
 class Optional<T> internal constructor(internal val fn: (String) -> T,
                                        description: String?,
                                        visibility: Visibility,
+                                       private val config: Config,
                                        private val io: IO) : BuntingFlag<T?>(description, visibility) {
 
-    fun secret() = Optional(fn, description, Secret, io)
+    fun secret() = Optional(fn, description, Secret, config, io)
 
     fun required() = Required(fn, description, visibility)
 
@@ -72,9 +73,16 @@ class Optional<T> internal constructor(internal val fn: (String) -> T,
         visibility,
         default)
 
-    fun described(new: String): Optional<T> = Optional(fn, new, visibility, io)
+    fun configuredAs(configProperty: String) = Configured(fn,
+        (description?.takeIf { it.isNotBlank() }?.let { "$it. " }
+            ?: "") + "Configured as \"$configProperty\"",
+        visibility,
+        configProperty,
+        config)
 
-    fun <NEXT> map(nextFn: (T) -> NEXT) = Optional({ nextFn(fn(it)) }, description, visibility, io)
+    fun described(new: String): Optional<T> = Optional(fn, new, visibility, config, io)
+
+    fun <NEXT> map(nextFn: (T) -> NEXT) = Optional({ nextFn(fn(it)) }, description, visibility, config, io)
 
     override fun getValue(thisRef: Bunting, property: KProperty<*>) = thisRef.retrieve(property)?.let {
         try {
@@ -100,6 +108,26 @@ class Defaulted<T> internal constructor(internal val fn: (String) -> T,
             throw IllegalFlag(property, visibility(it), e)
         }
     } ?: default
+}
+
+/**
+ * Configured flags are stored in config file.
+ */
+class Configured<T> internal constructor(internal val fn: (String) -> T,
+                                         description: String?,
+                                         visibility: Visibility,
+                                         private val configProperty: String,
+                                         private val config: Config) : BuntingFlag<T?>(description, visibility) {
+
+    override fun getValue(thisRef: Bunting, property: KProperty<*>): T? =
+        (thisRef.retrieve(property) ?: config[configProperty])?.let {
+
+            try {
+                fn(it)
+            } catch (e: Exception) {
+                throw IllegalFlag(property, visibility(it), e)
+            }
+        }
 }
 
 /**
