@@ -23,7 +23,7 @@ class PropertiesFileConfig(private val location: File) : Config {
 
     override fun set(key: String, value: String) {
         properties.setProperty(key, value).also {
-            location.mkdirs()
+            location.parentFile.mkdirs()
             location.writer().use { properties.store(it, "") }
         }
     }

@@ -22,6 +22,7 @@ class MyGreatFlags(args: Array<String>) : Bunting(args, config = InMemoryConfig(
     val version by option().int().defaultsTo(0)
     val prompt by option("This is prompted value").prompted()
     val configured by option("This is config value").configuredAs("foo.bar")
+    val defaultedConfig by option("This is config value").configuredAs("bar.baz").defaultsTo("defaulted value")
     val secret by option("This is secret value").int().secret().prompted()
     val level by option().enum<LogLevel>().defaultsTo(warn)
 }
@@ -86,8 +87,9 @@ object SecretValue {
 object ConfigValue {
     @JvmStatic
     // run the main with: java (...) SecretValue (note that when run in IDE, the masking will not work. Run from command line is ok...
-    fun main(ignored: Array<String>) = MyGreatFlags(emptyArray()).use {
+    fun main(ignored: Array<String>) = MyGreatFlags(arrayOf("-c", "passed value")).use {
         println(configured)
+        println(defaultedConfig)
     }
 }
 
