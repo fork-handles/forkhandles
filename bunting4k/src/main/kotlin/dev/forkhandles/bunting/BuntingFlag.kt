@@ -111,7 +111,7 @@ class Defaulted<T> internal constructor(internal val fn: (String) -> T,
 }
 
 /**
- * Configured flags are stored in config file.
+ * Configured flags are stored in the config.
  */
 class Configured<T> internal constructor(internal val fn: (String) -> T,
                                          description: String?,
