@@ -3,7 +3,8 @@ package parser4k
 import org.junit.jupiter.api.Test
 
 class LeftAssociativityTests {
-    @Test fun `single unary operator`() =
+    @Test
+    fun `single unary operator`() =
         object : TestGrammar() {
             val foo = inOrder(ref { expr }, str(".foo")).mapLeftAssoc { (expr, _) -> Field(expr, "foo") }
             override val expr: Parser<ASTNode> = oneOf(
@@ -16,7 +17,8 @@ class LeftAssociativityTests {
             "1.foo.foo" shouldBeParsedAs "((1.foo).foo)"
         }
 
-    @Test fun `two unary operators`() =
+    @Test
+    fun `two unary operators`() =
         object : TestGrammar() {
             val foo = inOrder(ref { expr }, str(".foo")).mapLeftAssoc { (expr, _) -> Field(expr, "foo") }
             val bar = inOrder(ref { expr }, str(".bar")).mapLeftAssoc { (expr, _) -> Field(expr, "bar") }
@@ -38,7 +40,8 @@ class LeftAssociativityTests {
             "1.bar.foo" shouldBeParsedAs "((1.bar).foo)"
         }
 
-    @Test fun `single binary operator`() =
+    @Test
+    fun `single binary operator`() =
         object : TestGrammar() {
             val plus = inOrder(ref { expr }, str(" + "), ref { expr }).mapLeftAssoc(::Plus.asBinary())
             override val expr: Parser<ASTNode> = oneOf(
@@ -51,7 +54,8 @@ class LeftAssociativityTests {
             "1 + 2 + 3" shouldBeParsedAs "((1 + 2) + 3)"
         }
 
-    @Test fun `two binary operators`() =
+    @Test
+    fun `two binary operators`() =
         object : TestGrammar() {
             val plus = inOrder(ref { expr }, str(" + "), ref { expr }).mapLeftAssoc(::Plus.asBinary())
             val minus = inOrder(ref { expr }, str(" - "), ref { expr }).mapLeftAssoc(::Minus.asBinary())
@@ -74,7 +78,8 @@ class LeftAssociativityTests {
             "1 + 2 - 3 + 4" shouldBeParsedAs "(((1 + 2) - 3) + 4)"
         }
 
-    @Test fun `operator precedence`() =
+    @Test
+    fun `operator precedence`() =
         object : TestGrammar() {
             val plus = inOrder(ref { expr }, str(" + "), ref { expr }).mapLeftAssoc(::Plus.asBinary())
             val or = inOrder(ref { expr }, str(" || "), ref { expr }).mapLeftAssoc(::Or.asBinary())
@@ -98,7 +103,8 @@ class LeftAssociativityTests {
             "1 || 2 + 3 || 4" shouldBeParsedAs "((1 || (2 + 3)) || 4)"
         }
 
-    @Test fun `nested operator precedence`() =
+    @Test
+    fun `nested operator precedence`() =
         object : TestGrammar() {
             val plus = inOrder(ref { expr }, str(" + "), ref { expr }).mapLeftAssoc(::Plus.asBinary())
             val paren = inOrder(str("("), ref { expr }, str(")")).map { (_, it, _) -> it }
@@ -125,7 +131,8 @@ class LeftAssociativityTests {
             "1 + 2 + (3 + 4)" shouldBeParsedAs "((1 + 2) + (3 + 4))"
         }
 
-    @Test fun `nested left-associative operator precedence`() =
+    @Test
+    fun `nested left-associative operator precedence`() =
         object : TestGrammar() {
             val plus = inOrder(ref { expr }, str(" + "), ref { expr })
                 .mapLeftAssoc(::Plus.asBinary())
@@ -149,7 +156,8 @@ class LeftAssociativityTests {
             "123[1 + 2] + 3" shouldBeParsedAs "(123[(1 + 2)] + 3)"
         }
 
-    @Test fun `nested left-associative operator precedence with cache`() =
+    @Test
+    fun `nested left-associative operator precedence with cache`() =
         object : TestGrammar() {
             val plus = inOrder(ref { expr }, str(" + "), ref { expr })
                 .mapLeftAssoc(::Plus.asBinary())
@@ -175,7 +183,8 @@ class LeftAssociativityTests {
 }
 
 class RightAssociativityTests {
-    @Test fun `single unary operator`() =
+    @Test
+    fun `single unary operator`() =
         object : TestGrammar() {
             val preIncrement = inOrder(str("++"), ref { expr }).map { (_, it) -> PreIncrement(it) }
             override val expr: Parser<ASTNode> = oneOf(
@@ -188,7 +197,8 @@ class RightAssociativityTests {
             "++++123" shouldBeParsedAs "++(++(123))"
         }
 
-    @Test fun `two unary operators`() =
+    @Test
+    fun `two unary operators`() =
         object : TestGrammar() {
             val preIncrement = inOrder(str("++"), ref { expr }).map { (_, it) -> PreIncrement(it) }
             val preDecrement = inOrder(str("--"), ref { expr }).map { (_, it) -> PreDecrement(it) }
@@ -210,7 +220,8 @@ class RightAssociativityTests {
             "--++123" shouldBeParsedAs "--(++(123))"
         }
 
-    @Test fun `single binary operator`() =
+    @Test
+    fun `single binary operator`() =
         object : TestGrammar() {
             val power = inOrder(ref { expr }, str(" ^ "), ref { expr }).map(::Power.asBinary())
             override val expr: Parser<ASTNode> = oneOf(
@@ -223,7 +234,8 @@ class RightAssociativityTests {
             "1 ^ 2 ^ 3" shouldBeParsedAs "(1 ^ (2 ^ 3))"
         }
 
-    @Test fun `two binary operators`() =
+    @Test
+    fun `two binary operators`() =
         object : TestGrammar() {
             val power = inOrder(ref { expr }, str(" ^ "), ref { expr }).map(::Power.asBinary())
             val colon = inOrder(ref { expr }, str(" : "), ref { expr }).map(::Colon.asBinary())
@@ -246,7 +258,8 @@ class RightAssociativityTests {
             "1 ^ 2 : 3 ^ 4" shouldBeParsedAs "(1 ^ (2 : (3 ^ 4)))"
         }
 
-    @Test fun `operator precedence`() =
+    @Test
+    fun `operator precedence`() =
         object : TestGrammar() {
             val power = inOrder(ref { expr }, str(" ^ "), ref { expr }).map(::Power.asBinary())
             val and = inOrder(ref { expr }, str(" && "), ref { expr }).map(::And.asBinary())
@@ -270,7 +283,8 @@ class RightAssociativityTests {
             "1 && 2 ^ 3 && 4" shouldBeParsedAs "(1 && ((2 ^ 3) && 4))"
         }
 
-    @Test fun `nested operator precedence`() =
+    @Test
+    fun `nested operator precedence`() =
         object : TestGrammar() {
             val power = inOrder(ref { expr }, str(" ^ "), ref { expr }).map(::Power.asBinary())
             val paren = inOrder(str("("), ref { expr }, str(")")).map { (_, it, _) -> it }
@@ -307,7 +321,8 @@ class LeftAndRightAssociativityTests : TestGrammar() {
         number
     )
 
-    @Test fun `it works`() {
+    @Test
+    fun `it works`() {
         "123" shouldBeParsedAs "123"
 
         "1 + 2" shouldBeParsedAs "(1 + 2)"

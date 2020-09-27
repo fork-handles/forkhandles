@@ -60,7 +60,7 @@ fun <T> Result<T, T>.get() = when (this) {
 /**
  * Unwrap a successful result or throw an exception
  */
-fun <T, X: Throwable> Result<T,X>.orThrow() = when (this) {
+fun <T, X : Throwable> Result<T, X>.orThrow() = when (this) {
     is Success<T> -> value
     is Failure<X> -> throw reason
 }

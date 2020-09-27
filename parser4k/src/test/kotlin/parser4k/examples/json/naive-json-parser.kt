@@ -1,7 +1,8 @@
 package parser4k.examples.json
 
 import org.junit.jupiter.api.Test
-import parser4k.*
+import parser4k.Parser
+import parser4k.anyCharExcept
 import parser4k.commonparsers.Tokens.digit
 import parser4k.commonparsers.Tokens.integer
 import parser4k.commonparsers.Tokens.letter
@@ -9,6 +10,15 @@ import parser4k.commonparsers.Tokens.string
 import parser4k.commonparsers.joinedWith
 import parser4k.commonparsers.token
 import parser4k.examples.json.NaiveJsonParser.parse
+import parser4k.inOrder
+import parser4k.map
+import parser4k.oneOf
+import parser4k.parseWith
+import parser4k.ref
+import parser4k.repeat
+import parser4k.shouldEqual
+import parser4k.skipWrapper
+import parser4k.str
 
 private object NaiveJsonParser {
     private val obj = inOrder(token("{"), ref { property }.joinedWith(token(",")), token("}")).skipWrapper().map { it.toMap() }
@@ -25,7 +35,8 @@ class NaiveJsonParserTests {
     private val emptyObject = emptyMap<String, Any>()
     private val emptyList = emptyList<Any>()
 
-    @Test fun `it works`() {
+    @Test
+    fun `it works`() {
         parse("""{}""") shouldEqual emptyObject
         parse("""{ "foo": 123 }""") shouldEqual mapOf("foo" to "123")
         parse("""{ "foo": 123, "bar": "woof" }""") shouldEqual mapOf("foo" to "123", "bar" to "woof")

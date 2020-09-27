@@ -1,6 +1,6 @@
 package parser4k
 
-interface Parser<out T> {
+fun interface Parser<out T> {
     fun parse(input: Input): Output<T>?
 }
 

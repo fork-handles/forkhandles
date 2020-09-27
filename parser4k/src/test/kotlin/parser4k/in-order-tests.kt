@@ -1,29 +1,38 @@
 package parser4k
 
-import dev.forkhandles.tuples.*
+import dev.forkhandles.tuples.Tuple3
+import dev.forkhandles.tuples.Tuple4
+import dev.forkhandles.tuples.Tuple5
+import dev.forkhandles.tuples.Tuple6
+import dev.forkhandles.tuples.Tuple7
+import dev.forkhandles.tuples.Tuple8
 import org.junit.jupiter.api.Test
 
 class InOrderTests {
     private val abParser = inOrder(str("a"), str("b"))
 
-    @Test fun `not enough input`() {
+    @Test
+    fun `not enough input`() {
         abParser.parse(Input("")) shouldEqual null
         abParser.parse(Input("a")) shouldEqual null
         abParser.parse(Input("ab", offset = 1)) shouldEqual null
     }
 
-    @Test fun `input mismatch`() {
+    @Test
+    fun `input mismatch`() {
         abParser.parse(Input("foo")) shouldEqual null
         abParser.parse(Input("aa")) shouldEqual null
     }
 
-    @Test fun `input match`() {
+    @Test
+    fun `input match`() {
         abParser.parse(Input("ab__")) shouldEqual Output(Pair("a", "b"), Input("ab__", offset = 2))
         abParser.parse(Input("_ab_", offset = 1)) shouldEqual Output(Pair("a", "b"), Input("_ab_", offset = 3))
         abParser.parse(Input("__ab", offset = 2)) shouldEqual Output(Pair("a", "b"), Input("__ab", offset = 4))
     }
 
-    @Test fun `input match with list as payload`() {
+    @Test
+    fun `input match with list as payload`() {
         inOrder(str("a")).parse(Input("ab")) shouldEqual Output(
             payload = listOf("a"),
             nextInput = Input("ab", offset = 1)
@@ -34,7 +43,8 @@ class InOrderTests {
         )
     }
 
-    @Test fun `input match with tuple as payload`() {
+    @Test
+    fun `input match with tuple as payload`() {
         inOrder(str("a"), str("b"), str("c")).parse(Input("abc")) shouldEqual Output(
             Tuple3("a", "b", "c"),
             Input("abc", offset = 3)

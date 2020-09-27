@@ -11,15 +11,15 @@ class FixedTimeSourceTest {
     fun `ticked by configured amount`() {
         val start = Instant.now()
         val tick = Duration.ofSeconds(2)
-        
+
         val timeSource = FixedTimeSource(start, tick)
-        
+
         assertThat(timeSource(), equalTo(start))
-        
+
         timeSource.tick()
         assertThat(timeSource(), equalTo(start + tick))
     }
-    
+
     @Test
     fun `ticked by explicit amount`() {
         val now = Instant.now()
@@ -29,20 +29,20 @@ class FixedTimeSourceTest {
         assertThat(fixed(), equalTo(now))
         assertThat(fixed.tick(tick)(), equalTo(now + tick))
     }
-    
+
     @Test
     fun `getting the time does not progress time`() {
         val now = Instant.now()
         val tick = Duration.ofSeconds(1)
 
         val timeSource = FixedTimeSource(now, Duration.ofSeconds(10))
-        
+
         assertThat(timeSource(), equalTo(now))
         assertThat(timeSource(), equalTo(now))
         assertThat(timeSource(), equalTo(now))
-    
+
         timeSource.tick(tick)
-        
+
         assertThat(timeSource(), equalTo(now + tick))
         assertThat(timeSource(), equalTo(now + tick))
         assertThat(timeSource(), equalTo(now + tick))

@@ -2,8 +2,18 @@ package parser4k.commonparsers
 
 import dev.forkhandles.tuples.val1
 import dev.forkhandles.tuples.val2
-import parser4k.*
+import parser4k.Parser
+import parser4k.anyCharExcept
 import parser4k.commonparsers.Tokens.whitespace
+import parser4k.inOrder
+import parser4k.map
+import parser4k.oneOf
+import parser4k.oneOrMore
+import parser4k.optional
+import parser4k.repeat
+import parser4k.skipWrapper
+import parser4k.str
+import parser4k.zeroOrMore
 
 object Tokens {
     val whitespace: Parser<Char> = oneOf(' ', '\t', '\r', '\n')

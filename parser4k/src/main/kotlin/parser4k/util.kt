@@ -1,6 +1,8 @@
 package parser4k
 
-import dev.forkhandles.tuples.*
+import dev.forkhandles.tuples.Tuple3
+import dev.forkhandles.tuples.val1
+import dev.forkhandles.tuples.val3
 
 fun <T1, T3, R> ((T1, T3) -> R).asBinary() = { tuple: Tuple3<T1, *, T3> ->
     this(tuple.val1, tuple.val3)
@@ -27,9 +29,9 @@ class NoMatchingParsers(override val message: String) : ParsingError(message)
 class InputIsNotConsumed(override val message: String) : ParsingError(message) {
     constructor(output: Output<*>) : this(
         "\n" + // start new line after "parser4k.InputIsNotConsumed: "
-        "${output.nextInput.value}\n" +
-        " ".repeat(output.nextInput.offset) + "^\n" +
-        "payload = ${output.payload}"
+            "${output.nextInput.value}\n" +
+            " ".repeat(output.nextInput.offset) + "^\n" +
+            "payload = ${output.payload}"
     )
 }
 

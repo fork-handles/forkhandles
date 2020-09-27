@@ -23,21 +23,21 @@ class FixedTimeSource(
     time: Instant = EPOCH,
     private val tick: Duration = ofSeconds(1)
 ) : TickableTimeSource {
-    
+
     init {
         tick.requirePositive()
     }
-    
+
     private val initial = AtomicReference(time)
-    
+
     override fun tick(amount: Duration?) = apply {
         amount?.requirePositive()
         initial.getAndUpdate { it + (amount ?: tick) }
     }
-    
+
     private fun Duration.requirePositive() =
         require(!isNegative) { "Time can only tick forwards, not by $this" }
-    
+
     override operator fun invoke(): Instant = initial.get()
 }
 
@@ -46,6 +46,6 @@ class FixedTimeSource(
  */
 class AutoTickingTimeSource(private val underlying: TickableTimeSource) : TickableTimeSource by underlying {
     constructor(time: Instant = EPOCH, tick: Duration = ofSeconds(1)) : this(FixedTimeSource(time, tick))
-    
+
     override operator fun invoke() = underlying().also { underlying.tick() }
 }

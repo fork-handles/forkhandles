@@ -3,10 +3,32 @@
 package parser4k.calculatortests
 
 import org.junit.jupiter.api.Test
-import parser4k.*
-import parser4k.calculatortests.Calculator.Expression.*
+import parser4k.NoMatchingParsers
+import parser4k.OutputCache
+import parser4k.Parser
+import parser4k.asBinary
+import parser4k.calculatortests.Calculator.Expression.Divide
+import parser4k.calculatortests.Calculator.Expression.Minus
+import parser4k.calculatortests.Calculator.Expression.Multiply
 import parser4k.calculatortests.Calculator.Expression.Number
+import parser4k.calculatortests.Calculator.Expression.Plus
+import parser4k.calculatortests.Calculator.Expression.Power
 import parser4k.commonparsers.token
+import parser4k.inOrder
+import parser4k.map
+import parser4k.mapLeftAssoc
+import parser4k.nestedPrecedence
+import parser4k.oneOf
+import parser4k.oneOfWithPrecedence
+import parser4k.oneOrMore
+import parser4k.parseWith
+import parser4k.ref
+import parser4k.reset
+import parser4k.shouldEqual
+import parser4k.shouldFailWith
+import parser4k.shouldFailWithMessage
+import parser4k.skipWrapper
+import parser4k.with
 import java.math.BigDecimal
 
 
@@ -33,12 +55,12 @@ private object Calculator {
 
     private fun Expression.evaluate(): BigDecimal =
         when (this) {
-            is Number   -> value
-            is Plus     -> left.evaluate() + right.evaluate()
-            is Minus    -> left.evaluate() - right.evaluate()
+            is Number -> value
+            is Plus -> left.evaluate() + right.evaluate()
+            is Minus -> left.evaluate() - right.evaluate()
             is Multiply -> left.evaluate() * right.evaluate()
-            is Divide   -> left.evaluate().divide(right.evaluate())
-            is Power    -> left.evaluate().pow(right.evaluate().toInt())
+            is Divide -> left.evaluate().divide(right.evaluate())
+            is Power -> left.evaluate().pow(right.evaluate().toInt())
         }
 
     private sealed class Expression {
@@ -78,7 +100,8 @@ private object MinimalCalculator {
 
 
 class CalculatorTests {
-    @Test fun `valid input`() = listOf(Calculator::evaluate, MinimalCalculator::evaluate).forEach { evaluate ->
+    @Test
+    fun `valid input`() = listOf(Calculator::evaluate, MinimalCalculator::evaluate).forEach { evaluate ->
         evaluate("1") shouldEqual BigDecimal(1)
         evaluate("1 + 2") shouldEqual BigDecimal(3)
         evaluate("1 + 2 * 3") shouldEqual BigDecimal(7)
@@ -89,12 +112,14 @@ class CalculatorTests {
         evaluate("2^12 - 2^10") shouldEqual BigDecimal(3072)
     }
 
-    @Test fun `large valid input`() = listOf(Calculator::evaluate, MinimalCalculator::evaluate).forEach { evaluate ->
+    @Test
+    fun `large valid input`() = listOf(Calculator::evaluate, MinimalCalculator::evaluate).forEach { evaluate ->
         evaluate(List(1000) { "1" }.joinToString("+")) shouldEqual BigDecimal(1000)
         evaluate(List(1000) { "1" }.joinToString("^")) shouldEqual BigDecimal(1)
     }
 
-    @Test fun `invalid input`() {
+    @Test
+    fun `invalid input`() {
         { Calculator.evaluate("+1") } shouldFailWith { it is NoMatchingParsers }
         { Calculator.evaluate("()") } shouldFailWith { it is NoMatchingParsers }
 

@@ -1,6 +1,6 @@
 package parser4k
 
-import java.util.*
+import java.util.LinkedList
 
 fun oneOf(vararg chars: Char): Parser<Char> = oneOf(chars.map { char(it) })
 
@@ -12,7 +12,7 @@ fun <T> oneOf(vararg parsers: Parser<T>): OneOf<T> = oneOf(parsers.toList())
 
 fun <T> oneOf(parsers: Iterable<Parser<T>>): OneOf<T> = OneOf(parsers)
 
-class OneOf<out T>(val parsers: Iterable<Parser<T>>): Parser<T> {
+class OneOf<out T>(val parsers: Iterable<Parser<T>>) : Parser<T> {
     override fun parse(input: Input): Output<T>? {
         if (input.offset == input.value.length) return null
         parsers.forEach { parser ->
@@ -44,7 +44,7 @@ fun <T> Parser<T>.except(parsers: Iterable<Parser<*>>): Parser<T> = object : Par
 
 fun <T> oneOfLongest(vararg parsers: Parser<T>): Parser<T> = nonRecursive(object : Parser<T> {
     override fun parse(input: Input) =
-        parsers.mapNotNull { it.parse(input) }.maxBy { it.nextInput.offset }
+        parsers.mapNotNull { it.parse(input) }.maxByOrNull { it.nextInput.offset }
 })
 
 fun <T> oneOfWithPrecedence(vararg parsers: Parser<T>): Parser<T> = oneOfWithPrecedence(parsers.toList())
@@ -89,7 +89,9 @@ interface OneOfExtensions {
     infix fun Char.or(that: String): OneOf<String> = oneOf(char(this).map { it.toString() }, str(that))
     infix fun <T> Char.or(that: Parser<T>): OneOf<Any?> = oneOf(char(this), that)
     infix fun OneOf<Char>.or(that: Char): OneOf<Char> = oneOf(parsers + char(that))
-    @Suppress("INAPPLICABLE_JVM_NAME") @JvmName("orChar")
+
+    @Suppress("INAPPLICABLE_JVM_NAME")
+    @JvmName("orChar")
     infix fun <T> OneOf<T>.or(that: Char): OneOf<Any?> = oneOf(parsers + char(that))
     infix fun <T> Parser<T>.or(that: Char): OneOf<Any?> = oneOf(this, char(that))
 
@@ -98,7 +100,9 @@ interface OneOfExtensions {
     infix fun CharRange.or(that: String): OneOf<String> = oneOf(oneOf(this).map { it.toString() }, str(that))
     infix fun <T> CharRange.or(that: Parser<T>): OneOf<Any?> = oneOf(oneOf(this), that)
     infix fun OneOf<CharRange>.or(that: CharRange): OneOf<Any> = oneOf(parsers + oneOf(that))
-    @Suppress("INAPPLICABLE_JVM_NAME") @JvmName("orCharRange")
+
+    @Suppress("INAPPLICABLE_JVM_NAME")
+    @JvmName("orCharRange")
     infix fun <T> OneOf<T>.or(that: CharRange): OneOf<Any?> = oneOf(parsers + oneOf(that))
     infix fun <T> Parser<T>.or(that: CharRange): OneOf<Any?> = oneOf(this, oneOf(that))
 
@@ -107,7 +111,9 @@ interface OneOfExtensions {
     infix fun String.or(that: String): OneOf<String> = oneOf(str(this), str(that))
     infix fun <T> String.or(that: Parser<T>): OneOf<Any?> = oneOf(str(this), that)
     infix fun OneOf<String>.or(that: String): OneOf<String> = oneOf(parsers + str(that))
-    @Suppress("INAPPLICABLE_JVM_NAME") @JvmName("orString")
+
+    @Suppress("INAPPLICABLE_JVM_NAME")
+    @JvmName("orString")
     infix fun <T> OneOf<T>.or(that: String): OneOf<Any?> = oneOf(parsers + str(that))
     infix fun <T> Parser<T>.or(that: String): OneOf<Any?> = oneOf(this, str(that))
 

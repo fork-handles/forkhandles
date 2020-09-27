@@ -2,9 +2,25 @@ package parser4k.examples.json
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
-import parser4k.*
+import parser4k.InOrderExtensions
+import parser4k.OneOf
+import parser4k.OneOfExtensions
+import parser4k.Parser
 import parser4k.commonparsers.joinedWith
 import parser4k.examples.json.JsonParser.parse
+import parser4k.except
+import parser4k.joinToString
+import parser4k.map
+import parser4k.oneOf
+import parser4k.oneOrMore
+import parser4k.optional
+import parser4k.parseWith
+import parser4k.ref
+import parser4k.shouldEqual
+import parser4k.skipFirst
+import parser4k.skipWrapper
+import parser4k.str
+import parser4k.zeroOrMore
 import java.io.File
 
 /**
@@ -23,9 +39,9 @@ private object JsonParser : OneOfExtensions, InOrderExtensions {
     private val fraction = optional('.' + digits).map { it?.joinToString() ?: "" }
     private val integer =
         (sign + oneNine + digits).map { it.joinToString() } or
-        (sign + digit).map { it.joinToString() } or
-        (oneNine + digits).map { it.joinToString() } or
-        digit.map { it.toString() }
+            (sign + digit).map { it.joinToString() } or
+            (oneNine + digits).map { it.joinToString() } or
+            digit.map { it.toString() }
 
     private val number = (integer + fraction + exponent)
         .map { (integer, fraction, exponent) ->
@@ -37,11 +53,11 @@ private object JsonParser : OneOfExtensions, InOrderExtensions {
     private val hex = digit or 'A'..'F' or 'a'..'f'
     private val escape: OneOf<Char> =
         oneOf('"', '\\', '/', 'b', 'f', 'n', 'r', 't').map { it.toEscapedChar() } or
-        ('u' + hex + hex + hex + hex).skipFirst().map { it.joinToString().toInt(16).toChar() }
+            ('u' + hex + hex + hex + hex).skipFirst().map { it.joinToString().toInt(16).toChar() }
 
     private val characters = zeroOrMore(
         (0x0020.toChar()..0x10FFFF.toChar()).except('"', '\\') or
-        ('\\' + escape).skipFirst()
+            ('\\' + escape).skipFirst()
     )
     private val string = ('"' + characters + '"')
         .skipWrapper().map { it.joinToString("") }
@@ -52,11 +68,11 @@ private object JsonParser : OneOfExtensions, InOrderExtensions {
 
     private val obj =
         ('{' + ws + '}').map { emptyMap<Any, Any>() } or
-        ('{' + member.joinedWith(",") + '}').skipWrapper().map { it.toMap() }
+            ('{' + member.joinedWith(",") + '}').skipWrapper().map { it.toMap() }
 
     private val array =
         ('[' + ws + ']').map { emptyList<Any>() } or
-        ('[' + ref { element }.joinedWith(",") + ']').skipWrapper()
+            ('[' + ref { element }.joinedWith(",") + ']').skipWrapper()
 
     private val `true` = str("true").map { true }
     private val `false` = str("false").map { false }
@@ -64,13 +80,13 @@ private object JsonParser : OneOfExtensions, InOrderExtensions {
 
     private val value: Parser<Any?> = (
         obj or
-        array or
-        string or
-        number or
-        `true` or
-        `false` or
-        `null`
-    )
+            array or
+            string or
+            number or
+            `true` or
+            `false` or
+            `null`
+        )
 
     private val element = (ws + value + ws).skipWrapper()
 
@@ -92,16 +108,19 @@ class JsonParserTests {
     private val emptyObject = emptyMap<String, Any>()
     private val emptyList = emptyList<Any>()
 
-    @Test fun `null`() {
+    @Test
+    fun `null`() {
         parse("null") shouldEqual null
     }
 
-    @Test fun booleans() {
+    @Test
+    fun booleans() {
         parse("true") shouldEqual true
         parse("false") shouldEqual false
     }
 
-    @Test fun integers() {
+    @Test
+    fun integers() {
         parse("0") shouldEqual 0
         parse("+1") shouldEqual 1
         parse("-1") shouldEqual -1
@@ -111,7 +130,8 @@ class JsonParserTests {
         parse("1234567890") shouldEqual 1234567890
     }
 
-    @Test fun `floating points`() {
+    @Test
+    fun `floating points`() {
         parse("123.456") shouldEqual 123.456
         parse("+123.456") shouldEqual 123.456
         parse("-123.456") shouldEqual -123.456
@@ -128,7 +148,8 @@ class JsonParserTests {
         parse("23456789012E66") shouldEqual 23456789012E66
     }
 
-    @Test fun strings() {
+    @Test
+    fun strings() {
         fun String.quoted() = "\"$this\""
 
         parse("".quoted()) shouldEqual ""
@@ -147,7 +168,8 @@ class JsonParserTests {
         parse("`1~!@#$%^&*()_+-={':[,]}|;.</>?".quoted()) shouldEqual "`1~!@#$%^&*()_+-={':[,]}|;.</>?"
     }
 
-    @Test fun arrays() {
+    @Test
+    fun arrays() {
         parse("[]") shouldEqual emptyList
         parse("[1, 2, 3]") shouldEqual listOf(1, 2, 3)
         parse("[[1, 2, 3], [4, 5, [6]]]") shouldEqual listOf(listOf(1, 2, 3), listOf(4, 5, listOf(6)))
@@ -159,7 +181,8 @@ class JsonParserTests {
             |""".trimMargin()) shouldEqual listOf(1, 2, 3, 4, 5, 6, 7)
     }
 
-    @Test fun objects() {
+    @Test
+    fun objects() {
         parse("""{}""") shouldEqual emptyObject
         parse("""{ "foo": 123 }""") shouldEqual mapOf("foo" to 123)
         parse("""{ "foo": 123, "bar": "woof" }""") shouldEqual mapOf("foo" to 123, "bar" to "woof")
@@ -170,7 +193,8 @@ class JsonParserTests {
             mapOf("jsontext" to """{"object with 1 member":["array with 1 element"]}""")
     }
 
-    @Test fun `test cases from json-dot-org`() {
+    @Test
+    fun `test cases from json-dot-org`() {
         // These tests cases were downloaded from https://www.json.org/JSON_checker
         // excluding fail1.json because strings are valid root elements according to json grammar,
         // excluding fail18.json because there is no official maximum depth for nested arrays.

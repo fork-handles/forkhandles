@@ -23,7 +23,8 @@ class LogTests {
 
     private val expr: Parser<Any> = oneOfWithPrecedence(or, and, boolean)
 
-    @Test fun `boolean literal`() {
+    @Test
+    fun `boolean literal`() {
         "true || false".parseWith(expr) shouldEqual Tuple3("true", " || ", "false")
 
         logEvents.joinToString("\n") { it.toDebugString() } shouldEqual """
