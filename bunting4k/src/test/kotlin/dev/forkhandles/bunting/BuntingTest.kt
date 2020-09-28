@@ -1,5 +1,6 @@
 package dev.forkhandles.bunting
 
+import com.natpryce.hamkrest.absent
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import dev.forkhandles.bunting.Visibility.Public
@@ -9,6 +10,7 @@ import java.util.UUID
 
 class BuntingTest {
     private val testIo = TestIO()
+    private val testConfig = InMemoryConfig()
 
     enum class AnEnum {
         a, b
@@ -21,7 +23,7 @@ class BuntingTest {
         val grandchild by command { MyGrandChildFlags(it, io) }
     }
 
-    class MyTestFlags(args: Array<String>, io: IO) : Bunting(args, "some description of all my commands", "MyTestFlags", io = io) {
+    class MyTestFlags(args: Array<String>, io: IO, config: Config) : Bunting(args, "some description of all my commands", "MyTestFlags", io = io, config = config) {
         val switch: Boolean by switch("This is a switch")
         val optional: String by option("This is an optional flag").required()
         val required: String by option("This is a required flag").required()
@@ -31,11 +33,13 @@ class BuntingTest {
         val mapped: Int by option("This is a mapped flag").map { it.toInt() }.required()
         val anEnum: AnEnum by option().enum<AnEnum>().defaultsTo(AnEnum.b)
         val command: MyChildFlags? by command { MyChildFlags(it, this.io) }
+        val configured: String? by option("This is a configured flag").configuredAs("test.configured")
+        val configuredWithDefault: String by option("This is a configured flag").configuredAs("test.configured").defaultsTo("defaulted value")
     }
 
     @Test
     fun `switch is parsed`() {
-        MyTestFlags(arrayOf("--switch"), testIo).use {
+        MyTestFlags(arrayOf("--switch"), testIo, testConfig).use {
             assertThat(switch, equalTo(true))
         }
         assertThat(testIo.toString(), equalTo(""))
@@ -59,7 +63,7 @@ description
 
     @Test
     fun `required flag is parsed`() {
-        MyTestFlags(arrayOf("--required", "foo"), testIo).use {
+        MyTestFlags(arrayOf("--required", "foo"), testIo, testConfig).use {
             assertThat(required, equalTo("foo"))
         }
         assertThat(testIo.toString(), equalTo(""))
@@ -68,7 +72,7 @@ description
     @Test
     fun `prompted flag is prompted for`() {
         val promptedIo = TestIO(listOf("foobar"))
-        MyTestFlags(arrayOf(), promptedIo).use {
+        MyTestFlags(arrayOf(), promptedIo, testConfig).use {
             assertThat(prompted, equalTo("foobar"))
         }
         assertThat(promptedIo.toString(), equalTo("Enter value for \"This is a prompted flag\": "))
@@ -76,7 +80,7 @@ description
 
     @Test
     fun `prompted flag is present`() {
-        MyTestFlags(arrayOf("-p", "foobar"), testIo).use {
+        MyTestFlags(arrayOf("-p", "foobar"), testIo, testConfig).use {
             assertThat(prompted, equalTo("foobar"))
         }
         assertThat(testIo.toString(), equalTo(""))
@@ -85,7 +89,7 @@ description
     @Test
     fun `prompted secret flag is prompted for`() {
         val promptedIo = TestIO(secrets = listOf("1"))
-        MyTestFlags(arrayOf(), promptedIo).use {
+        MyTestFlags(arrayOf(), promptedIo, testConfig).use {
             assertThat(secret, equalTo(1))
         }
         assertThat(promptedIo.toString(), equalTo("Enter value for \"This is a secret flag\": "))
@@ -93,15 +97,52 @@ description
 
     @Test
     fun `prompted secret flag is present`() {
-        MyTestFlags(arrayOf("-s", "1"), testIo).use {
+        MyTestFlags(arrayOf("-s", "1"), testIo, testConfig).use {
             assertThat(secret, equalTo(1))
         }
         assertThat(testIo.toString(), equalTo(""))
     }
 
     @Test
+    fun `configured flag is parsed`() {
+        MyTestFlags(arrayOf("--configured", "foo"), testIo, testConfig).use {
+            assertThat(configured, equalTo("foo"))
+        }
+        assertThat(testIo.toString(), equalTo(""))
+    }
+
+    @Test
+    fun `configured flag is loaded from config`() {
+        val config = InMemoryConfig().apply { set("test.configured", "configured value") }
+        MyTestFlags(emptyArray(), testIo, config).use {
+            assertThat(configured, equalTo("configured value"))
+        }
+        assertThat(testIo.toString(), equalTo(""))
+    }
+
+    @Test
+    fun `defaulted configured flag has correct value`() {
+        MyTestFlags(emptyArray(), testIo, testConfig).use {
+            assertThat(configuredWithDefault, equalTo("defaulted value"))
+            assertThat(testConfig["test.configured"], equalTo("defaulted value"))
+        }
+        assertThat(testIo.toString(), equalTo(""))
+    }
+
+    @Test
+    fun `loaded configured flag is not overridden by default`() {
+        val config = InMemoryConfig().apply { set("test.configured", "configured value") }
+
+        MyTestFlags(emptyArray(), testIo, config).use {
+            assertThat(configuredWithDefault, equalTo("configured value"))
+            assertThat(testConfig["test.configured"], absent())
+        }
+        assertThat(testIo.toString(), equalTo(""))
+    }
+
+    @Test
     fun `illegal prompted secret flag does not leak value`() {
-        MyTestFlags(arrayOf("-s", "foobar"), testIo).use {
+        MyTestFlags(arrayOf("-s", "foobar"), testIo, testConfig).use {
             secret
         }
         assertThat(testIo.toString(), equalTo("Usage: MyTestFlags [commands] [options]\n" +
@@ -110,7 +151,7 @@ description
 
     @Test
     fun `no value then required flag is parsed`() {
-        MyTestFlags(arrayOf("--switch", "--required", "foo", "--switch      2", "--required2", "foo2"), testIo).use {
+        MyTestFlags(arrayOf("--switch", "--required", "foo", "--switch      2", "--required2", "foo2"), testIo, testConfig).use {
             assertThat(required, equalTo("foo"))
         }
         assertThat(testIo.toString(), equalTo(""))
@@ -118,7 +159,7 @@ description
 
     @Test
     fun `missing required flag rejected`() {
-        MyTestFlags(arrayOf(), testIo).use {
+        MyTestFlags(arrayOf(), testIo, testConfig).use {
             required
         }
         assertThat(testIo.toString(), equalTo("""Usage: MyTestFlags [commands] [options]
@@ -127,7 +168,7 @@ Missing --required (STRING) flag. Use --help for docs."""))
 
     @Test
     fun `unknown command is rejected`() {
-        MyTestFlags(arrayOf("foobar"), testIo).use {
+        MyTestFlags(arrayOf("foobar"), testIo, testConfig).use {
             throw IllegalArgumentException()
         }
         assertThat(testIo.toString(), equalTo("Usage: MyTestFlags [commands] [options]\n" +
@@ -136,7 +177,7 @@ Missing --required (STRING) flag. Use --help for docs."""))
 
     @Test
     fun `unknown subcommand is rejected`() {
-        MyTestFlags(arrayOf("command", "foobar", "-n", "noDescription"), testIo).use {
+        MyTestFlags(arrayOf("command", "foobar", "-n", "noDescription"), testIo, testConfig).use {
             command.use {
                 throw IllegalArgumentException()
             }
@@ -147,7 +188,7 @@ Missing --required (STRING) flag. Use --help for docs."""))
 
     @Test
     fun `missing defaulted flag is defaulted`() {
-        MyTestFlags(arrayOf(), testIo).use {
+        MyTestFlags(arrayOf(), testIo, testConfig).use {
             assertThat(defaulted, equalTo("0.0.0"))
         }
         assertThat(testIo.toString(), equalTo(""))
@@ -155,7 +196,7 @@ Missing --required (STRING) flag. Use --help for docs."""))
 
     @Test
     fun `passing short flag`() {
-        MyTestFlags(arrayOf("-r", "foo"), testIo).use {
+        MyTestFlags(arrayOf("-r", "foo"), testIo, testConfig).use {
             assertThat(required, equalTo("foo"))
         }
         assertThat(testIo.toString(), equalTo(""))
@@ -163,7 +204,7 @@ Missing --required (STRING) flag. Use --help for docs."""))
 
     @Test
     fun `passing short switch`() {
-        MyTestFlags(arrayOf("-s", "-r", "foo"), testIo).use {
+        MyTestFlags(arrayOf("-s", "-r", "foo"), testIo, testConfig).use {
             assertThat(switch, equalTo(true))
         }
         assertThat(testIo.toString(), equalTo(""))
@@ -171,7 +212,7 @@ Missing --required (STRING) flag. Use --help for docs."""))
 
     @Test
     fun `passing uneven number of fields`() {
-        MyTestFlags(arrayOf("--required", "foo", "other"), testIo).use {
+        MyTestFlags(arrayOf("--required", "foo", "other"), testIo, testConfig).use {
             assertThat(required, equalTo("foo"))
         }
         assertThat(testIo.toString(), equalTo(""))
@@ -179,7 +220,7 @@ Missing --required (STRING) flag. Use --help for docs."""))
 
     @Test
     fun `mapped flag`() {
-        MyTestFlags(arrayOf("--mapped", "123"), testIo).use {
+        MyTestFlags(arrayOf("--mapped", "123"), testIo, testConfig).use {
             assertThat(mapped, equalTo(123))
         }
         assertThat(testIo.toString(), equalTo(""))
@@ -187,7 +228,7 @@ Missing --required (STRING) flag. Use --help for docs."""))
 
     @Test
     fun `illegal value flag`() {
-        MyTestFlags(arrayOf("--mapped", "asd"), testIo).use {
+        MyTestFlags(arrayOf("--mapped", "asd"), testIo, testConfig).use {
             mapped
         }
         assertThat(testIo.toString(), equalTo("Usage: MyTestFlags [commands] [options]\n" +
@@ -252,7 +293,7 @@ Missing --required (STRING) flag. Use --help for docs."""))
     private fun assertHelpText(strings: Array<String>) {
         val io = TestIO()
 
-        MyTestFlags(strings, io).use {
+        MyTestFlags(strings, io, testConfig).use {
             throw IllegalArgumentException()
         }
 
@@ -318,6 +359,8 @@ some description of all my commands
       -n, --noDescription               Defaults to "no description default" (STRING)
 [options]:
   -a, --anEnum                          Option choice: [a, b]. Defaults to "b" (ANENUM)
+  -c, --configured                      This is a configured flag. Configured as "test.configured" (STRING?)
+  -c, --configuredWithDefault           This is a configured flag. Configured as "test.configured". Defaults to "defaulted value" (STRING)
   -d, --defaulted                       This is a defaulted flag. Defaults to "0.0.0" (STRING)
   -m, --mapped                          This is a mapped flag (INT)
   -o, --optional                        This is an optional flag (STRING)

@@ -128,12 +128,31 @@ class Configured<T> internal constructor(internal val fn: (String) -> T,
             }
         }
 
-
-    fun defaultsTo(default: T) = Defaulted(fn,
+    fun defaultsTo(default: String) = ConfiguredDefault(fn,
         (description?.takeIf { it.isNotBlank() }?.let { "$it. " }
-            ?: "") + "Defaults to \"${visibility(default.toString())}\"",
+            ?: "") + "Defaults to \"${visibility(default)}\"",
         visibility,
-        { config[configProperty] = default.toString(); default })
+        configProperty,
+        config,
+        default)
+
+
+}
+
+class ConfiguredDefault<T> internal constructor(internal val fn: (String) -> T,
+                                                description: String?,
+                                                visibility: Visibility,
+                                                private val configProperty: String,
+                                                private val config: Config,
+                                                private val default: String) : BuntingFlag<T>(description, visibility) {
+
+    override fun getValue(thisRef: Bunting, property: KProperty<*>): T = (thisRef.retrieve(property) ?: config[configProperty] ?: default.also { config[configProperty] = it }).let {
+        try {
+            fn(it)
+        } catch (e: Exception) {
+            throw IllegalFlag(property, visibility(it), e)
+        }
+    }
 }
 
 /**

@@ -44,9 +44,10 @@ open class Bunting(
         val required = members { p, o: Required<*> -> p.name to p.description(o) }
         val defaulted = members { p, o: Defaulted<*> -> p.name to p.description(o) }
         val configured = members { p, o: Configured<*> -> p.name to p.description(o) }
+        val configuredDefault = members { p, o: ConfiguredDefault<*> -> p.name to p.description(o) }
         val prompted = members { p, o: Prompted<*> -> p.name to p.description(o) }
 
-        val sortedOptions = (switches + optional + required + defaulted + configured + prompted).sortedBy { it.first }
+        val sortedOptions = (switches + optional + required + defaulted + configured + configuredDefault + prompted).sortedBy { it.first }
         val allOptions = if (indent > 0) sortedOptions else sortedOptions + listOf("help" to "Show this message and exit")
 
         return allOptions.takeIf { it.isNotEmpty() }?.describeOptions(indent)
