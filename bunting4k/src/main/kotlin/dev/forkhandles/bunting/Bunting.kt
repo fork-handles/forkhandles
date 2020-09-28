@@ -8,10 +8,11 @@ open class Bunting(
     internal val args: Array<String>,
     private val description: String? = null,
     private val baseCommand: String = System.getProperty("sun.java.command"),
-    internal val io: IO = ConsoleIO
+    internal val io: IO = ConsoleIO,
+    private val config: Config = PropertiesFileConfig(configFile(baseCommand))
 ) {
     fun switch(description: String? = null) = Switch(description)
-    fun option(description: String? = null) = Optional({ it }, description, Public, io)
+    fun option(description: String? = null) = Optional({ it }, description, Public, config, io)
     fun <T : Bunting> command(fn: BuntingConstructor<T>) = Command(fn)
 
     internal fun usage(): String = "$baseCommand [commands] [options]"
@@ -42,9 +43,10 @@ open class Bunting(
         val optional = members { p, o: Optional<*> -> p.name to p.description(o) }
         val required = members { p, o: Required<*> -> p.name to p.description(o) }
         val defaulted = members { p, o: Defaulted<*> -> p.name to p.description(o) }
+        val configured = members { p, o: Configured<*> -> p.name to p.description(o) }
         val prompted = members { p, o: Prompted<*> -> p.name to p.description(o) }
 
-        val sortedOptions = (switches + optional + required + defaulted + prompted).sortedBy { it.first }
+        val sortedOptions = (switches + optional + required + defaulted + configured + prompted).sortedBy { it.first }
         val allOptions = if (indent > 0) sortedOptions else sortedOptions + listOf("help" to "Show this message and exit")
 
         return allOptions.takeIf { it.isNotEmpty() }?.describeOptions(indent)
