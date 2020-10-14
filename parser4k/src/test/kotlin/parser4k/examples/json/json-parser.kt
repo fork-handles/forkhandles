@@ -45,9 +45,8 @@ private object JsonParser : OneOfExtensions, InOrderExtensions {
 
     private val number = (integer + fraction + exponent)
         .map { (integer, fraction, exponent) ->
-            @Suppress("USELESS_CAST") // IntelliJ is wrong
             if (fraction.isEmpty() && exponent.isEmpty()) integer.toInt()
-            else (integer + fraction + exponent).toDouble() as Number
+            else (integer + fraction + exponent).toDouble()
         }
 
     private val hex = digit or 'A'..'F' or 'a'..'f'
