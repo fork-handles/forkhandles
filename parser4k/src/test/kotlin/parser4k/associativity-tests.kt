@@ -1,6 +1,7 @@
 package parser4k
 
 import org.junit.jupiter.api.Test
+import parser4k.commonparsers.joinedWith
 
 class LeftAssociativityTests {
     @Test
@@ -154,8 +155,13 @@ class LeftAssociativityTests {
             "123[1][2]" shouldBeParsedAs "((123[1])[2])"
             "123[1][2][3]" shouldBeParsedAs "(((123[1])[2])[3])"
 
+            "123[1[2]]" shouldBeParsedAs "(123[(1[2])])"
+            "123[1[2[3]]]" shouldBeParsedAs "(123[(1[(2[3])])])"
+
             "123[1] + 2 + 3" shouldBeParsedAs "(((123[1]) + 2) + 3)"
             "123[1 + 2] + 3" shouldBeParsedAs "((123[(1 + 2)]) + 3)"
+
+            "123[1[2 + 3]]" shouldBeParsedAs "(123[(1[(2 + 3)])])"
         }
 
     @Test
@@ -184,8 +190,48 @@ class LeftAssociativityTests {
             "123[1][2]" shouldBeParsedAs "((123[1])[2])"
             "123[1][2][3]" shouldBeParsedAs "(((123[1])[2])[3])"
 
+            "123[1[2]]" shouldBeParsedAs "(123[(1[2])])"
+            "123[1[2[3]]]" shouldBeParsedAs "(123[(1[(2[3])])])"
+
             "123[1] + 2 + 3" shouldBeParsedAs "(((123[1]) + 2) + 3)"
             "123[1 + 2] + 3" shouldBeParsedAs "((123[(1 + 2)]) + 3)"
+
+            "123[1[2 + 3]]" shouldBeParsedAs "(123[(1[(2 + 3)])])"
+        }
+
+    @Test fun `left-associative parser interaction with similar right-associative parser`() =
+        object : TestGrammar() {
+            val accessByIndex = inOrder(ref { expr }, str("["), ref { expr }, str("]"))
+                .mapLeftAssoc { (left, _, right, _) -> AccessByIndex(left, right) }
+
+            val fieldAccess = inOrder(ref { expr }, str("."), str("foo"))
+                .mapLeftAssoc(::Field.asBinary())
+
+            val arrayLiteral = inOrder(str("["), number.joinedWith(str(",")), str("]"))
+                .skipWrapper().map(::ArrayLiteral)
+
+            override val expr: Parser<ASTNode> = oneOfWithPrecedence(
+                accessByIndex.nestedPrecedence(),
+                fieldAccess,
+                arrayLiteral,
+                number
+            )
+        }.run {
+            "123" shouldBeParsedAs "123"
+            "[1,2,3]" shouldBeParsedAs "[1,2,3]"
+
+            "123.foo" shouldBeParsedAs "(123.foo)"
+            "[1,2,3].foo" shouldBeParsedAs "([1,2,3].foo)"
+            "123.foo.foo" shouldBeParsedAs "((123.foo).foo)"
+            // "123[0].foo" shouldBeParsedAs "((123[0]).foo)"
+
+            "123[0]" shouldBeParsedAs "(123[0])"
+            "[1,2,3][0]" shouldBeParsedAs "([1,2,3][0])"
+            "123.foo[0]" shouldBeParsedAs "((123.foo)[0])"
+            "123[0][1]" shouldBeParsedAs "((123[0])[1])"
+            "123[[1,2,3]]" shouldBeParsedAs "(123[[1,2,3]])"
+            "123[1.foo]" shouldBeParsedAs "(123[(1.foo)])"
+            "123[1[2]]" shouldBeParsedAs "(123[(1[2])])"
         }
 }
 
@@ -406,5 +452,9 @@ abstract class TestGrammar {
 
     data class AccessByIndex(private val left: ASTNode, private val right: ASTNode) : ASTNode {
         override fun toString() = "($left[$right])"
+    }
+
+    data class ArrayLiteral(val value: List<ASTNode>) : ASTNode {
+        override fun toString() = value.joinToString(prefix = "[", separator = ",", postfix = "]")
     }
 }
