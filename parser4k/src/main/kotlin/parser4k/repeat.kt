@@ -1,17 +1,15 @@
 package parser4k
 
-fun <T> repeat(parser: Parser<T>, atLeast: Int = 0, atMost: Int = Int.MAX_VALUE) = object : Parser<List<T>> {
-    override fun parse(input: Input): Output<List<T>>? {
-        val payload = ArrayList<T>()
-        var nextInput = input
-        while (true) {
-            val output = parser.parse(nextInput) ?: break
-            nextInput = output.nextInput
-            payload.add(output.payload)
-            if (payload.size == atMost) break
-        }
-        return if (payload.size >= atLeast) Output(payload, nextInput) else null
+fun <T> repeat(parser: Parser<T>, atLeast: Int = 0, atMost: Int = Int.MAX_VALUE) = Parser<List<T>> { input ->
+    val payload = ArrayList<T>()
+    var nextInput = input
+    while (true) {
+        val output = parser.parse(nextInput) ?: break
+        nextInput = output.nextInput
+        payload.add(output.payload)
+        if (payload.size == atMost) break
     }
+    if (payload.size >= atLeast) Output(payload, nextInput) else null
 }
 
 fun <T> zeroOrMore(parser: Parser<T>): Parser<List<T>> = repeat(parser, atLeast = 0)

@@ -23,8 +23,8 @@ class OneOf<out T>(val parsers: Iterable<Parser<T>>) : Parser<T> {
     }
 }
 
-fun oneOf(charRange: CharRange): Parser<Char> = object : Parser<Char> {
-    override fun parse(input: Input): Output<Char>? = input.run {
+fun oneOf(charRange: CharRange): Parser<Char> = Parser { input ->
+    input.run {
         if (offset == value.length || value[offset] !in charRange) null
         else Output(value[offset], copy(offset = offset + 1))
     }
@@ -42,10 +42,9 @@ fun <T> Parser<T>.except(parsers: Iterable<Parser<*>>): Parser<T> = object : Par
     }
 }
 
-fun <T> oneOfLongest(vararg parsers: Parser<T>): Parser<T> = nonRecursive(object : Parser<T> {
-    override fun parse(input: Input) =
-        parsers.mapNotNull { it.parse(input) }.maxByOrNull { it.nextInput.offset }
-})
+fun <T> oneOfLongest(vararg parsers: Parser<T>): Parser<T> = nonRecursive { input ->
+    parsers.mapNotNull { it.parse(input) }.maxByOrNull { it.nextInput.offset }
+}
 
 fun <T> oneOfWithPrecedence(vararg parsers: Parser<T>): Parser<T> = oneOfWithPrecedence(parsers.toList())
 

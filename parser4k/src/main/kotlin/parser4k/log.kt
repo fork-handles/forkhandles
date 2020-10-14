@@ -2,13 +2,11 @@ package parser4k
 
 import java.util.LinkedList
 
-fun <T> Parser<T>.with(parserId: String, log: ParsingLog) = object : Parser<T> {
-    override fun parse(input: Input): Output<T>? {
-        log.before(parserId, input)
-        val output = this@with.parse(input)
-        log.after(parserId, output)
-        return output
-    }
+fun <T> Parser<T>.with(parserId: String, log: ParsingLog) = Parser { input ->
+    log.before(parserId, input)
+    val output = this@with.parse(input)
+    log.after(parserId, output)
+    output
 }
 
 class ParsingLog(private val onEvent: (ParsingEvent) -> Unit = { println(it.toDebugString()) }) {
