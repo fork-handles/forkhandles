@@ -66,7 +66,6 @@ class LeftAssociativityTests {
             )
         }.run {
             "1" shouldBeParsedAs "1"
-
             "1 + 2" shouldBeParsedAs "(1 + 2)"
             "1 + 2 + 3" shouldBeParsedAs "((1 + 2) + 3)"
 
@@ -90,7 +89,6 @@ class LeftAssociativityTests {
             )
         }.run {
             "1" shouldBeParsedAs "1"
-
             "1 + 2" shouldBeParsedAs "(1 + 2)"
             "1 + 2 + 3" shouldBeParsedAs "((1 + 2) + 3)"
 
@@ -115,7 +113,6 @@ class LeftAssociativityTests {
             )
         }.run {
             "1" shouldBeParsedAs "1"
-
             "1 + 2" shouldBeParsedAs "(1 + 2)"
             "1 + 2 + 3" shouldBeParsedAs "((1 + 2) + 3)"
 
@@ -146,14 +143,19 @@ class LeftAssociativityTests {
                 number
             )
         }.run {
-            "123" shouldBeParsedAs "123"
+            "1" shouldBeParsedAs "1"
             "1 + 2" shouldBeParsedAs "(1 + 2)"
             "1 + 2 + 3" shouldBeParsedAs "((1 + 2) + 3)"
 
-            "123[0]" shouldBeParsedAs "123[0]"
-            "123[0][1]" shouldBeParsedAs "123[0][1]"
-            "123[1 + 2]" shouldBeParsedAs "123[(1 + 2)]"
-            "123[1 + 2] + 3" shouldBeParsedAs "(123[(1 + 2)] + 3)"
+            "123[1]" shouldBeParsedAs "(123[1])"
+            "123[1 + 2]" shouldBeParsedAs "(123[(1 + 2)])"
+            "123[1 + 2 + 3]" shouldBeParsedAs "(123[((1 + 2) + 3)])"
+
+            "123[1][2]" shouldBeParsedAs "((123[1])[2])"
+            "123[1][2][3]" shouldBeParsedAs "(((123[1])[2])[3])"
+
+            "123[1] + 2 + 3" shouldBeParsedAs "(((123[1]) + 2) + 3)"
+            "123[1 + 2] + 3" shouldBeParsedAs "((123[(1 + 2)]) + 3)"
         }
 
     @Test
@@ -171,14 +173,19 @@ class LeftAssociativityTests {
                 number.with(cache)
             ).reset(cache)
         }.run {
-            "123" shouldBeParsedAs "123"
+            "1" shouldBeParsedAs "1"
             "1 + 2" shouldBeParsedAs "(1 + 2)"
             "1 + 2 + 3" shouldBeParsedAs "((1 + 2) + 3)"
 
-            "123[0]" shouldBeParsedAs "123[0]"
-            "123[0][1]" shouldBeParsedAs "123[0][1]"
-            "123[1 + 2]" shouldBeParsedAs "123[(1 + 2)]"
-            "123[1 + 2] + 3" shouldBeParsedAs "(123[(1 + 2)] + 3)"
+            "123[1]" shouldBeParsedAs "(123[1])"
+            "123[1 + 2]" shouldBeParsedAs "(123[(1 + 2)])"
+            "123[1 + 2 + 3]" shouldBeParsedAs "(123[((1 + 2) + 3)])"
+
+            "123[1][2]" shouldBeParsedAs "((123[1])[2])"
+            "123[1][2][3]" shouldBeParsedAs "(((123[1])[2])[3])"
+
+            "123[1] + 2 + 3" shouldBeParsedAs "(((123[1]) + 2) + 3)"
+            "123[1 + 2] + 3" shouldBeParsedAs "((123[(1 + 2)]) + 3)"
         }
 }
 
@@ -350,54 +357,54 @@ class LeftAndRightAssociativityTests : TestGrammar() {
 
 abstract class TestGrammar {
     val cache = OutputCache<ASTNode>()
-    val number = oneOrMore(oneOf('0'..'9')).map { Number(it.joinToString("")) }
+    val number = oneOrMore(oneOf('0'..'9')).map { NumberLiteral(it.joinToString("")) }
     abstract val expr: Parser<ASTNode>
 
     infix fun String.shouldBeParsedAs(expected: String) = parseWith(expr).toString() shouldEqual expected
 
     interface ASTNode
 
-    class Number(private val value: String) : ASTNode {
+    data class NumberLiteral(private val value: String) : ASTNode {
         override fun toString() = value
     }
 
-    class PreIncrement(private val expression: ASTNode) : ASTNode {
+    data class PreIncrement(private val expression: ASTNode) : ASTNode {
         override fun toString() = "++($expression)"
     }
 
-    class PreDecrement(private val expression: ASTNode) : ASTNode {
+    data class PreDecrement(private val expression: ASTNode) : ASTNode {
         override fun toString() = "--($expression)"
     }
 
-    class Field(private val expression: ASTNode, private val name: String) : ASTNode {
+    data class Field(private val expression: ASTNode, private val name: String) : ASTNode {
         override fun toString() = "($expression.$name)"
     }
 
-    class Plus(private val left: ASTNode, private val right: ASTNode) : ASTNode {
+    data class Plus(private val left: ASTNode, private val right: ASTNode) : ASTNode {
         override fun toString() = "($left + $right)"
     }
 
-    class Minus(private val left: ASTNode, private val right: ASTNode) : ASTNode {
+    data class Minus(private val left: ASTNode, private val right: ASTNode) : ASTNode {
         override fun toString() = "($left - $right)"
     }
 
-    class Power(private val left: ASTNode, private val right: ASTNode) : ASTNode {
+    data class Power(private val left: ASTNode, private val right: ASTNode) : ASTNode {
         override fun toString() = "($left ^ $right)"
     }
 
-    class Colon(private val left: ASTNode, private val right: ASTNode) : ASTNode {
+    data class Colon(private val left: ASTNode, private val right: ASTNode) : ASTNode {
         override fun toString() = "($left : $right)"
     }
 
-    class Or(private val left: ASTNode, private val right: ASTNode) : ASTNode {
+    data class Or(private val left: ASTNode, private val right: ASTNode) : ASTNode {
         override fun toString() = "($left || $right)"
     }
 
-    class And(private val left: ASTNode, private val right: ASTNode) : ASTNode {
+    data class And(private val left: ASTNode, private val right: ASTNode) : ASTNode {
         override fun toString() = "($left && $right)"
     }
 
-    class AccessByIndex(private val left: ASTNode, private val right: ASTNode) : ASTNode {
-        override fun toString() = "$left[$right]"
+    data class AccessByIndex(private val left: ASTNode, private val right: ASTNode) : ASTNode {
+        override fun toString() = "($left[$right])"
     }
 }
