@@ -1,6 +1,5 @@
 package parser4k
 
-@Suppress("UNCHECKED_CAST")
 fun <T> InOrder<T>.mapLeftAssoc(transform: (List<T>) -> T) = object : Parser<T> {
     private val leftParser = nonRecursive(parsers.first())
     private val midParsers = parsers.drop(1).dropLast(1)
@@ -9,6 +8,7 @@ fun <T> InOrder<T>.mapLeftAssoc(transform: (List<T>) -> T) = object : Parser<T> 
     override fun parse(input: Input): Output<T>? {
         if (input.leftPayload == RightRecursionMarker) return null
 
+        @Suppress("UNCHECKED_CAST")
         val leftOutput =
             if (input.leftPayload == null) leftParser.parse(input) ?: return null
             else Output(input.leftPayload as T, input.copy(leftPayload = null))
@@ -21,4 +21,6 @@ fun <T> InOrder<T>.mapLeftAssoc(transform: (List<T>) -> T) = object : Parser<T> 
     }
 }
 
-private object RightRecursionMarker
+private object RightRecursionMarker {
+    override fun toString() = "RightRecursionMarker"
+}

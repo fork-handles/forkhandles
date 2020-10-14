@@ -49,7 +49,7 @@ fun <T> oneOfLongest(vararg parsers: Parser<T>): Parser<T> = nonRecursive { inpu
 fun <T> oneOfWithPrecedence(vararg parsers: Parser<T>): Parser<T> = oneOfWithPrecedence(parsers.toList())
 
 fun <T> oneOfWithPrecedence(parsers: List<Parser<T>>) = object : Parser<T> {
-    val stack: LinkedList<Parser<T>> = LinkedList()
+    private val stack: LinkedList<Parser<T>> = LinkedList()
 
     override fun parse(input: Input): Output<T>? {
         val prevParser = stack.peek()
