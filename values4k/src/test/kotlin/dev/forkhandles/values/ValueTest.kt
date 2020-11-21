@@ -2,9 +2,10 @@ package dev.forkhandles.values
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
+import com.natpryce.hamkrest.throws
 import org.junit.jupiter.api.Test
 
-class MyValue(value: String) : Value<String>(value)
+class MyValue(value: String) : Value<String>(value, String::isNotEmpty)
 
 class ValueTest {
 
@@ -24,5 +25,10 @@ class ValueTest {
         assertThat(myValue == myValue, equalTo(true))
         assertThat(myValue == MyValue("hello"), equalTo(true))
         assertThat(myValue == MyValue("hello2"), equalTo(false))
+    }
+
+    @Test
+    fun `cannot create illegal value`() {
+        assertThat({ MyValue("")}, throws<IllegalArgumentException>())
     }
 }

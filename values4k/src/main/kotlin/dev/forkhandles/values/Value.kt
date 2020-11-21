@@ -1,6 +1,18 @@
 package dev.forkhandles.values
 
-abstract class Value<T>(val value: T) {
+/**
+ * Base value type which enables type-safe primitives.
+ */
+abstract class Value<T> private constructor(validation: Validation<T>?, val value: T) {
+    constructor(value: T) : this(null, value)
+    constructor(value: T, validation: Validation<T>?) : this(validation, value)
+
+    init {
+        validation?.let {
+            require(it(value))
+            { "${javaClass.simpleName}(${value.toString().takeIf { it.isNotBlank() } ?: "\"\""})" }
+        }
+    }
     override fun toString() = value.toString()
 
     override fun hashCode() = value?.hashCode() ?: 0
@@ -14,11 +26,5 @@ abstract class Value<T>(val value: T) {
         if (value != other.value) return false
 
         return true
-    }
-}
-
-abstract class ValidatedValue<T>(value: T, validator: (T) -> Boolean) : Value<T>(value) {
-    init {
-        require(validator(value))
     }
 }
