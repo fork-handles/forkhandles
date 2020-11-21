@@ -3,4 +3,5 @@ description = 'ForkHandles Value-types library'
 dependencies {
     api Libs.kotlin_stdlib_jdk8
     testApi Config.TestDependencies
+    testApi project(":result4k")
 }

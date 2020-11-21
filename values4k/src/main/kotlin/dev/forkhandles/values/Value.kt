@@ -10,7 +10,7 @@ abstract class Value<T> private constructor(validation: Validation<T>?, val valu
     init {
         validation?.let {
             require(it(value))
-            { "${javaClass.simpleName}(${value.toString().takeIf { it.isNotBlank() } ?: "\"\""})" }
+            { "Validation failed for: ${javaClass.simpleName}(${value.toString().takeIf { it.isNotBlank() } ?: "\"\""})" }
         }
     }
     override fun toString() = value.toString()
