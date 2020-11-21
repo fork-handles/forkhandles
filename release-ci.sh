@@ -26,4 +26,5 @@ echo "Attempting to release $LOCAL_VERSION (old version $BINTRAY_VERSION)"
   :result4k:bintrayUpload \
   :time4k:bintrayUpload \
   :tuples4k:bintrayUpload \
+  :values4k:bintrayUpload \
   :forkhandles-bom:bintrayUpload
