@@ -12,7 +12,7 @@ class ValidationsTest {
     private val length_11 = "12345678901"
 
     @Test
-    fun `string length validations`() {
+    fun `string validations`() {
         assertThat(10.minLength(length_9), equalTo(false))
         assertThat(10.minLength(length_10), equalTo(true))
         assertThat(10.minLength(length_11), equalTo(true))
@@ -30,6 +30,9 @@ class ValidationsTest {
         assertThat((1..10).length(length_1), equalTo(true))
         assertThat((1..10).length(length_10), equalTo(true))
         assertThat((1..10).length(length_11), equalTo(false))
+
+        assertThat(".+".regex(length_0), equalTo(false))
+        assertThat(".+".regex(length_1), equalTo(true))
     }
 
     @Test

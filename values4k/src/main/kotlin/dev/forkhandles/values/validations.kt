@@ -17,6 +17,8 @@ val LongRange.value: Validation<Number> get() = { this@value.contains(this) }
 
 val Number.exactValue: Validation<Number> get() = { this == this@exactValue }
 
+val String.regex: Validation<String> get() = toRegex().let { { it.matches(this)} }
+
 fun <T> Validation<T>.and(that: Validation<T>): Validation<T> = { this@and(this) && that(this) }
 fun <T> Validation<T>.or(that: Validation<T>): Validation<T> = { this@or(this) || that(this) }
 operator fun <T> Validation<T>.not(): Validation<T> = { !this@not(this) }
