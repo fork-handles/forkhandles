@@ -1,31 +1,18 @@
 import dev.forkhandles.result4k.recover
 import dev.forkhandles.result4k.resultFrom
-import dev.forkhandles.values.LocalDateValue
-import dev.forkhandles.values.StringValue
+import dev.forkhandles.values.Maskers.hidden
 import dev.forkhandles.values.Value
+import dev.forkhandles.values.minValue
 import dev.forkhandles.values.regex
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 
-/**
- * A sort code is 6 digits long
- */
-class SortCode(value: String) : StringValue(value, "\\d{6}".regex)
-
-val format = DateTimeFormatter.BASIC_ISO_DATE
-
-class MyDate(value: LocalDate) : LocalDateValue(value, { true }) {
-    constructor(value: String) : this(try {
-        LocalDate.parse(value, format)
-    } catch (e: DateTimeParseException) {
-        throw e
-    })
-}
+class Money(value: Int) : Value<Int>(value, 1.minValue)
+class SortCode(value: String) : Value<String>(value, "\\d{6}".regex)
+class AccountNumber(value: String) : Value<String>(value, "\\d{8}".regex, hidden())
 
 fun main() {
     printOrError { SortCode("123456") }
     printOrError { SortCode("123qwe") }
+    printOrError { AccountNumber("12345678") }
 }
 
 private fun printOrError(fn: () -> Value<String>) = println(resultFrom(fn).recover { it.message })
