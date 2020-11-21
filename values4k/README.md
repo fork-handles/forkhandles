@@ -27,7 +27,7 @@ fun transferMoneyTo(amount: Money, accountNumber: AccountNumber, sortCode: SortC
 ```
 
 ### Validation
-The next problem is that there is no domain validation on our values. What if someone passed in a negative amount? Or an `accountNumber` containing letters instead of digits.
+The next problem is that there is no domain validation on our values. What if someone passed in a negative amount? Or an `accountNumber` containing letters instead of digits?
 
 We can fix that by passing in `validations` to ensure we can never create an illegal value. Illegal values will blow up on construction (at the entry point to our system) instead of deep inside our domain logic:
 
