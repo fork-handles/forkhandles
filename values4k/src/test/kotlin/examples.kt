@@ -1,12 +1,16 @@
 import dev.forkhandles.result4k.recover
 import dev.forkhandles.result4k.resultFrom
 import dev.forkhandles.values.Maskers.hidden
+import dev.forkhandles.values.StringValue
 import dev.forkhandles.values.Value
 import dev.forkhandles.values.minValue
 import dev.forkhandles.values.regex
 
 class Money(value: Int) : Value<Int>(value, 1.minValue)
-class SortCode(value: String) : Value<String>(value, "\\d{6}".regex)
+
+val pattern = "\\d{6}".regex // cache
+class SortCode(value: String) : StringValue(value, pattern)
+
 class AccountNumber(value: String) : Value<String>(value, "\\d{8}".regex, hidden())
 
 fun main() {

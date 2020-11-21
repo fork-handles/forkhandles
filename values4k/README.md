@@ -39,14 +39,15 @@ class AccountNumber(value: String): Value<String>(value, "\\d{8}".regex)
 
 Validations are modelled as a simple typealias and there are several useful ones bundled with values4k:
 ```kotlin
-typealias Validation<T> = T.() -> Boolean
+typealias Validation<T> = (T) -> Boolean
 ```
 
 ### Masking
 The final problem is one of PII data. We need to ensure that sensitive values are never outputted in their raw form into any logging infrastructure where they could be mined for nefarious purposes. 
 
 ```kotlin
-class AccountNumber(value: String): Value<String>(value, "\\d{8}".regex, Maskers.hidden())
+val regex = "\\d{8}".regex // cache this statically so we don't keep creating them
+class AccountNumber(value: String): Value<String>(value, regex, Maskers.hidden())
 ```
 
 If we attempt to print our `AccountNumber` now will result in:
