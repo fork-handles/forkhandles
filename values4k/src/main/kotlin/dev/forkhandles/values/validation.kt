@@ -1,5 +1,8 @@
 package dev.forkhandles.values
 
+/**
+ * Allows validation on values coming in to ensure only legal values construction.
+ */
 typealias Validation<T> = T.() -> Boolean
 
 val Int.maxLength: Validation<String> get() = { length <= this@maxLength }
@@ -22,3 +25,4 @@ val String.regex: Validation<String> get() = toRegex().let { { it.matches(this)}
 fun <T> Validation<T>.and(that: Validation<T>): Validation<T> = { this@and(this) && that(this) }
 fun <T> Validation<T>.or(that: Validation<T>): Validation<T> = { this@or(this) || that(this) }
 operator fun <T> Validation<T>.not(): Validation<T> = { !this@not(this) }
+

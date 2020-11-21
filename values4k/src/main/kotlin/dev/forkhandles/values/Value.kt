@@ -1,21 +1,26 @@
 package dev.forkhandles.values
 
+import dev.forkhandles.values.Maskers.public
+
 /**
- * Base value type which enables type-safe primitives.
+ * Base value type which enables type-safe primitives, along with Validation and Masking.
  */
-abstract class Value<T> private constructor(validation: Validation<T>?, val value: T) {
-    constructor(value: T) : this(null, value)
-    constructor(value: T, validation: Validation<T>?) : this(validation, value)
+abstract class Value<T : Any> @JvmOverloads constructor(
+    val value: T,
+    validation: Validation<T>? = null,
+    private val masking: Masking<T> = public
+) {
 
     init {
-        validation?.let {
+        validation?.also {
             require(it(value))
             { "Validation failed for: ${javaClass.simpleName}(${value.toString().takeIf { it.isNotBlank() } ?: "\"\""})" }
         }
     }
-    override fun toString() = value.toString()
 
-    override fun hashCode() = value?.hashCode() ?: 0
+    override fun toString() = masking(value)
+
+    override fun hashCode() = value.hashCode()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
