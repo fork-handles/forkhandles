@@ -33,9 +33,11 @@ We can fix that by passing in `validations` to ensure we can never create an ill
 
 ```kotlin
 class Money(value: Int): Value<Int>(value, 1.minValue)
-class SortCode(value: String): Value<String>(value, "\\d{6}".regex)
-class AccountNumber(value: String): Value<String>(value, "\\d{8}".regex)
+class SortCode(value: String): Value<String>(value, "\\d{6}".regex) //**
+class AccountNumber(value: String): Value<String>(value, "\\d{8}".regex) //**
 ```
+
+<sub>** We should cache these regex compilations statically as we don't want them compiled on every construction.</sub>
 
 Validations are modelled as a simple typealias and there are several useful ones bundled with values4k:
 ```kotlin
@@ -46,8 +48,7 @@ typealias Validation<T> = (T) -> Boolean
 The final problem is one of PII data. We need to ensure that sensitive values are never outputted in their raw form into any logging infrastructure where they could be mined for nefarious purposes. 
 
 ```kotlin
-val regex = "\\d{8}".regex // cache this statically so we don't keep creating them
-class AccountNumber(value: String): Value<String>(value, regex, Maskers.hidden())
+class AccountNumber(value: String): Value<String>(value, "\\d{8}".regex, Maskers.hidden())
 ```
 
 If we attempt to print our `AccountNumber` now will result in:
