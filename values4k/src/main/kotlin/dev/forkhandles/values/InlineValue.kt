@@ -5,9 +5,7 @@ package dev.forkhandles.values
  */
 abstract class InlineValue<T>(private val validation: Validation<T>? = null) {
     fun of(value: T) {
-        validation?.also {
-            require(it(value))
-            { "Validation failed for: ${javaClass.simpleName}(${value.toString().takeIf { it.isNotBlank() } ?: "\"\""})" }
-        }
+        validation?.check(value)
+        return
     }
 }
