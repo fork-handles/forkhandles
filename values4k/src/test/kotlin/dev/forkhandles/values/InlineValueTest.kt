@@ -7,12 +7,11 @@ import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.throws
 import org.junit.jupiter.api.Test
 
-inline class MyInlineValue(val value: String) {
-    companion object : InlineValue<String>(String::isNotEmpty)
+inline class MyInlineValue(val value: String) : AValue<String> {
+    companion object : InlineValue<String, MyInlineValue>(::MyInlineValue, String::isNotEmpty)
 }
 
 class InlineValueTest {
-
     @Test
     fun `create legal value`() {
         assertThat(MyInlineValue.of("hello"), equalTo(MyInlineValue("hello")))
