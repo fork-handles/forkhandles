@@ -27,9 +27,13 @@ val Number.exactValue: Validation<Number> get() = { it == this@exactValue }
  * val pattern = "\\d{6}".regex // make only one!
  * class SortCode(value: String) : Value<String>(value, pattern)
  */
-val String.regex: Validation<String> get() = toRegex().let { v -> { v.matches(it)} }
+val String.regex: Validation<String> get() = toRegex().let { v -> { v.matches(it) } }
 
 fun <T> Validation<T>.and(that: Validation<T>): Validation<T> = { this@and(it) && that(it) }
 fun <T> Validation<T>.or(that: Validation<T>): Validation<T> = { this@or(it) || that(it) }
 operator fun <T> Validation<T>.not(): Validation<T> = { !this@not(it) }
 
+fun <T> Validation<T>.check(value: T) {
+    require(this(value))
+    { "Validation failed for: ${this@check.javaClass.simpleName}(${value.toString().takeIf { it.isNotBlank() } ?: "\"\""})" }
+}

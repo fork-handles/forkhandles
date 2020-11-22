@@ -10,12 +10,8 @@ abstract class Value<T : Any> @JvmOverloads constructor(
     validation: Validation<T>? = null,
     private val masking: Masking<T> = public
 ) {
-
     init {
-        validation?.also {
-            require(it(value))
-            { "Validation failed for: ${javaClass.simpleName}(${value.toString().takeIf { it.isNotBlank() } ?: "\"\""})" }
-        }
+        validation?.check(value)
     }
 
     override fun toString() = masking(value)
