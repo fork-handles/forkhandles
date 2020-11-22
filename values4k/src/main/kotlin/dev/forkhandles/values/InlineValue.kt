@@ -6,7 +6,7 @@ package dev.forkhandles.values
 
 interface AValue<T>
 
-abstract class InlineValue<T, V>(private val fn: (T) -> V, private val validation: Validation<T>? = null) {
+abstract class InlineValue<V, T>(private val fn: (T) -> V, private val validation: Validation<T>? = null) {
     fun of(value: T): V {
         validation?.check(value)
         return fn(value)

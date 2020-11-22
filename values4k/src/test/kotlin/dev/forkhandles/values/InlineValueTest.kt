@@ -8,7 +8,7 @@ import com.natpryce.hamkrest.throws
 import org.junit.jupiter.api.Test
 
 inline class MyInlineValue(val value: String) : AValue<String> {
-    companion object : InlineValue<String, MyInlineValue>(::MyInlineValue, String::isNotEmpty)
+    companion object : InlineValue<MyInlineValue, String>(::MyInlineValue, String::isNotEmpty)
 }
 
 class InlineValueTest {
