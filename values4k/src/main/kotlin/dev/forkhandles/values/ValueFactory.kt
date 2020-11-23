@@ -6,7 +6,7 @@ import dev.forkhandles.result4k.resultFrom
 /**
  * Base value type for inline classes which enables type-safe primitives, along with Validation.
  */
-abstract class ValueFactory<V, T>(private val fn: (T) -> V, private val validation: Validation<T>? = null) {
+abstract class ValueFactory<V, T>(val fn: (T) -> V, val validation: Validation<T>? = null) {
     internal fun validate(value: T): V {
         validation?.check(value)
         return fn(value)
