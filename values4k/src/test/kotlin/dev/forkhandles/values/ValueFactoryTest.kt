@@ -19,7 +19,7 @@ class ValueFactoryTest {
     @Test
     fun `nullable factory`() {
         assertThat(MyValue.ofNullable("hello"), equalTo(MyValue.of("hello")))
-        assertThat({ MyValue.ofNullable("") }, absent())
+        assertThat(MyValue.ofNullable(""), absent())
     }
 
     @Test
@@ -37,7 +37,7 @@ class ValueFactoryTest {
     @Test
     fun `nullable parse`() {
         assertThat(MyIntValue.parseNullable("123"), equalTo(MyIntValue.of(123)))
-        assertThat({ MyIntValue.parseNullable("") }, absent())
+        assertThat(MyIntValue.parseNullable(""), absent())
     }
 
     @Test

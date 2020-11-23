@@ -1,3 +1,5 @@
+@file:Suppress("EXPERIMENTAL_FEATURE_WARNING")
+
 import dev.forkhandles.result4k.recover
 import dev.forkhandles.result4k.resultFrom
 import dev.forkhandles.values.IntValueFactory
@@ -8,7 +10,7 @@ import dev.forkhandles.values.Value
 import dev.forkhandles.values.minValue
 import dev.forkhandles.values.regex
 
-class Money private constructor(value: Int) : Value<Int>(value) {
+inline class Money(val value: Int) {
     companion object : IntValueFactory<Money>(::Money, 1.minValue)
 }
 
@@ -21,11 +23,15 @@ class AccountNumber private constructor(value: String) : Value<String>(value, hi
 }
 
 fun main() {
-    printOrError { SortCode.of("123qwe") }
-    printOrError { AccountNumber.of("12345678") }
-    printOrError { SortCode.parse("123456") }
-    printOrError { SortCode.of("123qwe") }
-    printOrError { AccountNumber.of("12345678") }
+    printOrError { Money.of(1) } // ok
+    printOrError { Money.of(0) } // will blow up
+    printOrError { Money.parse("not money") } // will blow up
+
+    printOrError { SortCode.of("123qwe") } // will blow up
+    printOrError { AccountNumber.of("12345678") } // ok
+    printOrError { SortCode.parse("123456") } // ok
+    printOrError { SortCode.of("123qwe") } // will blow up
+    printOrError { AccountNumber.parse("1234567") } // will blow up
 }
 
-private fun printOrError(fn: () -> Value<String>) = println(resultFrom(fn).recover { it.message })
+private fun printOrError(fn: () -> Any) = println(resultFrom(fn).recover { it.message })

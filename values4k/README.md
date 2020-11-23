@@ -36,7 +36,7 @@ class Money private constructor(value: Int) : Value<Int>(value) {
     companion object : ValueFactory<Money, Int>(::Money, 1.minValue)
 }
 
-class SortCode  private constructor(value: String) : StringValue(value) {
+class SortCode private constructor(value: String) : StringValue(value) {
     companion object : StringValueFactory<SortCode>(::SortCode, "\\d{6}".regex)
 }
 ```

@@ -22,7 +22,7 @@ import java.util.UUID
 abstract class StringValueFactory<DOMAIN> protected constructor(fn: (String) -> DOMAIN, validation: Validation<String>? = null)
     : ValueFactory<DOMAIN, String>(fn, validation, { it })
 
-abstract class IntValueFactory<DOMAIN> protected constructor(fn: (Int) -> DOMAIN, validation: Validation<Int>? = null)
+open class IntValueFactory<DOMAIN>(fn: (Int) -> DOMAIN, validation: Validation<Int>? = null)
     : ValueFactory<DOMAIN, Int>(fn, validation, String::toInt)
 
 abstract class LongValueFactory<DOMAIN> protected constructor(fn: (Long) -> DOMAIN, validation: Validation<Long>? = null)
