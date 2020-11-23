@@ -16,7 +16,7 @@ abstract class ValueFactory<V, T>(val fn: (T) -> V, val validation: Validation<T
 }
 
 /**
- * Return a Object/null based on validation
+ * Return a Object/null based on validation.
  */
 fun <V, T> ValueFactory<V, T>.ofNullable(value: T): V? = try {
     validate(value)
@@ -25,6 +25,6 @@ fun <V, T> ValueFactory<V, T>.ofNullable(value: T): V? = try {
 }
 
 /**
- * Return a Result4k Success/Failure based on validation
+ * Return a Result4k Success/Failure based on validation.
  */
 fun <V, T> ValueFactory<V, T>.ofResult4k(value: T): Result<V, Exception> = resultFrom { validate(value) }
