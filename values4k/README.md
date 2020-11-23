@@ -29,15 +29,16 @@ fun transferMoneyTo(amount: Money, accountNumber: AccountNumber, sortCode: SortC
 ### Validation
 The next problem is that there is no domain validation on our values. What if someone passed in a negative amount? Or an `accountNumber` containing letters instead of digits?
 
-We can fix that by validating to ensure we can never create an illegal value. We want values to fail on construction (at the entry point to our system) instead of deep inside our domain logic. For this we can force construction to go through a ValueFactory:
+We can fix that by validating to ensure we can never create an illegal value. We want values to fail on construction (at the entry point to our system) instead of deep inside our domain logic. For this we can force construction to go through a `ValueFactory` or one of the typed convenience subclasses:
 
 ```kotlin
+// 
 class Money private constructor(value: Int) : Value<Int>(value) {
     companion object : ValueFactory<Money, Int>(::Money, 1.minValue)
 }
 
 class SortCode  private constructor(value: String) : StringValue(value) {
-    companion object : ValueFactory<SortCode, String>(::SortCode, "\\d{6}".regex)
+    companion object : StringValueFactory<SortCode>(::SortCode, "\\d{6}".regex)
 }
 ```
 
@@ -48,6 +49,10 @@ Money.of(123) // returns Money(123)
 Money.of(0) // throws IllegalArgumentException
 SortCode.ofNullable("123") // returns null
 SortCode.ofResult4k("asdf12") // returns Failure<Exception>
+Money.parse("123") // returns Money(123)
+Money.parse("notmoney") // throws IllegalArgumentException
+SortCode.parseNullable("123") // returns null
+SortCode.parseResult4k("asdf12") // returns Failure<Exception>
 ```
 
 Validations are modelled as a simple typealias and there are several useful ones bundled with values4k:
@@ -60,7 +65,7 @@ The final problem is one of PII data. We need to ensure that sensitive values ar
 
 ```kotlin
 class AccountNumber  private constructor(value: String) : Value<String>(value, hidden()) {
-    companion object : ValueFactory<AccountNumber, String>(::AccountNumber, "\\d{8}".regex)
+    companion object : StringValueFactory<AccountNumber>(::AccountNumber, "\\d{8}".regex)
 }
 ```
 

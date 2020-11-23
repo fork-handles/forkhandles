@@ -15,9 +15,9 @@ abstract class ValueFactory<DOMAIN, PRIMITIVE> protected constructor(private val
         return fn(value)
     }
 
-    fun of(value: PRIMITIVE) = validate(value)
-
     fun parse(value: String) = validate(parseFn(value))
+
+    fun of(value: PRIMITIVE) = validate(value)
 }
 
 /**
