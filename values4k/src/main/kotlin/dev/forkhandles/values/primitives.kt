@@ -5,7 +5,6 @@ import java.math.BigInteger
 import java.util.UUID
 
 typealias StringValue = Value<String>
-abstract class NonEmptyStringValue(value: String) : Value<String>(value, 1.minLength)
 
 typealias IntValue = Value<Int>
 typealias LongValue = Value<Long>

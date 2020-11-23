@@ -29,15 +29,26 @@ fun transferMoneyTo(amount: Money, accountNumber: AccountNumber, sortCode: SortC
 ### Validation
 The next problem is that there is no domain validation on our values. What if someone passed in a negative amount? Or an `accountNumber` containing letters instead of digits?
 
-We can fix that by passing in `validations` to ensure we can never create an illegal value. Illegal values will blow up on construction (at the entry point to our system) instead of deep inside our domain logic:
+We can fix that by validating to ensure we can never create an illegal value. We want values to fail on construction (at the entry point to our system) instead of deep inside our domain logic. For this we can force construction to go through a ValueFactory:
 
 ```kotlin
-class Money(value: Int): Value<Int>(value, 1.minValue)
-class SortCode(value: String): Value<String>(value, "\\d{6}".regex) //**
-class AccountNumber(value: String): Value<String>(value, "\\d{8}".regex) //**
+class Money private constructor(value: Int) : Value<Int>(value) {
+    companion object : ValueFactory<Money, Int>(::Money, 1.minValue)
+}
+
+class SortCode  private constructor(value: String) : StringValue(value) {
+    companion object : ValueFactory<SortCode, String>(::SortCode, "\\d{6}".regex)
+}
 ```
 
-<sub>** We should cache these regex compilations statically as we don't want them compiled on every construction.</sub>
+Constructing the instances then happens using one of the built-in or user-supplied factories:
+
+```kotlin
+Money.of(123) // returns Money(123)
+Money.of(0) // throws IllegalArgumentException
+SortCode.ofNullable("123") // returns null
+SortCode.ofResult4k("asdf12") // returns Failure<Exception>
+```
 
 Validations are modelled as a simple typealias and there are several useful ones bundled with values4k:
 ```kotlin
@@ -48,7 +59,9 @@ typealias Validation<T> = (T) -> Boolean
 The final problem is one of PII data. We need to ensure that sensitive values are never outputted in their raw form into any logging infrastructure where they could be mined for nefarious purposes. 
 
 ```kotlin
-class AccountNumber(value: String): Value<String>(value, "\\d{8}".regex, Maskers.hidden())
+class AccountNumber  private constructor(value: String) : Value<String>(value, hidden()) {
+    companion object : ValueFactory<AccountNumber, String>(::AccountNumber, "\\d{8}".regex)
+}
 ```
 
 If we attempt to print our `AccountNumber` now will result in:
