@@ -34,16 +34,16 @@ class FactoriesTest {
         UUID.randomUUID().also { assertThat(object : UUIDValueFactory<UUID>({ it }) {}.parse(it.toString()), equalTo(it)) }
         URL("http://localhost").also { assertThat(object : URLValueFactory<URL>({ it }) {}.parse(it.toString()), equalTo(it)) }
 
+        Duration.ofHours(1).also { assertThat(object : DurationValueFactory<Duration>({ it }) {}.parse(it.toString()), equalTo(it)) }
         Instant.now().also { assertThat(object : InstantValueFactory<Instant>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        LocalTime.now().also { assertThat(object : LocalTimeValueFactory<LocalTime>({ it }) {}.parse(it.toString()), equalTo(it)) }
         LocalDate.now().also { assertThat(object : LocalDateValueFactory<LocalDate>({ it }) {}.parse(it.toString()), equalTo(it)) }
         LocalDateTime.now().also { assertThat(object : LocalDateTimeValueFactory<LocalDateTime>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        ZonedDateTime.now().also { assertThat(object : ZonedDateTimeValueFactory<ZonedDateTime>({ it }) {}.parse(it.toString()), equalTo(it)) }
+        LocalTime.now().also { assertThat(object : LocalTimeValueFactory<LocalTime>({ it }) {}.parse(it.toString()), equalTo(it)) }
         OffsetDateTime.now().also { assertThat(object : OffsetDateTimeValueFactory<OffsetDateTime>({ it }) {}.parse(it.toString()), equalTo(it)) }
         OffsetTime.now().also { assertThat(object : OffsetTimeValueFactory<OffsetTime>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        YearMonth.now().also { assertThat(object : YearMonthValueFactory<YearMonth>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        Year.now().also { assertThat(object : YearValueFactory<Year>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        Duration.ofHours(1).also { assertThat(object : DurationValueFactory<Duration>({ it }) {}.parse(it.toString()), equalTo(it)) }
         Period.ofDays(1).also { assertThat(object : PeriodValueFactory<Period>({ it }) {}.parse(it.toString()), equalTo(it)) }
+        Year.now().also { assertThat(object : YearValueFactory<Year>({ it }) {}.parse(it.toString()), equalTo(it)) }
+        YearMonth.now().also { assertThat(object : YearMonthValueFactory<YearMonth>({ it }) {}.parse(it.toString()), equalTo(it)) }
+        ZonedDateTime.now().also { assertThat(object : ZonedDateTimeValueFactory<ZonedDateTime>({ it }) {}.parse(it.toString()), equalTo(it)) }
     }
 }
