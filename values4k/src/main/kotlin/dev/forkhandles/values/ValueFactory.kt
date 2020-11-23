@@ -6,25 +6,35 @@ import dev.forkhandles.result4k.resultFrom
 /**
  * Base value type for inline classes which enables type-safe primitives, along with Validation.
  */
-abstract class ValueFactory<DOMAIN, PRIMITIVE> protected constructor(val fn: (PRIMITIVE) -> DOMAIN, val validation: Validation<PRIMITIVE>? = null) {
-
+abstract class ValueFactory<DOMAIN, PRIMITIVE> protected constructor(private val fn: (PRIMITIVE) -> DOMAIN,
+                                                                     private val validation: Validation<PRIMITIVE>? = null,
+                                                                     val parseFn: (String) -> PRIMITIVE
+) {
     internal fun validate(value: PRIMITIVE): DOMAIN {
         validation?.check(value)
         return fn(value)
     }
 
     fun of(value: PRIMITIVE) = validate(value)
-//
-//    fun parse(value: String):  = parseFn(value)
+
+    fun parse(value: String) = validate(parseFn(value))
 }
 
-//abstract class IntValueFactory() : ValueFactory<>
 /**
  * Return a Object/null based on validation.
  */
 fun <DOMAIN, PRIMITIVE> ValueFactory<DOMAIN, PRIMITIVE>.ofNullable(value: PRIMITIVE): DOMAIN? = try {
     validate(value)
-} catch (e: IllegalArgumentException) {
+} catch (e: Exception) {
+    null
+}
+
+/**
+ * Parse a Object/null based on validation.
+ */
+fun <DOMAIN, PRIMITIVE> ValueFactory<DOMAIN, PRIMITIVE>.parseNullable(value: String): DOMAIN? = try {
+    validate(parseFn(value))
+} catch (e: Exception) {
     null
 }
 
@@ -32,3 +42,8 @@ fun <DOMAIN, PRIMITIVE> ValueFactory<DOMAIN, PRIMITIVE>.ofNullable(value: PRIMIT
  * Return a Result4k Success/Failure based on validation.
  */
 fun <DOMAIN, PRIMITIVE> ValueFactory<DOMAIN, PRIMITIVE>.ofResult4k(value: PRIMITIVE): Result<DOMAIN, Exception> = resultFrom { validate(value) }
+
+/**
+ * Return a Result4k Success/Failure based on validation.
+ */
+fun <DOMAIN, PRIMITIVE> ValueFactory<DOMAIN, PRIMITIVE>.parseResult4k(value: String): Result<DOMAIN, Exception> = resultFrom { validate(parseFn(value)) }

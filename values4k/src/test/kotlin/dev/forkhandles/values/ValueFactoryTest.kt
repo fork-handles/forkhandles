@@ -12,8 +12,8 @@ class ValueFactoryTest {
 
     @Test
     fun `throwable factory`() {
-        assertThat(MyValue.of("hello"), equalTo(MyValue.of("hello")))
-        assertThat({ MyValue.of("") }, throws<IllegalArgumentException>())
+        assertThat(MyIntValue.of(123), equalTo(MyIntValue.of(123)))
+        assertThat({ MyIntValue.of(0) }, throws<IllegalArgumentException>())
     }
 
     @Test
@@ -25,6 +25,24 @@ class ValueFactoryTest {
     @Test
     fun `result factory`() {
         assertThat(MyValue.ofResult4k("hello"), equalTo(Success(MyValue.of("hello"))))
+        assertThat(MyValue.ofResult4k("") is Failure<Exception>, equalTo(true))
+    }
+
+    @Test
+    fun `throwable parse`() {
+        assertThat(MyIntValue.parse("123"), equalTo(MyIntValue.of(123)))
+        assertThat({ MyIntValue.parse("") }, throws<IllegalArgumentException>())
+    }
+
+    @Test
+    fun `nullable parse`() {
+        assertThat(MyIntValue.parseNullable("123"), equalTo(MyIntValue.of(123)))
+        assertThat({ MyIntValue.parseNullable("") }, absent())
+    }
+
+    @Test
+    fun `result parse`() {
+        assertThat(MyIntValue.parseResult4k("123"), equalTo(Success(MyIntValue.of(123))))
         assertThat(MyValue.ofResult4k("") is Failure<Exception>, equalTo(true))
     }
 }
