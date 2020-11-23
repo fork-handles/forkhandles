@@ -16,11 +16,11 @@ fun transferMoneyTo(amount: Int, accountNumber: String, sortCode: String)
 
 The first problem here is that `accountNumber` and `sortCode` fields are both of type `String`, meaning that a coder could accidentally switch these values around and we would not potentially  notice until runtime.
 
-The base type provided by this lib is `Value`, which is just a simple wrapper around a `value` field and can be used for defining your own domain types:
+The base type provided by this lib is `Value` or one of the typealiases, which are just a simple wrapper around a `value` field and can be used for defining your own domain types:
 
 ```kotlin
 class Money(value: Int): Value<Int>(value)
-class SortCode(value: String): Value<String>(value)
+class SortCode(value: String): StringValue(value)
 class AccountNumber(value: String): Value<String>(value)
 
 fun transferMoneyTo(amount: Money, accountNumber: AccountNumber, sortCode: SortCode)

@@ -2,12 +2,16 @@ package dev.forkhandles.values
 
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.net.URL
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.OffsetTime
+import java.time.Period
+import java.time.Year
 import java.time.YearMonth
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -47,11 +51,22 @@ abstract class UUIDValueFactory<DOMAIN> protected constructor(fn: (UUID) -> DOMA
                                                               validation: Validation<UUID>? = null)
     : ValueFactory<DOMAIN, UUID>(fn, validation, UUID::fromString)
 
+abstract class URLValueFactory<DOMAIN> protected constructor(fn: (URL) -> DOMAIN,
+                                                             validation: Validation<URL>? = null)
+    : ValueFactory<DOMAIN, URL>(fn, validation, ::URL)
+
+abstract class DurationValueFactory<DOMAIN> protected constructor(fn: (Duration) -> DOMAIN,
+                                                                  validation: Validation<Duration>? = null)
+    : ValueFactory<DOMAIN, Duration>(fn, validation, { Duration.parse(it) })
+
+abstract class InstantValueFactory<DOMAIN> protected constructor(fn: (Instant) -> DOMAIN,
+                                                                 validation: Validation<Instant>? = null)
+    : ValueFactory<DOMAIN, Instant>(fn, validation, Instant::parse)
+
 abstract class LocalDateValueFactory<DOMAIN> protected constructor(fn: (LocalDate) -> DOMAIN,
                                                                    validation: Validation<LocalDate>? = null,
                                                                    formatter: DateTimeFormatter = ISO_LOCAL_DATE)
     : ValueFactory<DOMAIN, LocalDate>(fn, validation, { LocalDate.parse(it, formatter) })
-
 
 abstract class LocalTimeValueFactory<DOMAIN> protected constructor(fn: (LocalTime) -> DOMAIN,
                                                                    validation: Validation<LocalTime>? = null,
@@ -65,10 +80,6 @@ abstract class LocalDateTimeValueFactory<DOMAIN> protected constructor(fn: (Loca
     : ValueFactory<DOMAIN, LocalDateTime>(fn, validation, { LocalDateTime.parse(it, formatter) })
 
 
-abstract class InstantValueFactory<DOMAIN> protected constructor(fn: (Instant) -> DOMAIN,
-                                                                 validation: Validation<Instant>? = null)
-    : ValueFactory<DOMAIN, Instant>(fn, validation, Instant::parse)
-
 abstract class OffsetDateTimeValueFactory<DOMAIN> protected constructor(fn: (OffsetDateTime) -> DOMAIN,
                                                                         validation: Validation<OffsetDateTime>? = null,
                                                                         formatter: DateTimeFormatter = ISO_OFFSET_DATE_TIME)
@@ -79,10 +90,20 @@ abstract class OffsetTimeValueFactory<DOMAIN> protected constructor(fn: (OffsetT
                                                                     formatter: DateTimeFormatter = ISO_OFFSET_TIME)
     : ValueFactory<DOMAIN, OffsetTime>(fn, validation, { OffsetTime.parse(it, formatter) })
 
+abstract class PeriodValueFactory<DOMAIN> protected constructor(fn: (Period) -> DOMAIN,
+                                                                validation: Validation<Period>? = null)
+    : ValueFactory<DOMAIN, Period>(fn, validation, { Period.parse(it) })
+
 abstract class YearMonthValueFactory<DOMAIN> protected constructor(fn: (YearMonth) -> DOMAIN,
                                                                    validation: Validation<YearMonth>? = null,
                                                                    formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM"))
     : ValueFactory<DOMAIN, YearMonth>(fn, validation, { YearMonth.parse(it, formatter) })
+
+abstract class YearValueFactory<DOMAIN> protected constructor(fn: (Year) -> DOMAIN,
+                                                              validation: Validation<Year>? = null,
+                                                              formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy"))
+    : ValueFactory<DOMAIN, Year>(fn, validation, { Year.parse(it, formatter) })
+
 
 abstract class ZonedDateTimeValueFactory<DOMAIN> protected constructor(fn: (ZonedDateTime) -> DOMAIN,
                                                                        validation: Validation<ZonedDateTime>? = null,
