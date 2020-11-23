@@ -6,19 +6,23 @@ import dev.forkhandles.result4k.resultFrom
 /**
  * Base value type for inline classes which enables type-safe primitives, along with Validation.
  */
-abstract class ValueFactory<V, T>(val fn: (T) -> V, val validation: Validation<T>? = null) {
-    internal fun validate(value: T): V {
+abstract class ValueFactory<DOMAIN, PRIMITIVE> protected constructor(val fn: (PRIMITIVE) -> DOMAIN, val validation: Validation<PRIMITIVE>? = null) {
+
+    internal fun validate(value: PRIMITIVE): DOMAIN {
         validation?.check(value)
         return fn(value)
     }
 
-    fun of(value: T): V = validate(value)
+    fun of(value: PRIMITIVE) = validate(value)
+//
+//    fun parse(value: String):  = parseFn(value)
 }
 
+//abstract class IntValueFactory() : ValueFactory<>
 /**
  * Return a Object/null based on validation.
  */
-fun <V, T> ValueFactory<V, T>.ofNullable(value: T): V? = try {
+fun <DOMAIN, PRIMITIVE> ValueFactory<DOMAIN, PRIMITIVE>.ofNullable(value: PRIMITIVE): DOMAIN? = try {
     validate(value)
 } catch (e: IllegalArgumentException) {
     null
@@ -27,4 +31,4 @@ fun <V, T> ValueFactory<V, T>.ofNullable(value: T): V? = try {
 /**
  * Return a Result4k Success/Failure based on validation.
  */
-fun <V, T> ValueFactory<V, T>.ofResult4k(value: T): Result<V, Exception> = resultFrom { validate(value) }
+fun <DOMAIN, PRIMITIVE> ValueFactory<DOMAIN, PRIMITIVE>.ofResult4k(value: PRIMITIVE): Result<DOMAIN, Exception> = resultFrom { validate(value) }
