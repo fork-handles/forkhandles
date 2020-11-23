@@ -32,7 +32,6 @@ The next problem is that there is no domain validation on our values. What if so
 We can fix that by validating to ensure we can never create an illegal value. We want values to fail on construction (at the entry point to our system) instead of deep inside our domain logic. For this we can force construction to go through a `ValueFactory` or one of the typed convenience subclasses:
 
 ```kotlin
-// 
 class Money private constructor(value: Int) : Value<Int>(value) {
     companion object : ValueFactory<Money, Int>(::Money, 1.minValue)
 }
