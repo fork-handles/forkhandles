@@ -23,7 +23,7 @@ abstract class ValueFactory<DOMAIN, PRIMITIVE> protected constructor(internal va
 /**
  * Return a Object/null based on validation.
  */
-fun <DOMAIN, PRIMITIVE> ValueFactory<DOMAIN, PRIMITIVE>.ofNullable(value: PRIMITIVE): DOMAIN? = try {
+fun <DOMAIN, PRIMITIVE> ValueFactory<DOMAIN, PRIMITIVE>.ofOrNull(value: PRIMITIVE): DOMAIN? = try {
     validate(value)
 } catch (e: Exception) {
     null
@@ -32,7 +32,7 @@ fun <DOMAIN, PRIMITIVE> ValueFactory<DOMAIN, PRIMITIVE>.ofNullable(value: PRIMIT
 /**
  * Parse a Object/null based on validation.
  */
-fun <DOMAIN, PRIMITIVE> ValueFactory<DOMAIN, PRIMITIVE>.parseNullable(value: String): DOMAIN? = try {
+fun <DOMAIN, PRIMITIVE> ValueFactory<DOMAIN, PRIMITIVE>.parseOrNull(value: String): DOMAIN? = try {
     validate(parseFn(value))
 } catch (e: Exception) {
     null
