@@ -7,13 +7,8 @@ import dev.forkhandles.values.Maskers.public
  */
 abstract class Value<T : Any> @JvmOverloads constructor(
     val value: T,
-    validation: Validation<T>? = null,
     private val masking: Masking<T> = public
 ) {
-    init {
-        validation?.check(value)
-    }
-
     override fun toString() = masking(value)
 
     override fun hashCode() = value.hashCode()
