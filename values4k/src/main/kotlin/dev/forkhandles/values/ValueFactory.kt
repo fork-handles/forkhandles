@@ -6,9 +6,10 @@ import dev.forkhandles.result4k.resultFrom
 /**
  * Base value type for inline classes which enables type-safe primitives, along with Validation.
  */
-abstract class ValueFactory<DOMAIN, PRIMITIVE> protected constructor(internal val coerceFn: (PRIMITIVE) -> DOMAIN,
-                                                                     private val validation: Validation<PRIMITIVE>? = null,
-                                                                     internal val parseFn: (String) -> PRIMITIVE
+abstract class ValueFactory<DOMAIN, PRIMITIVE>(
+    internal val coerceFn: (PRIMITIVE) -> DOMAIN,
+    private val validation: Validation<PRIMITIVE>? = null,
+    internal val parseFn: (String) -> PRIMITIVE
 ) {
     internal fun validate(value: PRIMITIVE): DOMAIN {
         validation?.check(value)
