@@ -23,27 +23,29 @@ class FactoriesTest {
 
     @Test
     fun `primitive factories`() {
-        1.also { assertThat(object : IntValueFactory<Int>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        1L.also { assertThat(object : LongValueFactory<Long>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        1.0.also { assertThat(object : DoubleValueFactory<Double>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        1.0f.also { assertThat(object : FloatValueFactory<Float>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        "1.0".also { assertThat(object : BigDecimalValueFactory<BigDecimal>({ it }) {}.parse(it), equalTo(BigDecimal(it))) }
-        "1".also { assertThat(object : BigIntegerValueFactory<BigInteger>({ it }) {}.parse(it), equalTo(BigInteger(it))) }
-        true.also { assertThat(object : BooleanValueFactory<Boolean>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        "hello".also { assertThat(object : StringValueFactory<String>({ it }) {}.parse(it), equalTo(it)) }
-        UUID.randomUUID().also { assertThat(object : UUIDValueFactory<UUID>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        URL("http://localhost").also { assertThat(object : URLValueFactory<URL>({ it }) {}.parse(it.toString()), equalTo(it)) }
+        1.also { assertThat(IntValueFactory(::id).parse(it.toString()), equalTo(it)) }
+        1L.also { assertThat(LongValueFactory(::id).parse(it.toString()), equalTo(it)) }
+        1.0.also { assertThat(DoubleValueFactory(::id).parse(it.toString()), equalTo(it)) }
+        1.0f.also { assertThat(FloatValueFactory(::id).parse(it.toString()), equalTo(it)) }
+        "1.0".also { assertThat(BigDecimalValueFactory(::id).parse(it), equalTo(BigDecimal(it))) }
+        "1".also { assertThat(BigIntegerValueFactory(::id).parse(it), equalTo(BigInteger(it))) }
+        true.also { assertThat(BooleanValueFactory(::id).parse(it.toString()), equalTo(it)) }
+        "hello".also { assertThat(StringValueFactory(::id).parse(it), equalTo(it)) }
+        UUID.randomUUID().also { assertThat(UUIDValueFactory(::id).parse(it.toString()), equalTo(it)) }
+        URL("http://localhost").also { assertThat(URLValueFactory(::id).parse(it.toString()), equalTo(it)) }
 
-        Duration.ofHours(1).also { assertThat(object : DurationValueFactory<Duration>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        Instant.now().also { assertThat(object : InstantValueFactory<Instant>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        LocalDate.now().also { assertThat(object : LocalDateValueFactory<LocalDate>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        LocalDateTime.now().also { assertThat(object : LocalDateTimeValueFactory<LocalDateTime>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        LocalTime.now().also { assertThat(object : LocalTimeValueFactory<LocalTime>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        OffsetDateTime.now().also { assertThat(object : OffsetDateTimeValueFactory<OffsetDateTime>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        OffsetTime.now().also { assertThat(object : OffsetTimeValueFactory<OffsetTime>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        Period.ofDays(1).also { assertThat(object : PeriodValueFactory<Period>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        Year.now().also { assertThat(object : YearValueFactory<Year>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        YearMonth.now().also { assertThat(object : YearMonthValueFactory<YearMonth>({ it }) {}.parse(it.toString()), equalTo(it)) }
-        ZonedDateTime.now().also { assertThat(object : ZonedDateTimeValueFactory<ZonedDateTime>({ it }) {}.parse(it.toString()), equalTo(it)) }
+        Duration.ofHours(1).also { assertThat(DurationValueFactory(::id).parse(it.toString()), equalTo(it)) }
+        Instant.now().also { assertThat(InstantValueFactory(::id).parse(it.toString()), equalTo(it)) }
+        LocalDate.now().also { assertThat(LocalDateValueFactory(::id).parse(it.toString()), equalTo(it)) }
+        LocalDateTime.now().also { assertThat(LocalDateTimeValueFactory(::id).parse(it.toString()), equalTo(it)) }
+        LocalTime.now().also { assertThat(LocalTimeValueFactory(::id).parse(it.toString()), equalTo(it)) }
+        OffsetDateTime.now().also { assertThat(OffsetDateTimeValueFactory(::id).parse(it.toString()), equalTo(it)) }
+        OffsetTime.now().also { assertThat(OffsetTimeValueFactory(::id).parse(it.toString()), equalTo(it)) }
+        Period.ofDays(1).also { assertThat(PeriodValueFactory(::id).parse(it.toString()), equalTo(it)) }
+        Year.now().also { assertThat(YearValueFactory(::id).parse(it.toString()), equalTo(it)) }
+        YearMonth.now().also { assertThat(YearMonthValueFactory(::id).parse(it.toString()), equalTo(it)) }
+        ZonedDateTime.now().also { assertThat(ZonedDateTimeValueFactory(::id).parse(it.toString()), equalTo(it)) }
     }
 }
+
+private fun <T> id(t: T) = t
