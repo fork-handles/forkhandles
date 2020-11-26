@@ -12,37 +12,37 @@ class ValueFactoryTest {
 
     @Test
     fun `throwable factory`() {
-        assertThat(MyIntValue(123), equalTo(MyIntValue(123)))
-        assertThat({ MyIntValue(0) }, throws<IllegalArgumentException>())
+        assertThat(MyIntValue.of(123), equalTo(MyIntValue.of(123)))
+        assertThat({ MyIntValue.of(0) }, throws<IllegalArgumentException>())
     }
 
     @Test
     fun `nullable factory`() {
-        assertThat(MyValue.orNull("hello"), equalTo(MyValue("hello")))
-        assertThat(MyValue.orNull(""), absent())
+        assertThat(MyValue.ofOrNull("hello"), equalTo(MyValue.of("hello")))
+        assertThat(MyValue.ofOrNull(""), absent())
     }
 
     @Test
     fun `result factory`() {
-        assertThat(MyValue.asResult4k("hello"), equalTo(Success(MyValue("hello"))))
-        assertThat(MyValue.asResult4k("") is Failure<Exception>, equalTo(true))
+        assertThat(MyValue.ofResult4k("hello"), equalTo(Success(MyValue.of("hello"))))
+        assertThat(MyValue.ofResult4k("") is Failure<Exception>, equalTo(true))
     }
 
     @Test
     fun `throwable parse`() {
-        assertThat(MyIntValue.parse("123"), equalTo(MyIntValue(123)))
+        assertThat(MyIntValue.parse("123"), equalTo(MyIntValue.of(123)))
         assertThat({ MyIntValue.parse("") }, throws<IllegalArgumentException>())
     }
 
     @Test
     fun `nullable parse`() {
-        assertThat(MyIntValue.parseOrNull("123"), equalTo(MyIntValue(123)))
+        assertThat(MyIntValue.parseOrNull("123"), equalTo(MyIntValue.of(123)))
         assertThat(MyIntValue.parseOrNull(""), absent())
     }
 
     @Test
     fun `result parse`() {
-        assertThat(MyIntValue.parseResult4k("123"), equalTo(Success(MyIntValue(123))))
-        assertThat(MyValue.asResult4k("") is Failure<Exception>, equalTo(true))
+        assertThat(MyIntValue.parseResult4k("123"), equalTo(Success(MyIntValue.of(123))))
+        assertThat(MyValue.ofResult4k("") is Failure<Exception>, equalTo(true))
     }
 }
