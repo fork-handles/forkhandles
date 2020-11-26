@@ -16,15 +16,18 @@ abstract class ValueFactory<DOMAIN, PRIMITIVE>(
         return coerceFn(value)
     }
 
-    fun parse(value: String) = validate(parseFn(value))
+    /**
+     * Return value or throw based on validation.
+     */
+    operator fun invoke(value: PRIMITIVE) = validate(value)
 
-    fun of(value: PRIMITIVE) = validate(value)
+    fun parse(value: String) = validate(parseFn(value))
 }
 
 /**
  * Return a Object/null based on validation.
  */
-fun <DOMAIN, PRIMITIVE> ValueFactory<DOMAIN, PRIMITIVE>.ofOrNull(value: PRIMITIVE): DOMAIN? = try {
+fun <DOMAIN, PRIMITIVE> ValueFactory<DOMAIN, PRIMITIVE>.orNull(value: PRIMITIVE): DOMAIN? = try {
     validate(value)
 } catch (e: Exception) {
     null
@@ -42,7 +45,7 @@ fun <DOMAIN, PRIMITIVE> ValueFactory<DOMAIN, PRIMITIVE>.parseOrNull(value: Strin
 /**
  * Return a Result4k Success/Failure based on validation.
  */
-fun <DOMAIN, PRIMITIVE> ValueFactory<DOMAIN, PRIMITIVE>.ofResult4k(value: PRIMITIVE): Result<DOMAIN, Exception> = resultFrom { validate(value) }
+fun <DOMAIN, PRIMITIVE> ValueFactory<DOMAIN, PRIMITIVE>.asResult4k(value: PRIMITIVE): Result<DOMAIN, Exception> = resultFrom { validate(value) }
 
 /**
  * Return a Result4k Success/Failure based on validation.

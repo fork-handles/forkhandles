@@ -44,10 +44,10 @@ class SortCode private constructor(value: String) : StringValue(value) {
 Constructing the instances then happens using one of the built-in or user-supplied factories:
 
 ```kotlin
-Money.of(123) // returns Money(123)
-Money.of(0) // throws IllegalArgumentException
-SortCode.ofOrNull("123") // returns null
-SortCode.ofResult4k("asdf12") // returns Failure<Exception>
+Money(123) // returns Money(123)
+Money(0) // throws IllegalArgumentException
+SortCode.orNull("123") // returns null
+SortCode.asResult4k("asdf12") // returns Failure<Exception>
 Money.parse("123") // returns Money(123)
 Money.parse("notmoney") // throws IllegalArgumentException
 SortCode.parseOrNull("123") // returns null
@@ -63,7 +63,7 @@ typealias Validation<T> = (T) -> Boolean
 The final problem is one of PII data. We need to ensure that sensitive values are never outputted in their raw form into any logging infrastructure where they could be mined for nefarious purposes. 
 
 ```kotlin
-class AccountNumber  private constructor(value: String) : Value<String>(value, hidden()) {
+class AccountNumber private constructor(value: String) : Value<String>(value, hidden()) {
     companion object : StringValueFactory<AccountNumber>(::AccountNumber, "\\d{8}".regex)
 }
 ```

@@ -33,10 +33,10 @@ class SubstringValue private constructor(value: String) : Value<String>(value, m
 class ValueTest {
     @Test
     fun `toString value`() {
-        assertThat(MyValue.of("hellohello").toString(), equalTo("hellohello"))
-        assertThat(HiddenValue.of("hellohello").toString(), equalTo("tttttttttt"))
-        assertThat(SubstringValue.of("hellohello").toString(), equalTo("hel**ello"))
-        assertThat(ObsfucatedValue.of("hello").toString(), object : Matcher<String> {
+        assertThat(MyValue("hellohello").toString(), equalTo("hellohello"))
+        assertThat(HiddenValue("hellohello").toString(), equalTo("tttttttttt"))
+        assertThat(SubstringValue("hellohello").toString(), equalTo("hel**ello"))
+        assertThat(ObsfucatedValue("hello").toString(), object : Matcher<String> {
             override fun invoke(actual: String) =
                 if (actual.all { it == '*' }) Match else Mismatch(actual)
 
@@ -46,15 +46,15 @@ class ValueTest {
 
     @Test
     fun `hashcode value`() {
-        assertThat(MyValue.of("hello").hashCode(), equalTo("hello".hashCode()))
+        assertThat(MyValue("hello").hashCode(), equalTo("hello".hashCode()))
     }
 
     @Test
     fun equality() {
-        val myValue = MyValue.of("hello")
+        val myValue = MyValue("hello")
         assertThat(myValue == myValue, equalTo(true))
-        assertThat(myValue == MyValue.of("hello"), equalTo(true))
-        assertThat(myValue == MyValue.of("hello2"), equalTo(false))
+        assertThat(myValue == MyValue("hello"), equalTo(true))
+        assertThat(myValue == MyValue("hello2"), equalTo(false))
     }
 
 }

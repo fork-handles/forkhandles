@@ -23,14 +23,14 @@ class AccountNumber private constructor(value: String) : Value<String>(value, hi
 }
 
 fun main() {
-    printOrError { Money.of(1) } // ok
-    printOrError { Money.of(0) } // will blow up
+    printOrError { Money(1) } // ok
+    printOrError { Money(0) } // will blow up
     printOrError { Money.parse("not money") } // will blow up
 
-    printOrError { SortCode.of("123qwe") } // will blow up
-    printOrError { AccountNumber.of("12345678") } // ok
+    printOrError { SortCode("123qwe") } // will blow up
+    printOrError { AccountNumber("12345678") } // ok
     printOrError { SortCode.parse("123456") } // ok
-    printOrError { SortCode.of("123qwe") } // will blow up
+    printOrError { SortCode("123qwe") } // will blow up
     printOrError { AccountNumber.parse("1234567") } // will blow up
 }
 
