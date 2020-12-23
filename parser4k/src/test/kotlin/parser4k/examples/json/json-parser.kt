@@ -31,7 +31,7 @@ private object JsonParser : OneOfExtensions, InOrderExtensions {
     fun parse(s: String) = s.parseWith(json)
 
     private val ws = zeroOrMore('\u0020' or '\u000A' or '\u000D' or '\u0009')
-    private val sign: OneOf<String> = "+" or "-" or ""
+    private val sign = "+" or "-" or ""
     private val oneNine = '1'..'9'
     private val digit = '0' or oneNine
     private val digits = oneOrMore(digit).map { it.joinToString("") }
@@ -39,9 +39,9 @@ private object JsonParser : OneOfExtensions, InOrderExtensions {
     private val fraction = optional('.' + digits).map { it?.joinToString() ?: "" }
     private val integer =
         (sign + oneNine + digits).map { it.joinToString() } or
-            (sign + digit).map { it.joinToString() } or
-            (oneNine + digits).map { it.joinToString() } or
-            digit.map { it.toString() }
+        (sign + digit).map { it.joinToString() } or
+        (oneNine + digits).map { it.joinToString() } or
+        digit.map { it.toString() }
 
     private val number = (integer + fraction + exponent)
         .map { (integer, fraction, exponent) ->
@@ -56,36 +56,36 @@ private object JsonParser : OneOfExtensions, InOrderExtensions {
 
     private val characters = zeroOrMore(
         (0x0020.toChar()..0x10FFFF.toChar()).except('"', '\\') or
-            ('\\' + escape).skipFirst()
+        ('\\' + escape).skipFirst()
     )
-    private val string = ('"' + characters + '"')
-        .skipWrapper().map { it.joinToString("") }
+    private val string: Parser<String> =
+        ('"' + characters + '"')
+            .skipWrapper().map { it.joinToString("") }
 
     private val member: Parser<Pair<Any, Any?>> =
         (ws + string + ws + str(":") + ref { element })
             .map { (_, id, _, _, element) -> Pair(id, element) }
 
-    private val obj =
-        ('{' + ws + '}').map { emptyMap<Any, Any>() } or
-            ('{' + member.joinedWith(",") + '}').skipWrapper().map { it.toMap() }
-
-    private val array =
+    private val array: OneOf<List<Any?>> =
         ('[' + ws + ']').map { emptyList<Any>() } or
-            ('[' + ref { element }.joinedWith(",") + ']').skipWrapper()
+        ('[' + ref { element }.joinedWith(",") + ']').skipWrapper()
+
+    private val obj: OneOf<Map<Any, Any?>> =
+        ('{' + ws + '}').map { emptyMap<Any, Any>() } or
+        ('{' + member.joinedWith(",") + '}').skipWrapper().map { it.toMap() }
 
     private val `true` = str("true").map { true }
     private val `false` = str("false").map { false }
     private val `null` = str("null").map { null }
 
-    private val value: Parser<Any?> = (
+    private val value: Parser<Any?> =
         obj or
-            array or
-            string or
-            number or
-            `true` or
-            `false` or
-            `null`
-        )
+        array or
+        string or
+        number or
+        `true` or
+        `false` or
+        `null`
 
     private val element = (ws + value + ws).skipWrapper()
 
