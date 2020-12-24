@@ -87,14 +87,16 @@ class NestedPrecedence<T>(private val parser: Parser<T>) : Parser<T> {
 }
 
 
+@Suppress("INAPPLICABLE_JVM_NAME")
 interface OneOfExtensions {
     infix fun Char.or(that: Char): OneOf<Char> = oneOf(char(this), char(that))
     infix fun Char.or(that: CharRange): OneOf<Char> = oneOf(char(this), oneOf(that))
     infix fun Char.or(that: String): OneOf<String> = oneOf(char(this).map { it.toString() }, str(that))
     infix fun <T> Char.or(that: Parser<T>): OneOf<Any?> = oneOf(char(this), that)
     infix fun OneOf<Char>.or(that: Char): OneOf<Char> = oneOf(parsers + char(that))
+    @JvmName("charOrCharRange")
+    infix fun OneOf<Char>.or(that: CharRange): OneOf<Char> = oneOf(parsers + oneOf(that))
 
-    @Suppress("INAPPLICABLE_JVM_NAME")
     @JvmName("orChar")
     infix fun <T> OneOf<T>.or(that: Char): OneOf<Any?> = oneOf(parsers + char(that))
     infix fun <T> Parser<T>.or(that: Char): OneOf<Any?> = oneOf(this, char(that))
@@ -105,7 +107,6 @@ interface OneOfExtensions {
     infix fun <T> CharRange.or(that: Parser<T>): OneOf<Any?> = oneOf(oneOf(this), that)
     infix fun OneOf<CharRange>.or(that: CharRange): OneOf<Any> = oneOf(parsers + oneOf(that))
 
-    @Suppress("INAPPLICABLE_JVM_NAME")
     @JvmName("orCharRange")
     infix fun <T> OneOf<T>.or(that: CharRange): OneOf<Any?> = oneOf(parsers + oneOf(that))
     infix fun <T> Parser<T>.or(that: CharRange): OneOf<Any?> = oneOf(this, oneOf(that))
@@ -116,7 +117,6 @@ interface OneOfExtensions {
     infix fun <T> String.or(that: Parser<T>): OneOf<Any?> = oneOf(str(this), that)
     infix fun OneOf<String>.or(that: String): OneOf<String> = oneOf(parsers + str(that))
 
-    @Suppress("INAPPLICABLE_JVM_NAME")
     @JvmName("orString")
     infix fun <T> OneOf<T>.or(that: String): OneOf<Any?> = oneOf(parsers + str(that))
     infix fun <T> Parser<T>.or(that: String): OneOf<Any?> = oneOf(this, str(that))
