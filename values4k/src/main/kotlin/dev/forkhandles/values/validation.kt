@@ -20,13 +20,6 @@ val LongRange.value: Validation<Number> get() = { this@value.contains(it) }
 
 val Number.exactValue: Validation<Number> get() = { it == this@exactValue }
 
-/**
- * Be careful when you are using this - Regex compilation can be expensive, so it's worth
- * externalising the instances of these Validations. eg:
- *
- * val pattern = "\\d{6}".regex // make only one!
- * class SortCode(value: String) : Value<String>(value, pattern)
- */
 val String.regex: Validation<String> get() = toRegex().let { v -> { v.matches(it) } }
 
 fun <T> Validation<T>.and(that: Validation<T>): Validation<T> = { this@and(it) && that(it) }
