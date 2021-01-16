@@ -11,19 +11,19 @@ The problem which we are trying to solve is to avoid illegal values entering int
 
 For example, take this simple function:
 ```kotlin
-fun transferMoneyTo(amount: Int, accountNumber: String, sortCode: String)
+fun transferMoneyTo(amount: Int, sortCode: String, accountNumber: String)
 ```
 
 The first problem here is that `accountNumber` and `sortCode` fields are both of type `String`, meaning that a coder could accidentally switch these values around and we would not potentially  notice until runtime.
 
-The base type provided by this lib is `Value` or one of the typealiases, which are just a simple wrapper around a `value` field and can be used for defining your own domain types:
+The base type provided by this lib is the interface `Value<T>`. This ie extended by `AbstractValue<T>` or one of the typealiases, which are just a simple wrapper around a `value` field and can be used for defining your own domain types. Inline classes are also supported by just implementing `Value<T>`:
 
 ```kotlin
-class Money(value: Int): Value<Int>(value)
-class SortCode(value: String): StringValue(value)
-class AccountNumber(value: String): Value<String>(value)
+class Money(value: Int): AbstractValue<Int>(value)
+class AccountNumber(value: String): StringValue(value)
+inline class SortCode(override val value: String): Value<String>
 
-fun transferMoneyTo(amount: Money, accountNumber: AccountNumber, sortCode: SortCode)
+fun transferMoneyTo(amount: Money, sortCode: SortCode, accountNumber: AccountNumber)
 ```
 
 ### Validation
@@ -32,11 +32,16 @@ The next problem is that there is no domain validation on our values. What if so
 We can fix that by validating to ensure we can never create an illegal value. We want values to fail on construction (at the entry point to our system) instead of deep inside our domain logic. For this we can force construction to go through a `ValueFactory` or one of the typed convenience subclasses:
 
 ```kotlin
-class Money private constructor(value: Int) : Value<Int>(value) {
+class Money private constructor(value: Int) : AbstractValue<Int>(value) {
     companion object : ValueFactory<Money, Int>(::Money, 1.minValue)
 }
 
-class SortCode private constructor(value: String) : StringValue(value) {
+class AccountNumber private constructor(value: String) : StringValue(value) {
+    companion object : StringValueFactory<AccountNumber>(::AccountNumber, "\\d{8}".regex)
+}
+
+// note that private constructors are not available until Kotlin 1.4.30
+inline class SortCode /** private constructor **/(override val value: String) : Value<T> {
     companion object : StringValueFactory<SortCode>(::SortCode, "\\d{6}".regex)
 }
 ```
@@ -63,12 +68,12 @@ typealias Validation<T> = (T) -> Boolean
 The final problem is one of PII data. We need to ensure that sensitive values are never outputted in their raw form into any logging infrastructure where they could be mined for nefarious purposes. 
 
 ```kotlin
-class AccountNumber  private constructor(value: String) : Value<String>(value, hidden()) {
+class AccountNumber private constructor(value: String) : StringValue(value, hidden()) {
     companion object : StringValueFactory<AccountNumber>(::AccountNumber, "\\d{8}".regex)
 }
 ```
 
-If we attempt to print our `AccountNumber` now will result in:
+If we attempt to print our `AccountNumber` using toString() now will result in:
 ```kotlin
 ********
 ```
