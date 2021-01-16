@@ -18,23 +18,23 @@ import java.time.YearMonth
 import java.time.ZonedDateTime
 import java.util.UUID
 
-typealias StringValue = Value<String>
-typealias IntValue = Value<Int>
-typealias LongValue = Value<Long>
-typealias DoubleValue = Value<Double>
-typealias FloatValue = Value<Float>
-typealias UUIDValue = Value<UUID>
-typealias BigDecimalValue = Value<BigDecimal>
-typealias BigIntegerValue = Value<BigInteger>
-typealias LocalTimeValue = Value<LocalTime>
-typealias LocalDateValue = Value<LocalDate>
-typealias LocalDateTimeValue = Value<LocalDateTime>
-typealias OffsetTimeValue = Value<OffsetTime>
-typealias OffsetDateTimeValue = Value<OffsetDateTime>
-typealias ZonedDateTimeValue = Value<ZonedDateTime>
-typealias InstantValue = Value<Instant>
-typealias YearMonthValue = Value<YearMonth>
-typealias YearValue = Value<Year>
-typealias MonthValue = Value<Month>
-typealias DurationValue = Value<Duration>
-typealias PeriodValue = Value<Period>
+typealias StringValue = AbstractValue<String>
+typealias IntValue = AbstractValue<Int>
+typealias LongValue = AbstractValue<Long>
+typealias DoubleValue = AbstractValue<Double>
+typealias FloatValue = AbstractValue<Float>
+typealias UUIDValue = AbstractValue<UUID>
+typealias BigDecimalValue = AbstractValue<BigDecimal>
+typealias BigIntegerValue = AbstractValue<BigInteger>
+typealias LocalTimeValue = AbstractValue<LocalTime>
+typealias LocalDateValue = AbstractValue<LocalDate>
+typealias LocalDateTimeValue = AbstractValue<LocalDateTime>
+typealias OffsetTimeValue = AbstractValue<OffsetTime>
+typealias OffsetDateTimeValue = AbstractValue<OffsetDateTime>
+typealias ZonedDateTimeValue = AbstractValue<ZonedDateTime>
+typealias InstantValue = AbstractValue<Instant>
+typealias YearMonthValue = AbstractValue<YearMonth>
+typealias YearValue = AbstractValue<Year>
+typealias MonthValue = AbstractValue<Month>
+typealias DurationValue = AbstractValue<Duration>
+typealias PeriodValue = AbstractValue<Period>

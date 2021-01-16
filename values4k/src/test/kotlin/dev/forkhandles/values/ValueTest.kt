@@ -10,23 +10,23 @@ import dev.forkhandles.values.Maskers.obfuscated
 import dev.forkhandles.values.Maskers.substring
 import org.junit.jupiter.api.Test
 
-class MyValue private constructor(value: String) : Value<String>(value) {
+class MyValue private constructor(value: String) : StringValue(value) {
     companion object : StringValueFactory<MyValue>(::MyValue, String::isNotEmpty)
 }
 
-class MyIntValue private constructor(value: Int) : Value<Int>(value) {
+class MyIntValue private constructor(value: Int) : IntValue(value) {
     companion object : IntValueFactory<MyIntValue>(::MyIntValue, { it > 0 })
 }
 
-class HiddenValue private constructor(value: String) : Value<String>(value, masking = hidden('t')) {
+class HiddenValue private constructor(value: String) : StringValue(value, masking = hidden('t')) {
     companion object : StringValueFactory<HiddenValue>(::HiddenValue)
 }
 
-class ObsfucatedValue private constructor(value: String) : Value<String>(value, masking = obfuscated()) {
+class ObsfucatedValue private constructor(value: String) : StringValue(value, masking = obfuscated()) {
     companion object : StringValueFactory<ObsfucatedValue>(::ObsfucatedValue)
 }
 
-class SubstringValue private constructor(value: String) : Value<String>(value, masking = substring(3, 5)) {
+class SubstringValue private constructor(value: String) : StringValue(value, masking = substring(3, 5)) {
     companion object : StringValueFactory<SubstringValue>(::SubstringValue)
 }
 

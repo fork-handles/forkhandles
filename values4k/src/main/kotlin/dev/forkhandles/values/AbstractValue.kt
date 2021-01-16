@@ -3,12 +3,16 @@ package dev.forkhandles.values
 import dev.forkhandles.values.Maskers.public
 
 /**
- * Base value type which enables type-safe primitives, along with Validation and Masking.
+ * Base value interface which enables type-safe primitives, along with Validation.
  */
-abstract class Value<T : Any> @JvmOverloads constructor(
-    val value: T,
+interface Value<T : Any> {
+    val value: T
+}
+
+abstract class AbstractValue<T : Any> @JvmOverloads constructor(
+    override val value: T,
     private val masking: Masking<T> = public
-) {
+) : Value<T> {
     override fun toString() = masking(value)
 
     override fun hashCode() = value.hashCode()
@@ -17,7 +21,7 @@ abstract class Value<T : Any> @JvmOverloads constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as Value<*>
+        other as AbstractValue<*>
 
         if (value != other.value) return false
 

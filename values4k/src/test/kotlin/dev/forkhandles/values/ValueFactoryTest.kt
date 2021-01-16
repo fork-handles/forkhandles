@@ -45,4 +45,10 @@ class ValueFactoryTest {
         assertThat(MyIntValue.parseResult4k("123"), equalTo(Success(MyIntValue.of(123))))
         assertThat(MyValue.ofResult4k("") is Failure<Exception>, equalTo(true))
     }
+
+    @Test
+    fun print() {
+        assertThat(MyIntValue.print(MyIntValue.of(123)), equalTo("123"))
+    }
+
 }
