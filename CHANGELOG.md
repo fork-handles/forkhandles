@@ -3,7 +3,7 @@
 This list is not intended to be all-encompassing - it will document major and breaking API
 changes with their rationale when appropriate:
 
-### v1.8.0.0 (uncut)
+### v1.8.0.0
 - **values4k** : [Breaking] Add proper support for inline classes through an interface. Rename `Value` to `AbstractValue`, reintroduce `Value` as an interface
 - **values4k** : Add print() to value factory, so we have a nice symmetric interface for String <-> Value conversions.
 - **values4k** : [Breaking] Undo-rename `of` to `invoke` for construction of values. This was considered to be a bad move.
