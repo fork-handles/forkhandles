@@ -10,7 +10,7 @@ abstract class ValueFactory<DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any>(
     internal val coerceFn: (PRIMITIVE) -> DOMAIN,
     private val validation: Validation<PRIMITIVE>? = null,
     internal val parseFn: (String) -> PRIMITIVE,
-    internal val printFn: (PRIMITIVE) -> String = { it.toString() }
+    internal val showFn: (PRIMITIVE) -> String = { it.toString() }
 ) {
     internal fun validate(value: PRIMITIVE): DOMAIN {
         validation?.check(value)
@@ -18,7 +18,11 @@ abstract class ValueFactory<DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any>(
     }
 
     fun parse(value: String) = validate(parseFn(value))
-    fun print(value: DOMAIN) = printFn(value.value)
+
+    @Deprecated("use show()", ReplaceWith("show(value"))
+    fun print(value: DOMAIN) = show(value)
+
+    fun show(value: DOMAIN) = showFn(value.value)
 
     fun of(value: PRIMITIVE) = validate(value)
 }

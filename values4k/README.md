@@ -82,3 +82,10 @@ Masking rules are modelled as a simple typealias and there are several useful on
 ```kotlin
 typealias Masking<T> = T.() -> String
 ```
+
+### Show
+For times where we want to display the underlying value as a String, we can use `show()`, which is the natural opposite to `parse()`. This is different (and safer than) using toString(), where we will have to deal with the Masking rules. In order to maintain symmetry (and to ensure that we can support inline classes), this method is present on the ValueFactory instance - this looks a little strange but it actually is consistent because the display and parse logic should NOT be part of the `Value` itself, but be separated logically.
+
+```kotlin
+Money.show(Money.of(123)) // returns "123"
+```

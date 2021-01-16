@@ -47,8 +47,8 @@ class ValueFactoryTest {
     }
 
     @Test
-    fun print() {
-        assertThat(MyIntValue.print(MyIntValue.of(123)), equalTo("123"))
+    fun show() {
+        assertThat(MyIntValue.show(MyIntValue.of(123)), equalTo("123"))
     }
 
 }

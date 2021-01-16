@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API
 changes with their rationale when appropriate:
 
+### v1.8.1.0
+- **values4k** : [Deprecation]: Rename `print()` to `show()` as less confusing.
+
 ### v1.8.0.0
 - **values4k** : [Breaking] Add proper support for inline classes through an interface. Rename `Value` to `AbstractValue`, reintroduce `Value` as an interface
 - **values4k** : Add print() to value factory, so we have a nice symmetric interface for String <-> Value conversions.
