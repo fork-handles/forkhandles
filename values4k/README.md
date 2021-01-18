@@ -13,7 +13,7 @@ Lightweight, validatable base Value types - aka Microtypes - aka Tinytypes
 
 In Gradle, install the BOM and then any other modules in the dependency block:
 
-```kotlin
+```kotlin 
 implementation(platform("dev.forkhandles:forkhandles-bom:X.Y.Z"))
 implementation("dev.forkhandles:values4k")
 ```
@@ -45,7 +45,7 @@ fun transferMoneyTo(amount: Money, sortCode: SortCode, accountNumber: AccountNum
 ### Validation
 The next problem is that there is no domain validation on our values. What if someone passed in a negative amount? Or an `accountNumber` containing letters instead of digits?
 
-We can fix that by validating to ensure we can never create an illegal value. We want values to fail on construction (at the entry point to our system) instead of deep inside our domain logic. For this we can force construction to go through a `ValueFactory` or one of the typed convenience subclasses:
+We can fix that by validating to ensure we can never create an illegal value. We want values to fail on construction (at the entry point to our system) instead of deep inside our domain logic. For this we can force construction to go through a `ValueFactory` or one of the provided convenience subclasses (`IntValueFactory`, `LocalDateTimeValueFactory` etc..):
 
 ```kotlin
 class Money private constructor(value: Int) : AbstractValue<Int>(value) {
@@ -56,7 +56,7 @@ class AccountNumber private constructor(value: String) : StringValue(value) {
     companion object : StringValueFactory<AccountNumber>(::AccountNumber, "\\d{8}".regex)
 }
 
-// note that private constructors are not available until Kotlin 1.4.30
+// note that private constructors are not available on inline classes until Kotlin 1.4.30
 inline class SortCode /** private constructor **/(override val value: String) : Value<T> {
     companion object : StringValueFactory<SortCode>(::SortCode, "\\d{6}".regex)
 }
