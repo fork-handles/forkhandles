@@ -1,4 +1,4 @@
-# ForK Handles
+# Time4k
 
 <a href="https://bintray.com/fork-handles/maven/forkhandles-bom/_latestVersion"><img alt="Download" src="https://api.bintray.com/packages/fork-handles/maven/forkhandles-bom/images/download.svg"></a>
 <a href="https://travis-ci.org/fork-handles/forkhandles"><img alt="build status" src="https://travis-ci.org/fork-handles/forkhandles.svg?branch=trunk"/></a>
@@ -7,18 +7,19 @@
 <a href="http://kotlinlang.org"><img alt="kotlin" src="https://img.shields.io/badge/kotlin-1.4-blue.svg"></a>
 <a href="https://codebeat.co/projects/github-com-fork-handles-forkhandles-trunk"><img alt="codebeat badge" src="https://codebeat.co/badges/5b369ed4-af27-46f4-ad9c-a307d900617e"></a>
 
-Forkhandles (4k) contains foundational libraries for Kotlin
-- [Bunting4k](bunting4k) - Command line argument parser
-- [Parser4k](parser4k)  - Recursive descent parser combinator library
-- [Result4k](result4k) - A usable Result type
-- [Time4k](time4k) - Clock and deterministic scheduler
-- [Tuples4k](tuples4k) - Tuple classes
-- [Values4k](values4k) - Value classes aka Microtypes aka Tinytypes
-
-## Installation
-In Gradle, install the BOM and then any other modules in the dependency block: 
+A simple replacement for the Java clock
 
 ```kotlin
 implementation(platform("dev.forkhandles:forkhandles-bom:X.Y.Z"))
-implementation("dev.forkhandles:$libraryName")
+implementation("dev.forkhandles:time4k")
 ```
+
+## Motivation
+
+The Java `Clock` is an abstract class, which is a pain. Time4k represents the clock as a simple typealias:
+
+```kotlin
+typealias TimeSource = () -> Instant
+```
+
+The library also provides a DeterministicScheduler which is a drop-in test replacement for using a `ScheduledExecutorService`. You can control time and make the scheduler move forward in a controlled manner.

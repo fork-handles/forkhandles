@@ -5,6 +5,11 @@ Lightweight, validatable base Value types - aka Microtypes - aka Tinytypes
 ## Motivation & Concepts
 Subvert primitive obsession and provide type safety and other facilities for JVM programs.
 
+```kotlin
+implementation(platform("dev.forkhandles:forkhandles-bom:X.Y.Z"))
+implementation("dev.forkhandles:values4k")
+```
+
 ### Typesafety
 
 The problem which we are trying to solve is to avoid illegal values entering into our system. For this, it is best to use strongly typed values, which allow us to both lean on the compiler and improve the developer experience by engaging with IDE tooling.
