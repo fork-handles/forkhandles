@@ -10,7 +10,7 @@
 Type safe error handling in Kotlin.
 
 ## Installation
-In Gradle, install the BOM and then any other modules in the dependency block:
+In Gradle, install the ForkHandles BOM and then this module in the dependency block:
 
 ```kotlin
 implementation(platform("dev.forkhandles:forkhandles-bom:X.Y.Z"))

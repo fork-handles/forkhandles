@@ -19,7 +19,7 @@ abstract class ValueFactory<DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any>(
 
     fun parse(value: String) = validate(parseFn(value))
 
-    @Deprecated("use show()", ReplaceWith("show(value"))
+    @Deprecated("use show()", ReplaceWith("show(value)"))
     fun print(value: DOMAIN) = show(value)
 
     fun show(value: DOMAIN) = showFn(value.value)
