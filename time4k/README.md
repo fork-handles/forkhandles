@@ -9,6 +9,9 @@
 
 A simple replacement for the Java clock ans scheduler.
 
+## Installation
+In Gradle, install the BOM and then any other modules in the dependency block:
+
 ```kotlin
 implementation(platform("dev.forkhandles:forkhandles-bom:X.Y.Z"))
 implementation("dev.forkhandles:time4k")

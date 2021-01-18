@@ -9,6 +9,10 @@
 
 Tuples with up to (currently) eight elements, and convenient operations for working with them.
 
+## Installation
+
+In Gradle, install the BOM and then any other modules in the dependency block:
+
 ```kotlin
 implementation(platform("dev.forkhandles:forkhandles-bom:X.Y.Z"))
 implementation("dev.forkhandles:tuples4k")

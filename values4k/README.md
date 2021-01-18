@@ -9,13 +9,17 @@
 
 Lightweight, validatable base Value types - aka Microtypes - aka Tinytypes
 
-## Motivation & Concepts
-Subvert primitive obsession and provide type safety and other facilities for JVM programs.
+## Installation
+
+In Gradle, install the BOM and then any other modules in the dependency block:
 
 ```kotlin
 implementation(platform("dev.forkhandles:forkhandles-bom:X.Y.Z"))
 implementation("dev.forkhandles:values4k")
 ```
+
+## Motivation & Concepts
+Subvert primitive obsession and provide type safety and other facilities for JVM programs.
 
 ### Typesafety
 

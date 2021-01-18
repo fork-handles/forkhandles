@@ -10,6 +10,7 @@
 Simple, typesafe, testable command line flags.
 
 ## Installation
+
 In Gradle, install the BOM and then any other modules in the dependency block:
 
 ```kotlin

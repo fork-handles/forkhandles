@@ -7,16 +7,19 @@
 <a href="http://kotlinlang.org"><img alt="kotlin" src="https://img.shields.io/badge/kotlin-1.4-blue.svg"></a>
 <a href="https://codebeat.co/projects/github-com-fork-handles-forkhandles-trunk"><img alt="codebeat badge" src="https://codebeat.co/badges/5b369ed4-af27-46f4-ad9c-a307d900617e"></a>
 
+Recursive descent parser combinator library for Kotlin with support for [left recursion](https://en.wikipedia.org/wiki/Left_recursion).
+It aims to be:
+- **simple** - very few core concepts
+- **easy to use** - you can quickly figure out how to write a parser for a small language
+- **production-ready** - enough functionality and performance for real-world applications
+
+## Installation
+In Gradle, install the BOM and then any other modules in the dependency block:
+
 ```kotlin
 implementation(platform("dev.forkhandles:forkhandles-bom:X.Y.Z"))
 implementation("dev.forkhandles:parser4k")
 ```
-
-Recursive descent parser combinator library for Kotlin with support for [left recursion](https://en.wikipedia.org/wiki/Left_recursion). 
-It aims to be:
- - **simple** - very few core concepts
- - **easy to use** - you can quickly figure out how to write a parser for a small language
- - **production-ready** - enough functionality and performance for real-world applications
  
 ### Examples
 ```kotlin
