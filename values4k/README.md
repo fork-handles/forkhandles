@@ -45,7 +45,7 @@ fun transferMoneyTo(amount: Money, sortCode: SortCode, accountNumber: AccountNum
 ### Validation
 The next problem is that there is no domain validation on our values. What if someone passed in a negative amount? Or an `accountNumber` containing letters instead of digits?
 
-We can fix that by validating to ensure we can never create an illegal value. We want values to fail on construction (at the entry point to our system) instead of deep inside our domain logic. For this we can force construction to go through a `ValueFactory` or one of the provided convenience subclasses (`IntValueFactory`, `LocalDateTimeValueFactory` etc..):
+We can fix that by validating to ensure we can never create an illegal value. We want values to fail on construction (at the entry point to our system) instead of deep inside our domain logic. For this we can force construction to go through a `ValueFactory` or one of the provided convenience subclasses (`IntValueFactory`, `LocalDateTimeValueFactory` etc..), passing a `Validation` predicate:
 
 ```kotlin
 class Money private constructor(value: Int) : AbstractValue<Int>(value) {
@@ -81,7 +81,7 @@ typealias Validation<T> = (T) -> Boolean
 ```
 
 ### Masking
-The final problem is one of PII data. We need to ensure that sensitive values are never outputted in their raw form into any logging infrastructure where they could be mined for nefarious purposes. 
+The last big problem is one of PII data. We need to ensure that sensitive values are never outputted in their raw form into any logging infrastructure where they could be mined for nefarious purposes. 
 
 ```kotlin
 class AccountNumber private constructor(value: String) : StringValue(value, hidden()) {
