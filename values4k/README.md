@@ -32,7 +32,7 @@ fun transferMoneyTo(amount: Int, sortCode: String, accountNumber: String)
 
 The first problem here is that `accountNumber` and `sortCode` fields are both of type `String`, meaning that a coder could accidentally switch these values around and we would not potentially  notice until runtime.
 
-The base type provided by this lib is the interface `Value<T>`. This ie extended by `AbstractValue<T>` or one of the typealiases, which are just a simple wrapper around a `value` field and can be used for defining your own domain types. Inline classes are also supported by just implementing `Value<T>`:
+The base type provided by this lib is the interface `Value<T>`. This is extended by `AbstractValue<T>` or one of the typealiases, which are just a simple wrapper around a `value` field and can be used for defining your own domain types. Inline classes are also supported by just implementing `Value<T>`:
 
 ```kotlin
 class Money(value: Int): AbstractValue<Int>(value)
