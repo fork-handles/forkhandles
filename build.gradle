@@ -36,9 +36,8 @@ allprojects {
     }
 
     compileKotlin.kotlinOptions.jvmTarget = "1.8"
-    compileKotlin.kotlinOptions.useIR = true
     compileTestKotlin.kotlinOptions.jvmTarget = "1.8"
-    compileTestKotlin.kotlinOptions.useIR = true
+
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 
@@ -202,3 +201,4 @@ wrapper {
     gradleVersion = Versions.gradleLatestVersion
     distributionType = Wrapper.DistributionType.ALL
 }
+
