@@ -57,7 +57,7 @@ class AccountNumber private constructor(value: String) : StringValue(value) {
 }
 
 // note that private constructors are not available on inline classes until Kotlin 1.4.30
-inline class SortCode /** private constructor **/(override val value: String) : Value<T> {
+inline class SortCode private constructor(override val value: String) : Value<T> {
     companion object : StringValueFactory<SortCode>(::SortCode, "\\d{6}".regex)
 }
 ```
