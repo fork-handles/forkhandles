@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API
 changes with their rationale when appropriate:
 
+### v1.8.2.0
+- test release process (remove jcenter)
+
 ### v1.8.1.0
 - **values4k** : [Deprecation]: Rename `print()` to `show()` as less confusing.
 
