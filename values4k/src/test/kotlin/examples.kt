@@ -27,8 +27,8 @@ class AccountNumber private constructor(value: String) : AbstractValue<String>(v
 }
 
 // ...inline classes can also be used by extending the base Value interface.
-// ... private constructors are coming in Kotlin 1.4.30
-inline class Money /**private constructor**/(override val value: Int) : Value<Int> {
+// ... private constructors are available in Kotlin 1.4.30 with the IR backend enabled
+inline class Money /*private constructor*/(override val value: Int) : Value<Int> {
     companion object : IntValueFactory<Money>(::Money, 1.minValue)
 }
 
@@ -36,7 +36,7 @@ fun main() {
     printOrError { BottlesOfBeer.of(99) } // constructs ok
     printOrError { Money.of(0) } // will blow up
     printOrError { Money.parse("not money") } // will blow up
-    printOrError { Money.show(Money(123)) } // prints 123
+    printOrError { Money.show(Money.of(123)) } // prints 123
 
     printOrError { SortCode.of("123qwe") } // will blow up
     printOrError { AccountNumber.of("12345678") } // masks value

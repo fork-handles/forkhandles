@@ -1,7 +1,6 @@
 buildscript {
     repositories {
         mavenCentral()
-        jcenter()
     }
 
     dependencies {
@@ -21,7 +20,6 @@ allprojects {
 
     repositories {
         mavenCentral()
-        jcenter()
     }
 
     apply plugin: 'kotlin'
@@ -43,6 +41,7 @@ allprojects {
 
     version = project.hasProperty('releaseVersion') ? project.releaseVersion : 'LOCAL'
     group = 'dev.forkhandles'
+
 
     test {
         useJUnitPlatform()
@@ -200,3 +199,4 @@ wrapper {
     gradleVersion = Versions.gradleLatestVersion
     distributionType = Wrapper.DistributionType.ALL
 }
+
