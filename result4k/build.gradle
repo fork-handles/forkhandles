@@ -6,6 +6,7 @@ description = 'A friendly Kotlin Result type'
 
 dependencies {
     api Libs.kotlin_stdlib_jdk8
+    api project(":tuples4k")
     testApi Config.TestDependencies
     testApi Libs.kotlin_test
 }
