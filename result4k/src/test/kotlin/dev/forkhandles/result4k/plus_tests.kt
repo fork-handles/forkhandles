@@ -12,30 +12,37 @@ class PlusTests {
     private val _3 = Success(3)
     private val _4 = Success(4)
     private val _5 = Success(5)
+    private val _6 = Success(6)
 
     private val fail = Failure(RuntimeException())
 
     @Test
-    fun `plus 2`() {
+    fun `plus`() {
         assertThat((_1 + _2).orThrow(), equalTo(tuple(1, 2)))
         assertThat((_1 + fail).failureOrNull(), equalTo(fail.reason))
     }
 
     @Test
-    fun `plus 3`() {
+    fun `plus 2`() {
         assertThat((_1 + _2 + _3).orThrow(), equalTo(tuple(1, 2, 3)))
         assertThat((_1 + _2 + fail).failureOrNull(), equalTo(fail.reason))
     }
 
     @Test
-    fun `plus 4`() {
+    fun `plus 3`() {
         assertThat((_1 + _2 + _3 + _4).orThrow(), equalTo(tuple(1, 2, 3, 4)))
         assertThat((_1 + _2 + _3 + fail).failureOrNull(), equalTo(fail.reason))
     }
 
     @Test
-    fun `plus 5`() {
+    fun `plus 4`() {
         assertThat((_1 + _2 + _3 + _4 + _5).orThrow(), equalTo(tuple(1, 2, 3, 4, 5)))
         assertThat((_1 + _2 + _3 + _4 + fail).failureOrNull(), equalTo(fail.reason))
+    }
+
+    @Test
+    fun `plus 5`() {
+        assertThat((_1 + _2 + _3 + _4 + _5 + _6).orThrow(), equalTo(tuple(1, 2, 3, 4, 5, 6)))
+        assertThat((_1 + _2 + _3 + _4 + _5 + fail).failureOrNull(), equalTo(fail.reason))
     }
 }
