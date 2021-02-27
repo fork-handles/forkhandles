@@ -17,7 +17,7 @@ class PlusTests {
     private val fail = Failure(RuntimeException())
 
     @Test
-    fun `plus`() {
+    fun plus() {
         assertThat((_1 + _2).orThrow(), equalTo(tuple(1, 2)))
         assertThat((_1 + fail).failureOrNull(), equalTo(fail.reason))
     }
