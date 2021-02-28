@@ -5,28 +5,27 @@ import kotlin.test.assertEquals
 import kotlin.test.fail
 
 class ZipTests {
+    private val r: Result<String, ExampleException> = Success("x")
+
     private data class ExampleException(val msg: String) : Exception(msg)
 
     @Test
     fun `success zip returns value`() {
-        val r: Result<String, ExampleException> = Success("x")
-        val z: Result<Int, ExampleException> = zip(r) { 2 }
+        val z = zip(r) { 2 }
 
         assertEquals(Success(2), z)
     }
 
     @Test
     fun `success flatzip returns value`() {
-        val r: Result<String, ExampleException> = Success("x")
-        val z: Result<Int, ExampleException> = flatZip(r) { Success(2) }
+        val z = flatZip(r) { Success(2) }
 
         assertEquals(Success(2), z)
     }
 
     @Test
     fun `failure flatzip returns value`() {
-        val r: Result<String, ExampleException> = Success("x")
-        val z: Result<Int, ExampleException> = flatZip(r) { Failure(ExampleException("flatzip failure")) }
+        val z = flatZip(r) { Failure(ExampleException("flatzip failure")) }
 
         assertEquals(Failure(ExampleException("flatzip failure")), z)
     }
