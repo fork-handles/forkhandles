@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API
 changes with their rationale when appropriate:
 
+### v1.8.4.0
+- **values4k** : Add `NonEmptyStringValueFactory`.
+
 ### v1.8.3.0
 - **result4k** : Add flatZip(). h/t @razvn
 

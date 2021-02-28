@@ -24,8 +24,14 @@ import java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME
 import java.util.UUID
 
 open class StringValueFactory<DOMAIN : Value<String>>(
-    fn: (String) -> DOMAIN, validation: Validation<String>? = null
-) : ValueFactory<DOMAIN, String>(fn, validation, { it })
+    fn: (String) -> DOMAIN, validation: Validation<String>? = null,
+    showFn: (String) -> String = { it }
+) : ValueFactory<DOMAIN, String>(fn, validation, { it }, showFn)
+
+open class NonEmptyStringValueFactory<DOMAIN : Value<String>>(
+    fn: (String) -> DOMAIN,
+    showFn: (String) -> String = { it }
+) : ValueFactory<DOMAIN, String>(fn, 1.minLength, { it }, showFn)
 
 open class IntValueFactory<DOMAIN : Value<Int>>(
     fn: (Int) -> DOMAIN, validation: Validation<Int>? = null

@@ -33,6 +33,7 @@ class FactoriesTest {
         "1".also { assertThat(BigIntegerValueFactory(::TV).parse(it), equalTo(TV(BigInteger(it)))) }
         true.also { assertThat(BooleanValueFactory(::TV).parse(it.toString()), equalTo(TV(it))) }
         "hello".also { assertThat(StringValueFactory(::TV).parse(it), equalTo(TV(it))) }
+        "hello".also { assertThat(NonEmptyStringValueFactory(::TV).parse(it), equalTo(TV(it))) }
         UUID.randomUUID().also { assertThat(UUIDValueFactory(::TV).parse(it.toString()), equalTo(TV(it))) }
         URL("http://localhost").also { assertThat(URLValueFactory(::TV).parse(it.toString()), equalTo(TV(it))) }
 
