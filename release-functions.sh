@@ -13,21 +13,23 @@ function maven_publish {
     local PACKAGE=$1
     local PAYLOAD="{\"username\": \"${SONATYPE_USER}\", \"password\": \"${SONATYPE_KEY}\"}"
 
-        curl --fail --silent -o /dev/null https://repo.maven.apache.org/maven2/dev/forkhandles/"${PACKAGE}"/"${LOCAL_VERSION}"/"${PACKAGE}"-"${LOCAL_VERSION}".pom
-
-    local PUBLISHED=$(curl --fail --silent -o /dev/null https://mvnrepository.com/artifact/dev.forkhandles/"${PACKAGE}"/"${LOCAL_VERSION}" ; echo $?)
+    local PUBLISHED=$(curl --fail --silent -o /dev/null https://repo.maven.apache.org/maven2/dev/forkhandles/"${PACKAGE}"/"${LOCAL_VERSION}"/"${PACKAGE}"-"${LOCAL_VERSION}".pom ; echo $?)
 
     if [[ $PUBLISHED == "0" ]]; then
         echo "$PACKAGE is already published. Skipping"
     else
         echo "Publishing $PACKAGE $LOCAL_VERSION into Maven central..."
-        RESULT=$(curl -s -X POST -u "$BINTRAY_USER:$BINTRAY_KEY" -H "Content-Type: application/json" --data "$PAYLOAD" "https://bintray.com/api/v1/maven_central_sync/fork-handles/maven/$PACKAGE/versions/$LOCAL_VERSION")
+        RESULT=$(curl -s -X POST -u "$BINTRAY_USER:$BINTRAY_KEY" -H "Content-Type: application/json" --data "$PAYLOAD" "https://bintray.com/api/v1/maven_central_sync/http4k/maven/$PACKAGE/versions/$LOCAL_VERSION")
 
         if [[ ! "${RESULT}" =~ .*Successful.* ]]; then
-           echo "Failed: ${RESULT}"
-           exit 1
+            echo "Failed: ${RESULT}"
         fi
     fi
+}
+
+function create_tag {
+    git tag -a "$LOCAL_VERSION" -m "forkhandles version $LOCAL_VERSION"
+    git push origin "$LOCAL_VERSION"
 }
 
 function ensure_release_commit {
@@ -38,4 +40,3 @@ function ensure_release_commit {
     fi
 }
 
-ensure_release_commit
