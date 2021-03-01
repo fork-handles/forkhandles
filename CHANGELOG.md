@@ -3,7 +3,7 @@
 This list is not intended to be all-encompassing - it will document major and breaking API
 changes with their rationale when appropriate:
 
-### v1.8.4.1
+### v1.8.4.2
 - release from MC
 
 ### v1.8.4.0
