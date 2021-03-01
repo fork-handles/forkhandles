@@ -49,10 +49,6 @@ allprojects {
         useJUnitPlatform()
     }
 
-    artifacts {
-        testArtifacts testJar
-    }
-
     jacocoTestReport {
         reports {
             html.enabled = true
