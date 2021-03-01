@@ -47,6 +47,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
       - name: Upload to Bintray
         run: ./release-ci.sh
         env:
