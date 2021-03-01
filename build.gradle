@@ -14,7 +14,10 @@ plugins {
     id 'com.github.kt3k.coveralls' version "2.10.1"
     id "com.jfrog.bintray" version "1.8.4"
     id 'de.fayard.buildSrcVersions' version "0.7.0"
+    id "io.codearte.nexus-staging" version '0.22.0'
 }
+
+apply plugin: 'io.codearte.nexus-staging'
 
 allprojects {
 
@@ -30,7 +33,7 @@ allprojects {
     apply plugin: 'maven-publish'
 
     jacoco {
-        toolVersion = '0.8.3'
+        toolVersion = '0.8.6'
     }
 
     compileKotlin.kotlinOptions.jvmTarget = "1.8"
@@ -42,9 +45,35 @@ allprojects {
     version = project.hasProperty('releaseVersion') ? project.releaseVersion : 'LOCAL'
     group = 'dev.forkhandles'
 
-
     test {
         useJUnitPlatform()
+    }
+
+    artifacts {
+        testArtifacts testJar
+    }
+
+    jacocoTestReport {
+        reports {
+            html.enabled = true
+            xml.enabled = true
+        }
+    }
+
+    tasks.withType(GenerateModuleMetadata) {
+        enabled = false
+    }
+}
+
+subprojects {
+
+    jar {
+        manifest {
+            attributes 'Implementation-Title': project.name,
+                'Implementation-Vendor': 'dev.forkhandles',
+                'Implementation-Version': project.version,
+                'forkhandles_version': archiveVersion
+        }
     }
 
     task sourcesJar(type: Jar, dependsOn: classes) {
@@ -66,11 +95,46 @@ allprojects {
         testArtifacts.extendsFrom testRuntime
     }
 
-    artifacts {
-        testArtifacts testJar
+    def enableSigning = project.findProperty('sign') == "true"
+
+    apply plugin: 'maven-publish' // required to configure bintray
+    apply plugin: 'maven' // required to upload to sonatype
+
+    if (enableSigning) { // when added it expects signing keys to be configured
+        apply plugin: 'signing'
+
+        signing {
+            def signingKey = findProperty("signingKey")
+            def signingPassword = findProperty("signingPassword")
+
+            useInMemoryPgpKeys(signingKey, signingPassword)
+            sign publishing.publications
+        }
     }
 
+    def nexusUsername = project.findProperty('nexusUsername') ?: "notset"
+    def nexusPassword = project.findProperty('nexusPassword') ?: "notset"
+
     publishing {
+        repositories {
+            maven {
+                name 'SonatypeStaging'
+                url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+                credentials {
+                    username nexusUsername
+                    password nexusPassword
+                }
+            }
+            maven {
+                name 'SonatypeSnapshot'
+                url 'https://oss.sonatype.org/content/repositories/snapshots/'
+                credentials {
+                    username nexusUsername
+                    password nexusPassword
+                }
+            }
+        }
+
         publications {
             mavenJava(MavenPublication) {
                 artifactId = archivesBaseName
@@ -80,19 +144,17 @@ allprojects {
                     asNode().appendNode('description', description)
                     asNode().appendNode('url', 'https://forkhandles.dev')
                     asNode().appendNode('developers')
-                            .appendNode('developer').appendNode('name', 'Nat Pryce').parent().appendNode('email', 'nat@forkhandles.dev')
-                            .parent().parent()
-                            .appendNode('developer').appendNode('name', 'David Denton').parent().appendNode('email', 'david@forkhandles.dev')
+                        .appendNode('developer').appendNode('name', 'Nat Pryce').parent().appendNode('email', 'nat@forkhandles.dev')
+                        .parent().parent()
+                        .appendNode('developer').appendNode('name', 'David Denton').parent().appendNode('email', 'david@forkhandles.dev')
                     asNode().appendNode('scm').
-                            appendNode('url', 'git@github.com:fork-handles/forkhandles.git').parent().
-                            appendNode('connection', 'scm:git:git@github.com:fork-handles/forkhandles.git').parent().
-                            appendNode('developerConnection', 'scm:git:git@github.com:fork-handles/forkhandles.git')
+                        appendNode('url', 'git@github.com:fork-handles/forkhandles.git').parent().
+                        appendNode('connection', 'scm:git:git@github.com:fork-handles/forkhandles.git').parent().
+                        appendNode('developerConnection', 'scm:git:git@github.com:fork-handles/forkhandles.git')
                     asNode().appendNode('licenses').appendNode('license').
-                            appendNode('name', 'Apache License, Version 2.0').parent().
-                            appendNode('url', 'http://www.apache.org/licenses/LICENSE-2.0.html')
+                        appendNode('name', 'Apache License, Version 2.0').parent().
+                        appendNode('url', 'http://www.apache.org/licenses/LICENSE-2.0.html')
                 }
-                from components.java
-
                 artifact sourcesJar
                 artifact javadocJar
             }
@@ -134,19 +196,6 @@ allprojects {
         }
     }
 
-    jacocoTestReport {
-        reports {
-            xml.enabled = true
-        }
-    }
-
-    jar {
-        manifest {
-            attributes 'Implementation-Title': project.name,
-                       'Implementation-Vendor': 'dev.forkhandles',
-                       'Implementation-Version': project.version
-        }
-    }
 }
 
 compileTestKotlin.kotlinOptions {
@@ -175,7 +224,11 @@ task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
 
 dependencies {
     compile project(":bunting4k")
+    compile project(":parser4k")
+    compile project(":result4k")
+    compile project(":time4k")
     compile project(":tuples4k")
+    compile project(":values4k")
 }
 
 sourceSets {
