@@ -49,10 +49,6 @@ allprojects {
         useJUnitPlatform()
     }
 
-    artifacts {
-        testArtifacts testJar
-    }
-
     jacocoTestReport {
         reports {
             html.enabled = true
@@ -93,6 +89,11 @@ subprojects {
 
     configurations {
         testArtifacts.extendsFrom testRuntime
+    }
+
+    artifacts {
+        testArtifacts testJar
+        archives sourcesJar, javadocJar
     }
 
     def enableSigning = project.findProperty('sign') == "true"
