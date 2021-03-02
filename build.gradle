@@ -98,6 +98,7 @@ subprojects {
 
     def enableSigning = project.findProperty('sign') == "true"
 
+    apply plugin: 'com.jfrog.bintray'
     apply plugin: 'maven-publish' // required to configure bintray
     apply plugin: 'maven' // required to upload to sonatype
 
@@ -148,6 +149,10 @@ subprojects {
                         .appendNode('developer').appendNode('name', 'Nat Pryce').parent().appendNode('email', 'nat@forkhandles.dev')
                         .parent().parent()
                         .appendNode('developer').appendNode('name', 'David Denton').parent().appendNode('email', 'david@forkhandles.dev')
+                        .parent().parent()
+                        .appendNode('developer').appendNode('name', 'Dmitry Kandalov').parent().appendNode('email', 'dmitry@forkhandles.dev')
+                        .parent().parent()
+                        .appendNode('developer').appendNode('name', 'Duncan McGregor').parent().appendNode('email', 'duncan@forkhandles.dev')
                     asNode().appendNode('scm').
                         appendNode('url', 'git@github.com:fork-handles/forkhandles.git').parent().
                         appendNode('connection', 'scm:git:git@github.com:fork-handles/forkhandles.git').parent().
@@ -156,6 +161,8 @@ subprojects {
                         appendNode('name', 'Apache License, Version 2.0').parent().
                         appendNode('url', 'http://www.apache.org/licenses/LICENSE-2.0.html')
                 }
+                from components.java
+
                 artifact sourcesJar
                 artifact javadocJar
             }
@@ -196,7 +203,6 @@ subprojects {
             }
         }
     }
-
 }
 
 compileTestKotlin.kotlinOptions {
@@ -224,12 +230,10 @@ task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
 }
 
 dependencies {
-    compile project(":bunting4k")
-    compile project(":parser4k")
-    compile project(":result4k")
-    compile project(":time4k")
-    compile project(":tuples4k")
-    compile project(":values4k")
+    subprojects
+        .forEach {
+            api project(it.name)
+        }
 }
 
 sourceSets {
