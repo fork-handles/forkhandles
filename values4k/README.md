@@ -49,7 +49,7 @@ We can fix that by validating to ensure we can never create an illegal value. We
 
 ```kotlin
 class Money private constructor(value: Int) : AbstractValue<Int>(value) {
-    companion object : ValueFactory<Money, Int>(::Money, 1.minValue)
+    companion object : ValueFactory<Money, Int>(::Money, 1.minValue, String::toInt)
 }
 
 class AccountNumber private constructor(value: String) : StringValue(value) {
@@ -58,7 +58,7 @@ class AccountNumber private constructor(value: String) : StringValue(value) {
 
 // note that private constructors are only available on inline classes 
 // starting with Kotlin 1.4.30, and even then need to be compiled with the IR-backend
-inline class SortCode private constructor(override val value: String) : Value<T> {
+inline class SortCode private constructor(override val value: String) : Value<String> {
     companion object : StringValueFactory<SortCode>(::SortCode, "\\d{6}".regex)
 }
 ```
