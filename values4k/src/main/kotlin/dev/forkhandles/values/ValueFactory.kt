@@ -66,24 +66,25 @@ fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>
     values.map(::of)
 
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofListOrNull(vararg values: PRIMITIVE) =
-    when {
-        values.isEmpty() -> emptyList()
-        else -> values.mapNotNull(::ofOrNull).takeIf(List<*>::isNotEmpty)
-    }
+    ofListOrNull(values.toList())
+
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofListOrNull(values: List<PRIMITIVE>) =
+    values.orNull(::ofOrNull)
 
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofListResult4k(values: List<PRIMITIVE>) =
     values.toResult(::ofResult4k)
+
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofListResult4k(vararg values: PRIMITIVE) =
     ofListResult4k(values.toList())
 
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.parseList(vararg values: String) =
     values.map(::parse)
 
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.parseListOrNull(values: List<String>) =
+    values.orNull(::parseOrNull)
+
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.parseListOrNull(vararg values: String) =
-    when {
-        values.isEmpty() -> emptyList()
-        else -> values.mapNotNull(::parseOrNull).takeIf(List<*>::isNotEmpty)
-    }
+    parseListOrNull(values.toList())
 
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.parseListResult4k(values: List<String>) =
     values.toResult(::parseResult4k)
@@ -94,7 +95,13 @@ fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.showList(vararg values: DOMAIN) =
     values.map(::show)
 
-private fun <IN, DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> List<out IN>.toResult(
+private fun <IN, DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> List<IN>.orNull(fn: (IN) -> DOMAIN?) =
+    when {
+        isEmpty() -> emptyList()
+        else -> mapNotNull(fn).takeIf(List<*>::isNotEmpty)
+    }
+
+private fun <IN, DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> List<IN>.toResult(
     fn: (IN) -> Result<DOMAIN, Exception>
 ) = when {
     isEmpty() -> Success(emptyList())
