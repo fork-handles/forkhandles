@@ -1,6 +1,9 @@
 package dev.forkhandles.values
 
+import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
+import dev.forkhandles.result4k.Success
+import dev.forkhandles.result4k.map
 import dev.forkhandles.result4k.resultFrom
 
 /**
@@ -58,3 +61,36 @@ fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>
  */
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.parseResult4k(value: String): Result<DOMAIN, Exception> =
     resultFrom { validate(parseFn(value)) }
+
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofList(vararg values: PRIMITIVE) =
+    values.map(::of)
+
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofListOrNull(vararg values: PRIMITIVE) =
+    values
+        .mapNotNull(::ofOrNull).takeIf(List<DOMAIN>::isNotEmpty)
+
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofListResult4k(vararg values: PRIMITIVE):
+    Result<List<DOMAIN>, Exception> =
+    when {
+        values.isEmpty() -> Success(emptyList())
+        else ->
+            values.drop(1)
+                .fold(ofResult4k(values.first()).map(::listOf)) { acc, next ->
+                    when (acc) {
+                        is Success -> ofResult4k(next).map { acc.value + it }
+                        is Failure -> acc
+                    }
+                }
+    }
+
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.parseList(vararg values: String) =
+    values.map(::parse)
+
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.parseListOrNull(vararg values: String) =
+    values.map(::parseOrNull)
+
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.parseListResult4k(vararg values: String) =
+    values.map(::parseResult4k)
+
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.showList(vararg values: DOMAIN) =
+    values.map(::show)
