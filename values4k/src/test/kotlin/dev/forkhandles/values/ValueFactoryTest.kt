@@ -15,6 +15,7 @@ class ValueFactoryTest {
         assertThat(MyIntValue.of(123), equalTo(MyIntValue.of(123)))
         assertThat({ MyIntValue.of(0) }, throws<IllegalArgumentException>())
 
+        assertThat(MyIntValue.ofList(), equalTo(listOf()))
         assertThat(MyIntValue.ofList(123, 456), equalTo(listOf(MyIntValue.of(123), MyIntValue.of(456))))
         assertThat({ MyIntValue.ofList(0, 1) }, throws<IllegalArgumentException>())
     }
@@ -24,6 +25,7 @@ class ValueFactoryTest {
         assertThat(MyValue.ofOrNull("hello"), equalTo(MyValue.of("hello")))
         assertThat(MyValue.ofOrNull(""), absent())
 
+        assertThat(MyIntValue.ofListOrNull(), equalTo(emptyList()))
         assertThat(MyIntValue.ofListOrNull(123, 456), equalTo(listOf(MyIntValue.of(123), MyIntValue.of(456))))
         assertThat(MyValue.ofListOrNull(""), absent())
     }
@@ -33,7 +35,7 @@ class ValueFactoryTest {
         assertThat(MyValue.ofResult4k("hello"), equalTo(Success(MyValue.of("hello"))))
         assertThat(MyValue.ofResult4k("") is Failure<Exception>, equalTo(true))
 
-        assertThat(MyValue.ofListResult4k(), equalTo(Success(emptyList())))
+        assertThat(MyValue.ofListResult4k(), equalTo(Success(listOf())))
         assertThat(
             MyValue.ofListResult4k("hello", "there"),
             equalTo(Success(listOf(MyValue.of("hello"), MyValue.of("there"))))
@@ -45,6 +47,10 @@ class ValueFactoryTest {
     fun `throwable parse`() {
         assertThat(MyIntValue.parse("123"), equalTo(MyIntValue.of(123)))
         assertThat({ MyIntValue.parse("") }, throws<IllegalArgumentException>())
+
+        assertThat(MyIntValue.parseList(), equalTo(listOf()))
+        assertThat(MyIntValue.parseList("123", "456"), equalTo(listOf(MyIntValue.of(123), MyIntValue.of(456))))
+        assertThat({ MyIntValue.parseList("") }, throws<IllegalArgumentException>())
     }
 
     @Test

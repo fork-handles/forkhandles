@@ -66,8 +66,10 @@ fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>
     values.map(::of)
 
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofListOrNull(vararg values: PRIMITIVE) =
-    values
-        .mapNotNull(::ofOrNull).takeIf(List<DOMAIN>::isNotEmpty)
+    when {
+        values.isEmpty() -> emptyList()
+        else -> values.mapNotNull(::ofOrNull).takeIf(List<DOMAIN>::isNotEmpty)
+    }
 
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofListResult4k(vararg values: PRIMITIVE):
     Result<List<DOMAIN>, Exception> =
