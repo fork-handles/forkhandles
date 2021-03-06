@@ -33,7 +33,11 @@ class ValueFactoryTest {
         assertThat(MyValue.ofResult4k("hello"), equalTo(Success(MyValue.of("hello"))))
         assertThat(MyValue.ofResult4k("") is Failure<Exception>, equalTo(true))
 
-        assertThat(MyValue.ofListResult4k("hello", "there"), equalTo(Success(listOf(MyValue.of("hello"), MyValue.of("there")))))
+        assertThat(MyValue.ofListResult4k(), equalTo(Success(emptyList())))
+        assertThat(
+            MyValue.ofListResult4k("hello", "there"),
+            equalTo(Success(listOf(MyValue.of("hello"), MyValue.of("there"))))
+        )
         assertThat(MyValue.ofListResult4k("hello", "") is Failure<Exception>, equalTo(true))
     }
 
