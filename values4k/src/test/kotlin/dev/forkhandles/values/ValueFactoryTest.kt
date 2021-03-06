@@ -57,12 +57,20 @@ class ValueFactoryTest {
     fun `nullable parse`() {
         assertThat(MyIntValue.parseOrNull("123"), equalTo(MyIntValue.of(123)))
         assertThat(MyIntValue.parseOrNull(""), absent())
+
+        assertThat(MyIntValue.parseListOrNull(), equalTo(listOf()))
+        assertThat(MyIntValue.parseListOrNull("123", "456"), equalTo(listOf(MyIntValue.of(123), MyIntValue.of(456))))
+        assertThat(MyIntValue.parseListOrNull(""), absent())
     }
 
     @Test
     fun `result parse`() {
         assertThat(MyIntValue.parseResult4k("123"), equalTo(Success(MyIntValue.of(123))))
         assertThat(MyValue.ofResult4k("") is Failure<Exception>, equalTo(true))
+
+        assertThat(MyIntValue.parseListResult4k(), equalTo(Success(emptyList())))
+        assertThat(MyIntValue.parseListResult4k("123", "456"), equalTo(Success(listOf(MyIntValue.of(123), MyIntValue.of(456)))))
+        assertThat(MyValue.parseListResult4k("123", "") is Failure<Exception>, equalTo(true))
     }
 
     @Test

@@ -33,7 +33,7 @@ abstract class ValueFactory<DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any>(
 /**
  * Return a Object/null based on validation.
  */
-fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofOrNull(value: PRIMITIVE): DOMAIN? =
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofOrNull(value: PRIMITIVE) =
     try {
         validate(value)
     } catch (e: Exception) {
@@ -43,7 +43,7 @@ fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>
 /**
  * Parse a Object/null based on validation.
  */
-fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.parseOrNull(value: String): DOMAIN? =
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.parseOrNull(value: String) =
     try {
         validate(parseFn(value))
     } catch (e: Exception) {
@@ -53,13 +53,13 @@ fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>
 /**
  * Return a Result4k Success/Failure based on validation.
  */
-fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofResult4k(value: PRIMITIVE): Result<DOMAIN, Exception> =
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofResult4k(value: PRIMITIVE) =
     resultFrom { validate(value) }
 
 /**
  * Return a Result4k Success/Failure based on validation.
  */
-fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.parseResult4k(value: String): Result<DOMAIN, Exception> =
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.parseResult4k(value: String) =
     resultFrom { validate(parseFn(value)) }
 
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofList(vararg values: PRIMITIVE) =
@@ -68,31 +68,42 @@ fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofListOrNull(vararg values: PRIMITIVE) =
     when {
         values.isEmpty() -> emptyList()
-        else -> values.mapNotNull(::ofOrNull).takeIf(List<DOMAIN>::isNotEmpty)
+        else -> values.mapNotNull(::ofOrNull).takeIf(List<*>::isNotEmpty)
     }
 
-fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofListResult4k(vararg values: PRIMITIVE):
-    Result<List<DOMAIN>, Exception> =
-    when {
-        values.isEmpty() -> Success(emptyList())
-        else ->
-            values.drop(1)
-                .fold(ofResult4k(values.first()).map(::listOf)) { acc, next ->
-                    when (acc) {
-                        is Success -> ofResult4k(next).map { acc.value + it }
-                        is Failure -> acc
-                    }
-                }
-    }
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofListResult4k(values: List<PRIMITIVE>) =
+    values.toResult(::ofResult4k)
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofListResult4k(vararg values: PRIMITIVE) =
+    ofListResult4k(values.toList())
 
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.parseList(vararg values: String) =
     values.map(::parse)
 
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.parseListOrNull(vararg values: String) =
-    values.map(::parseOrNull)
+    when {
+        values.isEmpty() -> emptyList()
+        else -> values.mapNotNull(::parseOrNull).takeIf(List<*>::isNotEmpty)
+    }
+
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.parseListResult4k(values: List<String>) =
+    values.toResult(::parseResult4k)
 
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.parseListResult4k(vararg values: String) =
-    values.map(::parseResult4k)
+    parseListResult4k(values.toList())
 
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.showList(vararg values: DOMAIN) =
     values.map(::show)
+
+private fun <IN, DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> List<out IN>.toResult(
+    fn: (IN) -> Result<DOMAIN, Exception>
+) = when {
+    isEmpty() -> Success(emptyList())
+    else ->
+        drop(1)
+            .fold(fn(first()).map(::listOf)) { acc, next ->
+                when (acc) {
+                    is Success -> fn(next).map { acc.value + it }
+                    is Failure -> acc
+                }
+            }
+}
