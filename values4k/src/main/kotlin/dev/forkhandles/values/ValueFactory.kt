@@ -93,6 +93,9 @@ fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>
     parseListResult4k(values.toList())
 
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.showList(vararg values: DOMAIN) =
+    showList(values.toList())
+
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.showList(values: List<DOMAIN>) =
     values.map(::show)
 
 private fun <IN, DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> List<IN>.orNull(fn: (IN) -> DOMAIN?) =
