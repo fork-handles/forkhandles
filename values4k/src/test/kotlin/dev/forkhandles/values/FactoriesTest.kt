@@ -1,5 +1,6 @@
 package dev.forkhandles.values
 
+import com.natpryce.hamkrest.absent
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import org.junit.jupiter.api.Test
@@ -33,7 +34,13 @@ class FactoriesTest {
         "1".also { assertThat(BigIntegerValueFactory(::TV).parse(it), equalTo(TV(BigInteger(it)))) }
         true.also { assertThat(BooleanValueFactory(::TV).parse(it.toString()), equalTo(TV(it))) }
         "hello".also { assertThat(StringValueFactory(::TV).parse(it), equalTo(TV(it))) }
+
         "hello".also { assertThat(NonEmptyStringValueFactory(::TV).parse(it), equalTo(TV(it))) }
+        "".also { assertThat(NonEmptyStringValueFactory(::TV).parseOrNull(it), absent()) }
+
+        "hello".also { assertThat(NonBlankStringValueFactory(::TV).parse(it), equalTo(TV(it))) }
+        "   ".also { assertThat(NonBlankStringValueFactory(::TV).parseOrNull(it), absent()) }
+
         UUID.randomUUID().also { assertThat(UUIDValueFactory(::TV).parse(it.toString()), equalTo(TV(it))) }
         URL("http://localhost").also { assertThat(URLValueFactory(::TV).parse(it.toString()), equalTo(TV(it))) }
 

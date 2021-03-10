@@ -33,6 +33,11 @@ open class NonEmptyStringValueFactory<DOMAIN : Value<String>>(
     showFn: (String) -> String = { it }
 ) : ValueFactory<DOMAIN, String>(fn, 1.minLength, { it }, showFn)
 
+open class NonBlankStringValueFactory<DOMAIN : Value<String>>(
+    fn: (String) -> DOMAIN,
+    showFn: (String) -> String = { it }
+) : ValueFactory<DOMAIN, String>(fn, 1.minLength.let { v -> { v(it.trim()) } }, { it }, showFn)
+
 open class IntValueFactory<DOMAIN : Value<Int>>(
     fn: (Int) -> DOMAIN, validation: Validation<Int>? = null
 ) : ValueFactory<DOMAIN, Int>(fn, validation, String::toInt)
