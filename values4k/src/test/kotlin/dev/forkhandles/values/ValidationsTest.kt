@@ -42,17 +42,11 @@ class ValidationsTest {
         assertThat(10L.maxValue(10), equalTo(true))
         assertThat(10L.maxValue(11), equalTo(false))
 
-        assertThat(10.maxValue(10), equalTo(true))
-        assertThat(10.maxValue(11), equalTo(false))
-
         assertThat(10L.minValue(10), equalTo(true))
         assertThat(10L.minValue(9), equalTo(false))
 
-        assertThat(10.minValue(10), equalTo(true))
-        assertThat(10.minValue(9), equalTo(false))
-
-        assertThat((1..10).value(0), equalTo(false))
-        assertThat((1..10).value(11), equalTo(false))
+        assertThat((1..10).between(0), equalTo(false))
+        assertThat((1..10).between(11), equalTo(false))
     }
 
     @Test

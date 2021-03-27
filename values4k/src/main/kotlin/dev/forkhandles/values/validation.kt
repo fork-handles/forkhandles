@@ -9,18 +9,13 @@ val Int.maxLength: Validation<String> get() = { it.length <= this@maxLength }
 val Int.minLength: Validation<String> get() = { it.length >= this@minLength }
 val Int.exactLength: Validation<String> get() = { it.length == this@exactLength }
 val IntRange.length: Validation<String> get() = { this@length.contains(it.length) }
+val String.regex: Validation<String> get() = toRegex().let { v -> { v.matches(it) } }
 
-val Int.maxValue: Validation<Int> get() = { it <= this@maxValue }
-val Int.minValue: Validation<Int> get() = { it >= this@minValue }
-val IntRange.value: Validation<Number> get() = { this@value.contains(it) }
-
-val Long.maxValue: Validation<Long> get() = { it <= this@maxValue }
-val Long.minValue: Validation<Long> get() = { it >= this@minValue }
-val LongRange.value: Validation<Number> get() = { this@value.contains(it) }
+val <T : Comparable<T>> T.maxValue: Validation<T> get() = { it <= this@maxValue }
+val <T : Comparable<T>> T.minValue: Validation<T> get() = { it >= this@minValue }
+val <T : Comparable<T>> ClosedRange<T>.between: Validation<T> get() = { this@between.contains(it) }
 
 val Number.exactValue: Validation<Number> get() = { it == this@exactValue }
-
-val String.regex: Validation<String> get() = toRegex().let { v -> { v.matches(it) } }
 
 fun <T> Validation<T>.and(that: Validation<T>): Validation<T> = { this@and(it) && that(it) }
 fun <T> Validation<T>.or(that: Validation<T>): Validation<T> = { this@or(it) || that(it) }
