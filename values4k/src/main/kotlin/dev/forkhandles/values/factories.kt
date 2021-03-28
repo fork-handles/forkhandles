@@ -68,7 +68,9 @@ open class BigDecimalValueFactory<DOMAIN : Value<BigDecimal>>(
 
 open class UUIDValueFactory<DOMAIN : Value<UUID>>(
     fn: (UUID) -> DOMAIN, validation: Validation<UUID>? = null
-) : ValueFactory<DOMAIN, UUID>(fn, validation, UUID::fromString)
+) : ValueFactory<DOMAIN, UUID>(fn, validation, UUID::fromString) {
+    fun random() = of(UUID.randomUUID())
+}
 
 open class URLValueFactory<DOMAIN : Value<URL>>(
     fn: (URL) -> DOMAIN, validation: Validation<URL>? = null
