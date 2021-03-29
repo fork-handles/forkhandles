@@ -1,15 +1,22 @@
 <h2 class="github">Changelog</h2>
 
-This list is not intended to be all-encompassing - it will document major and breaking API
-changes with their rationale when appropriate:
+This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
+when appropriate:
+
+### v1.8.6.0
+
+- **values4k** : Add unwrap() and fix validations.
 
 ### v1.8.5.0
+
 - **values4k** : Add `NonBlankStringValueFactory`.
 
 ### v1.8.4.3
+
 - release from MC
 
 ### v1.8.4.0
+
 - **values4k** : Add `NonEmptyStringValueFactory`.
 
 ### v1.8.3.0

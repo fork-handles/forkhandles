@@ -69,13 +69,21 @@ class ValueFactoryTest {
         assertThat(MyValue.ofResult4k("") is Failure<Exception>, equalTo(true))
 
         assertThat(MyIntValue.parseListResult4k(), equalTo(Success(emptyList())))
-        assertThat(MyIntValue.parseListResult4k("123", "456"), equalTo(Success(listOf(MyIntValue.of(123), MyIntValue.of(456)))))
+        assertThat(
+            MyIntValue.parseListResult4k("123", "456"),
+            equalTo(Success(listOf(MyIntValue.of(123), MyIntValue.of(456))))
+        )
         assertThat(MyValue.parseListResult4k("123", "") is Failure<Exception>, equalTo(true))
     }
 
     @Test
     fun show() {
         assertThat(MyIntValue.show(MyIntValue.of(123)), equalTo("123"))
+    }
+
+    @Test
+    fun unwrap() {
+        assertThat(MyIntValue.unwrap(MyIntValue.of(123)), equalTo(123))
     }
 
     @Test

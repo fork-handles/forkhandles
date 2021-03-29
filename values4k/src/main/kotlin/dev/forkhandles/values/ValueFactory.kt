@@ -25,9 +25,11 @@ abstract class ValueFactory<DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any>(
     @Deprecated("use show()", ReplaceWith("show(value)"))
     fun print(value: DOMAIN) = show(value)
 
-    fun show(value: DOMAIN) = showFn(value.value)
+    fun show(value: DOMAIN) = showFn(unwrap(value))
 
     fun of(value: PRIMITIVE) = validate(value)
+
+    fun unwrap(value: DOMAIN) = value.value
 }
 
 /**
