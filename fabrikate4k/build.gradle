@@ -1,0 +1,8 @@
+description = 'ForkHandles test utility to instantiate objects with fake data'
+
+dependencies {
+    api Libs.kotlin_stdlib_jdk8
+    api Libs.kotlin_reflect
+    testApi Config.TestDependencies
+    testApi Libs.kotlin_test
+}
