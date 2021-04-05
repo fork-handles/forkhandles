@@ -45,27 +45,26 @@ open class InstanceFabricator(
 ) {
     class NoUsableConstructor : Error()
 
-    fun makeRandomInstance(classRef: KClass<*>, type: KType): Any {
-        val primitive = makeStandardInstanceOrNull(classRef, type)
-
-        return when {
-            primitive != null -> primitive
-            else -> {
-                for (constructor in classRef.constructors.shuffled(config.random)) {
-                    try {
-                        return constructor.parameters
-                            .map { makeRandomInstanceForParam(it.type, classRef, type) }
-                            .toTypedArray()
-                            .let(constructor::call)
-                    } catch (e: Throwable) {
-                        e.printStackTrace()
-                        // no-op. We catch any possible error here that might occur during class creation
+    fun makeRandomInstance(classRef: KClass<*>, type: KType): Any =
+        when (val primitive = makeStandardInstanceOrNull(classRef, type)) {
+            null -> {
+                classRef.constructors
+                    .shuffled(config.random)
+                    .forEach { constructor ->
+                        try {
+                            return constructor.parameters
+                                .map { makeRandomInstanceForParam(it.type, classRef, type) }
+                                .toTypedArray()
+                                .let(constructor::call)
+                        } catch (e: Throwable) {
+                            e.printStackTrace()
+                            // no-op. We catch any possible error here that might occur during class creation
+                        }
                     }
-                }
                 throw NoUsableConstructor()
             }
+            else -> primitive
         }
-    }
 
     private fun makeRandomInstanceForParam(
         paramType: KType,
