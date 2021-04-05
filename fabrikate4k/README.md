@@ -106,4 +106,4 @@ Person(
 
 The original code is copied
 from [Creating a random instance of any class in Kotlin](https://blog.kotlin-academy.com/creating-a-random-instance-of-any-class-in-kotlin-b6168655b64a)
-by [Marcin Moskala ](http://marcinmoskala.com/).
+by [Marcin Moskala](http://marcinmoskala.com/).
