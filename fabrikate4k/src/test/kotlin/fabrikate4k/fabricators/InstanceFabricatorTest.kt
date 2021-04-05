@@ -187,7 +187,7 @@ class InstanceFabricatorTest {
 
     @Test
     fun `when user expects empty collections, both Map and List are empty`() {
-        val config = InstanceFabricatorConfig(
+        val config = FabricatorConfig(
             collectionSizes = 0..0,
         )
 
@@ -209,7 +209,7 @@ class InstanceFabricatorTest {
 
     @Test
     fun `when user expects concrete collection size, both Map and List are of this size`() {
-        val config = InstanceFabricatorConfig(
+        val config = FabricatorConfig(
             collectionSizes = 5..5
         )
 
@@ -222,7 +222,7 @@ class InstanceFabricatorTest {
 
     @Test
     fun `when user expects concrete String length, all Strings have this length`() {
-        val config = InstanceFabricatorConfig(
+        val config = FabricatorConfig(
             string = StringFabricator(5..5),
             collectionSizes = (2..2),
         )
@@ -237,7 +237,7 @@ class InstanceFabricatorTest {
     @Test
     fun `object set in config as Any, is always returned when we expect Any`() {
         val any = object {}
-        val config = InstanceFabricatorConfig(any = AnyFabricator(any))
+        val config = FabricatorConfig(any = AnyFabricator(any))
 
         repeat(10) {
             assertEquals(any, Fabrikate(config).random<Any>())
@@ -248,7 +248,7 @@ class InstanceFabricatorTest {
 
     @Test
     fun `check expected random values`() {
-        val config = InstanceFabricatorConfig(random = Random(11))
+        val config = FabricatorConfig(random = Random(11))
 
         assertEquals(
             "A",

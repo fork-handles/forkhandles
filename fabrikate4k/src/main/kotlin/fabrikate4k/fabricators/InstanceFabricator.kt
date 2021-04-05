@@ -12,7 +12,7 @@ import kotlin.random.Random
 import kotlin.reflect.*
 import kotlin.reflect.full.createType
 
-data class InstanceFabricatorConfig(
+data class FabricatorConfig(
     val random: Random = Random,
     val collectionSizes: IntRange = 1..5,
     val string: Fabricator<String> = StringFabricator(random = random),
@@ -41,7 +41,7 @@ data class InstanceFabricatorConfig(
 )
 
 open class InstanceFabricator(
-    private val config: InstanceFabricatorConfig = InstanceFabricatorConfig()
+    private val config: FabricatorConfig = FabricatorConfig()
 ) {
     class NoUsableConstructor : Error()
 
