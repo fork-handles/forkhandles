@@ -30,12 +30,11 @@ class UsageTest {
 
         val myRandomInt: Fabricator<Int> = { Random.nextInt(20, 60) }
 
-        val randomPerson: Person = Fabrikate(
-            FabricatorConfig(
-                string = myRandomString,
-                int = myRandomInt
-            )
-        ).random()
+        val config = FabricatorConfig()
+            .register(myRandomString)
+            .register(myRandomInt)
+
+        val randomPerson: Person = Fabrikate(config).random()
 
         println(randomPerson)
     }

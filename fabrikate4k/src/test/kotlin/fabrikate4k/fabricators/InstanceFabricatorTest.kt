@@ -222,10 +222,7 @@ class InstanceFabricatorTest {
 
     @Test
     fun `when user expects concrete String length, all Strings have this length`() {
-        val config = FabricatorConfig(
-            string = StringFabricator(5..5),
-            collectionSizes = (2..2),
-        )
+        val config = FabricatorConfig(collectionSizes = (2..2)).register(StringFabricator(5..5))
 
         repeat(10) {
             assertEquals(5, Fabrikate(config).random<String>().length)
@@ -237,7 +234,7 @@ class InstanceFabricatorTest {
     @Test
     fun `object set in config as Any, is always returned when we expect Any`() {
         val any = object {}
-        val config = FabricatorConfig(any = AnyFabricator(any))
+        val config = FabricatorConfig().register(AnyFabricator(any))
 
         repeat(10) {
             assertEquals(any, Fabrikate(config).random<Any>())
@@ -248,7 +245,7 @@ class InstanceFabricatorTest {
 
     @Test
     fun `check expected random values`() {
-        val config = FabricatorConfig(random = Random(11))
+        val config = FabricatorConfig(11)
 
         assertEquals(
             "A",

@@ -1,44 +1,10 @@
 package fabrikate4k.fabricators
 
-import java.io.File
 import java.lang.reflect.*
-import java.math.BigDecimal
-import java.math.BigInteger
-import java.net.URI
-import java.net.URL
 import java.time.*
 import java.util.*
-import kotlin.random.Random
 import kotlin.reflect.*
 import kotlin.reflect.full.createType
-
-data class FabricatorConfig(
-    val random: Random = Random,
-    val collectionSizes: IntRange = 1..5,
-    val string: Fabricator<String> = StringFabricator(random = random),
-    val long: Fabricator<Long> = LongFabricator(random),
-    val int: Fabricator<Int> = IntFabricator(random),
-    val double: Fabricator<Double> = DoubleFabricator(random),
-    val float: Fabricator<Float> = FloatFabricator(random),
-    val char: Fabricator<Char> = CharFabricator(random = random),
-    val byte: Fabricator<ByteArray> = BytesFabricator(random = random),
-    val bigInteger: Fabricator<BigInteger> = BigIntegerFabricator(random = random),
-    val bigDecimal: Fabricator<BigDecimal> = BigDecimalFabricator(random = random),
-    val instant: Fabricator<Instant> = InstantFabricator(random),
-    val localDate: Fabricator<LocalDate> = LocalDateFabricator(random),
-    val localTime: Fabricator<LocalTime> = LocalTimeFabricator(random),
-    val localDateTime: Fabricator<LocalDateTime> = LocalDateTimeFabricator(random),
-    val offsetDateTime: Fabricator<OffsetDateTime> = OffsetDateTimeFabricator(random),
-    val offsetTime: Fabricator<OffsetTime> = OffsetTimeFabricator(random),
-    val zonedDateTime: Fabricator<ZonedDateTime> = ZonedDateTimeFabricator(random),
-    val duration: Fabricator<Duration> = DurationFabricator(random),
-    val date: Fabricator<Date> = DateFabricator(random),
-    val uri: Fabricator<URI> = UriFabricator(random),
-    val url: Fabricator<URL> = UrlFabricator(random),
-    val file: Fabricator<File> = FileFabricator(),
-    val uuid: Fabricator<UUID> = UUIDFabricator(),
-    val any: Fabricator<Any> = AnyFabricator(),
-)
 
 open class InstanceFabricator(
     private val config: FabricatorConfig = FabricatorConfig()
@@ -56,8 +22,9 @@ open class InstanceFabricator(
                                 .map { makeRandomInstanceForParam(it.type, classRef, type) }
                                 .toTypedArray()
                                 .let(constructor::call)
-                        } catch (e: Throwable) {
-                            e.printStackTrace()
+                        } catch (ignore: Throwable) {
+                            System.err.println("Failed to call constructor. Seed=${config.seed}. Reason=${ignore.message}")
+                            ignore.printStackTrace()
                             // no-op. We catch any possible error here that might occur during class creation
                         }
                     }
@@ -83,33 +50,10 @@ open class InstanceFabricator(
 
     private fun makeStandardInstanceOrNull(classRef: KClass<*>, type: KType) = with(config) {
         when (classRef) {
-            Any::class -> any()
-            Int::class -> int()
-            Long::class -> long()
-            Double::class -> double()
-            Float::class -> float()
-            Char::class -> char()
-            String::class -> string()
-            ByteArray::class -> byte()
-            BigInteger::class -> bigInteger()
-            BigDecimal::class -> bigDecimal()
-            Instant::class -> instant()
-            LocalDate::class -> localDate()
-            LocalTime::class -> localTime()
-            LocalDateTime::class -> localDateTime()
-            OffsetDateTime::class -> offsetDateTime()
-            OffsetTime::class -> offsetTime()
-            ZonedDateTime::class -> zonedDateTime()
-            Date::class -> date()
-            URI::class -> uri()
-            URL::class -> url()
-            File::class -> file()
-            Duration::class -> duration()
-            UUID::class -> uuid()
             Set::class -> makeRandomSet(classRef, type)
             List::class, Collection::class, Set::class -> makeRandomList(classRef, type)
             Map::class -> makeRandomMap(classRef, type)
-            else -> null
+            else -> mappings[classRef]?.invoke()
         }
     }
 
