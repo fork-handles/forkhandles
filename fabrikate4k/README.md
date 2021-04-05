@@ -30,7 +30,7 @@ data class Person(
     val birthdate: LocalDate
 )
 
-val randomPerson: Person = Fabrikate.random()
+val randomPerson: Person = Fabrikate().random()
 
 /*
 Person(
@@ -50,7 +50,7 @@ val myRandomString: Fabricator<String> = UUID.randomUUID()::toString
 
 val myRandomInt: Fabricator<Int> = { Random.nextInt(20, 60) }
 
-val randomPerson: Person = Fabrikate.random(
+val randomPerson: Person = Fabrikate().random(
     InstanceFabricatorConfig(
         string = myRandomString,
         int = myRandomInt

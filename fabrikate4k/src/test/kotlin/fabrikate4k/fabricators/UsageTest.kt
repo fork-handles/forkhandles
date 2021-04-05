@@ -21,7 +21,7 @@ class UsageTest {
 
     @Test
     fun `simple usage example`() {
-        println(Fabrikate.random<Person>())
+        println(Fabrikate().random<Person>())
     }
 
     @Test
@@ -30,12 +30,12 @@ class UsageTest {
 
         val myRandomInt: Fabricator<Int> = { Random.nextInt(20, 60) }
 
-        val randomPerson: Person = Fabrikate.random(
+        val randomPerson: Person = Fabrikate(
             InstanceFabricatorConfig(
                 string = myRandomString,
                 int = myRandomInt
             )
-        )
+        ).random()
 
         println(randomPerson)
     }
