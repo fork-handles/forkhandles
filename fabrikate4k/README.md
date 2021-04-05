@@ -14,7 +14,7 @@ In Gradle, install the ForkHandles BOM and then this module in the dependency bl
 
 ```kotlin
 implementation(platform("dev.forkhandles:forkhandles-bom:X.Y.Z"))
-implementation("dev.forkhandles:fabrikate4k")
+testImplementation("dev.forkhandles:fabrikate4k")
 ```
 
 ## Usage
@@ -92,9 +92,9 @@ Person(
 * OffsetTime
 * OffsetDateTime
 * ZonedDateTime
-* Set<String>
-* List<String>
-* Map<String, String>
+* Set
+* List
+* Map
 * URI
 * URL
 * Date
