@@ -45,6 +45,6 @@ class SupportedTypesTest {
 
     @Test
     fun `supports common types`() {
-        assertThat(Fabrikate.randomInstance<Foobar>().also(::println), present())
+        assertThat(Fabrikate.random<Foobar>().also(::println), present())
     }
 }
