@@ -43,19 +43,18 @@ Person(
  */
 ```
 
-If you need more control over the randomly created data you can do so by providing your own implementation:
+If you need more control over the randomly created data you can register your own implementation:
 
 ```kotlin
 val myRandomString: Fabricator<String> = UUID.randomUUID()::toString
 
 val myRandomInt: Fabricator<Int> = { Random.nextInt(20, 60) }
 
-val randomPerson: Person = Fabrikate(
-    FabricatorConfig(
-        string = myRandomString,
-        int = myRandomInt
-    )
-).random()
+val config = FabricatorConfig()
+    .register(myRandomString)
+    .register(myRandomInt)
+
+val randomPerson: Person = Fabrikate(config).random()
 
 /*
 Person(
