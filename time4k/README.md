@@ -7,7 +7,7 @@
 <a href="http://kotlinlang.org"><img alt="kotlin" src="https://img.shields.io/badge/kotlin-1.4-blue.svg"></a>
 <a href="https://codebeat.co/projects/github-com-fork-handles-forkhandles-trunk"><img alt="codebeat badge" src="https://codebeat.co/badges/5b369ed4-af27-46f4-ad9c-a307d900617e"></a>
 
-A simple replacement for the Java clock ans scheduler.
+A simple replacement for the Java clock and scheduler.
 
 ## Installation
 In Gradle, install the ForkHandles BOM and then this module in the dependency block:
