@@ -1,6 +1,7 @@
 package fabrikate4k.fabricators
 
 import com.natpryce.hamkrest.assertion.assertThat
+import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.present
 import fabrikate4k.Fabrikate
 import fabrikate4k.fabricators.InstanceFabricator.NoUsableConstructor
@@ -327,7 +328,8 @@ class InstanceFabricatorTest {
         assertThat(Fabrikate().random<Foobar>().also(::println), present())
     }
 
-    class X private constructor(val a: String) {
+    @Suppress("DataClassPrivateConstructor")
+    data class X private constructor(val a: String) {
         companion object {
             fun factory(a: String): X = X(a)
             fun somethingElse(a: String): String = a
@@ -336,6 +338,7 @@ class InstanceFabricatorTest {
 
     @Test
     fun `supports static factory methods`() {
-        assertThat(Fabrikate().random<X>().also(::println), present())
+        val config = FabricatorConfig(19191).withStandardMappings()
+        assertThat(Fabrikate(config).random<X>().toString(), equalTo("X(a=MKl2)"))
     }
 }

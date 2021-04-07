@@ -4,7 +4,10 @@ import java.lang.reflect.*
 import java.time.*
 import java.util.*
 import kotlin.reflect.*
+import kotlin.reflect.full.companionObject
+import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.createType
+import kotlin.reflect.full.memberFunctions
 
 open class InstanceFabricator(
     private val config: FabricatorConfig
@@ -14,24 +17,41 @@ open class InstanceFabricator(
     fun makeRandomInstance(classRef: KClass<*>, type: KType): Any =
         when (val primitive = makeStandardInstanceOrNull(classRef, type)) {
             null -> {
-                classRef.constructors
-                    .shuffled(config.random)
-                    .forEach { constructor ->
+                val ctransform: (KParameter) -> Any? =
+                    { makeRandomInstanceForParam(it.type, classRef, type) }
+
+                val otransform: (KParameter) -> Any? = {
+                    if (it.kind == KParameter.Kind.INSTANCE) classRef.companionObjectInstance
+                    else makeRandomInstanceForParam(it.type, classRef, type)
+                }
+
+                val shuffled = classRef.constructors
+                    .shuffled(config.random).map { it to ctransform }
+
+                val toList = (classRef.companionObject
+                    ?.memberFunctions
+                    ?.filter { it.returnType == type }
+                    ?.shuffled(config.random)
+                    ?.toTypedArray() ?: emptyArray()).toList().map { it to otransform }
+
+                (shuffled + toList)
+                    .forEach {
                         try {
-                            return constructor.parameters
-                                .map { makeRandomInstanceForParam(it.type, classRef, type) }
-                                .toTypedArray()
-                                .let(constructor::call)
+                            return call(it.first, it.second)
                         } catch (ignore: Throwable) {
-                            System.err.println("Failed to call constructor. Seed=${config.seed}. Reason=${ignore.message}")
-                            ignore.printStackTrace()
+//                            System.err.println("""Failed to call constructor "${fn.name}". Seed=${config.seed}. Reason=${ignore.message}""")
+//                            ignore.printStackTrace()
                             // no-op. We catch any possible error here that might occur during class creation
                         }
                     }
+
                 throw NoUsableConstructor()
             }
             else -> primitive
         }
+
+    private fun call(fn: KFunction<*>, transform: (KParameter) -> Any?) =
+        fn.parameters.map(transform).toTypedArray().let(fn::call)!!
 
     private fun makeRandomInstanceForParam(
         paramType: KType,
