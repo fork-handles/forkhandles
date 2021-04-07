@@ -41,8 +41,8 @@ open class InstanceFabricator(
         ?.sortedByDescending { it.parameters.any { p -> p.type == String::class } }
         ?.toTypedArray() ?: emptyArray())
         .toList()
-        .map { constructor ->
-            constructor to { param: KParameter ->
+        .map {
+            it to { param: KParameter ->
                 if (param.kind == KParameter.Kind.INSTANCE) classRef.companionObjectInstance
                 else makeRandomInstanceForParam(param.type, classRef, type)
             }
@@ -53,15 +53,7 @@ open class InstanceFabricator(
         type: KType
     ): List<Pair<KFunction<Any>, (KParameter) -> Any>> = classRef.constructors
         .shuffled(config.random)
-        .map { constructor ->
-            constructor to { param: KParameter ->
-                makeRandomInstanceForParam(
-                    param.type,
-                    classRef,
-                    type
-                )
-            }
-        }
+        .map { it to { param: KParameter -> makeRandomInstanceForParam(param.type, classRef, type) } }
 
     private fun makeRandomInstanceForParam(
         paramType: KType,
