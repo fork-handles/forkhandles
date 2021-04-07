@@ -7,6 +7,7 @@ import kotlin.reflect.*
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.createType
+import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.memberFunctions
 
 open class InstanceFabricator(
@@ -17,41 +18,50 @@ open class InstanceFabricator(
     fun makeRandomInstance(classRef: KClass<*>, type: KType): Any =
         when (val primitive = makeStandardInstanceOrNull(classRef, type)) {
             null -> {
-                val ctransform: (KParameter) -> Any? =
-                    { makeRandomInstanceForParam(it.type, classRef, type) }
-
-                val otransform: (KParameter) -> Any? = {
-                    if (it.kind == KParameter.Kind.INSTANCE) classRef.companionObjectInstance
-                    else makeRandomInstanceForParam(it.type, classRef, type)
-                }
-
-                val shuffled = classRef.constructors
-                    .shuffled(config.random).map { it to ctransform }
-
-                val toList = (classRef.companionObject
-                    ?.memberFunctions
-                    ?.filter { it.returnType == type }
-                    ?.shuffled(config.random)
-                    ?.toTypedArray() ?: emptyArray()).toList().map { it to otransform }
-
-                (shuffled + toList)
-                    .forEach {
-                        try {
-                            return call(it.first, it.second)
-                        } catch (ignore: Throwable) {
-//                            System.err.println("""Failed to call constructor "${fn.name}". Seed=${config.seed}. Reason=${ignore.message}""")
-//                            ignore.printStackTrace()
-                            // no-op. We catch any possible error here that might occur during class creation
-                        }
+                val constructors = findConstructorFunctions(classRef, type)
+                val factories = findFactoryFunctions(classRef, type)
+                (constructors + factories).forEach { (fn, transform) ->
+                    try {
+                        return fn.parameters.map(transform).toTypedArray().let(fn::call)!!
+                    } catch (ignore: Throwable) {
+                        // do nothing
                     }
-
+                }
                 throw NoUsableConstructor()
             }
             else -> primitive
         }
 
-    private fun call(fn: KFunction<*>, transform: (KParameter) -> Any?) =
-        fn.parameters.map(transform).toTypedArray().let(fn::call)!!
+    private fun findFactoryFunctions(
+        classRef: KClass<*>,
+        type: KType
+    ): List<Pair<KFunction<*>, (KParameter) -> Any?>> = (classRef.companionObject
+        ?.memberFunctions
+        ?.filter { it.returnType == type || type.isSubtypeOf(it.returnType) }
+        ?.sortedByDescending { it.parameters.any { p -> p.type == String::class } }
+        ?.toTypedArray() ?: emptyArray())
+        .toList()
+        .map { constructor ->
+            constructor to { param: KParameter ->
+                if (param.kind == KParameter.Kind.INSTANCE) classRef.companionObjectInstance
+                else makeRandomInstanceForParam(param.type, classRef, type)
+            }
+        }
+
+    private fun findConstructorFunctions(
+        classRef: KClass<*>,
+        type: KType
+    ): List<Pair<KFunction<Any>, (KParameter) -> Any>> = classRef.constructors
+        .shuffled(config.random)
+        .map { constructor ->
+            constructor to { param: KParameter ->
+                makeRandomInstanceForParam(
+                    param.type,
+                    classRef,
+                    type
+                )
+            }
+        }
 
     private fun makeRandomInstanceForParam(
         paramType: KType,

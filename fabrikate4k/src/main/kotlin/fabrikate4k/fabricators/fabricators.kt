@@ -75,7 +75,7 @@ class BytesFabricator(
 }
 
 class InstantFabricator(private val random: Random = Random) : Fabricator<Instant> {
-    override fun invoke(): Instant = Instant.ofEpochSecond(random.nextLong(0, Instant.now().epochSecond))
+    override fun invoke(): Instant = Instant.ofEpochSecond(random.nextLong(0, 1735689600))
 }
 
 class LocalDateFabricator(private val random: Random = Random) : Fabricator<LocalDate> {

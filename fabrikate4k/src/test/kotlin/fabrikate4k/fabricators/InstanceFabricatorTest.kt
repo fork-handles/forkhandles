@@ -329,9 +329,19 @@ class InstanceFabricatorTest {
     }
 
     @Suppress("DataClassPrivateConstructor")
-    data class X private constructor(val a: String) {
+    data class X private constructor(val a: Instant) {
         companion object {
-            fun factory(a: String): X = X(a)
+            fun parse(a: String): X = X(Instant.parse(a))
+            fun factory(a: Instant): X = X(a)
+            fun somethingElse(a: String): String = a
+        }
+    }
+
+    interface Q
+    @Suppress("DataClassPrivateConstructor")
+    data class R private constructor(val a: String): Q {
+        companion object {
+            fun of(name: String): Q = R(name)
             fun somethingElse(a: String): String = a
         }
     }
@@ -339,6 +349,7 @@ class InstanceFabricatorTest {
     @Test
     fun `supports static factory methods`() {
         val config = FabricatorConfig(19191).withStandardMappings()
-        assertThat(Fabrikate(config).random<X>().toString(), equalTo("X(a=MKl2)"))
+        assertThat(Fabrikate(config).random<X>().toString(), equalTo("X(a=2018-12-07T16:10:15Z)"))
+        assertThat(Fabrikate(config).random<R>().toString(), equalTo("R(a=2dfFRx3d6v)"))
     }
 }
