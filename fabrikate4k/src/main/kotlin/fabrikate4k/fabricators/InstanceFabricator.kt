@@ -7,7 +7,7 @@ import kotlin.reflect.*
 import kotlin.reflect.full.createType
 
 open class InstanceFabricator(
-    private val config: FabricatorConfig = FabricatorConfig()
+    private val config: FabricatorConfig
 ) {
     class NoUsableConstructor : Error()
 

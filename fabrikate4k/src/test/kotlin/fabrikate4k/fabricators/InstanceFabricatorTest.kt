@@ -1,11 +1,26 @@
 package fabrikate4k.fabricators
 
+import com.natpryce.hamkrest.assertion.assertThat
+import com.natpryce.hamkrest.present
 import fabrikate4k.Fabrikate
 import fabrikate4k.fabricators.InstanceFabricator.NoUsableConstructor
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import kotlin.random.Random
+import java.io.File
+import java.math.BigDecimal
+import java.math.BigInteger
+import java.net.URI
+import java.net.URL
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.OffsetTime
+import java.time.ZonedDateTime
+import java.util.*
 
 @Suppress(
     "ConvertSecondaryConstructorToPrimary",
@@ -187,9 +202,7 @@ class InstanceFabricatorTest {
 
     @Test
     fun `when user expects empty collections, both Map and List are empty`() {
-        val config = FabricatorConfig(
-            collectionSizes = 0..0,
-        )
+        val config = FabricatorConfig(collectionSizes = 0..0).withStandardMappings()
 
         repeat(10) {
             assertEquals(
@@ -209,9 +222,7 @@ class InstanceFabricatorTest {
 
     @Test
     fun `when user expects concrete collection size, both Map and List are of this size`() {
-        val config = FabricatorConfig(
-            collectionSizes = 5..5
-        )
+        val config = FabricatorConfig(collectionSizes = 5..5).withStandardMappings()
 
         repeat(10) {
             assertEquals(5, Fabrikate(config).random<List<Int>>().size)
@@ -222,7 +233,9 @@ class InstanceFabricatorTest {
 
     @Test
     fun `when user expects concrete String length, all Strings have this length`() {
-        val config = FabricatorConfig(collectionSizes = (2..2)).register(StringFabricator(5..5))
+        val config = FabricatorConfig(collectionSizes = (2..2))
+            .withStandardMappings()
+            .register(StringFabricator(5..5))
 
         repeat(10) {
             assertEquals(5, Fabrikate(config).random<String>().length)
@@ -234,7 +247,9 @@ class InstanceFabricatorTest {
     @Test
     fun `object set in config as Any, is always returned when we expect Any`() {
         val any = object {}
-        val config = FabricatorConfig().register(AnyFabricator(any))
+        val config = FabricatorConfig()
+            .withStandardMappings()
+            .register(AnyFabricator(any))
 
         repeat(10) {
             assertEquals(any, Fabrikate(config).random<Any>())
@@ -245,7 +260,7 @@ class InstanceFabricatorTest {
 
     @Test
     fun `check expected random values`() {
-        val config = FabricatorConfig(11)
+        val config = FabricatorConfig(11).withStandardMappings()
 
         assertEquals(
             "A",
@@ -276,5 +291,51 @@ class InstanceFabricatorTest {
             "F(l=[E(b=B(a=A), map={4356568840000774042=wXbpNgKY, -5661535184940083983=31AN}, l=8355581566063425117), E(b=B(a=A), map={-4428731399617125871=858U2A, 4946810254014872353=EvlX, -8872764544214427894=Mq0e7Q}, l=-3647988506537829790), E(b=B(a=A), map={-5082975600357804165=4nidgrzQ5z, 4581876831692180829=7hU, 9182925820547913012=c0t}, l=-1694053907404763001)], e=E(b=B(a=A), map={4998150485251263969=2psruqY0, 6954434527856743375=ahWA5T1ewA}, l=1510234775683172956))",
             Fabrikate(config).random<F>().toString()
         )
+    }
+
+    @Suppress("ArrayInDataClass")
+    data class Foobar(
+        val a: Int,
+        val b: Long,
+        val c: Double,
+        val d: Float,
+        val e: Char,
+        val f: String,
+        val g: ByteArray,
+        val h: BigInteger,
+        val i: BigDecimal,
+        val j: Instant,
+        val k: LocalDate,
+        val l: LocalTime,
+        val m: LocalDateTime,
+        val n: OffsetTime,
+        val o: OffsetDateTime,
+        val p: ZonedDateTime,
+        val q: Set<String>,
+        val r: List<String>,
+        val s: Map<String, String>,
+        val t: URI,
+        val u: URL,
+        val v: Date,
+        val w: File,
+        val x: UUID,
+        val y: Duration,
+    )
+
+    @Test
+    fun `supports common types`() {
+        assertThat(Fabrikate().random<Foobar>().also(::println), present())
+    }
+
+    class X private constructor(val a: String) {
+        companion object {
+            fun factory(a: String): X = X(a)
+            fun somethingElse(a: String): String = a
+        }
+    }
+
+    @Test
+    fun `supports static factory methods`() {
+        assertThat(Fabrikate().random<X>().also(::println), present())
     }
 }

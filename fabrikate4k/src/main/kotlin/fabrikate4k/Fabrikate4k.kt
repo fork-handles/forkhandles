@@ -4,7 +4,7 @@ import fabrikate4k.fabricators.InstanceFabricator
 import fabrikate4k.fabricators.FabricatorConfig
 import fabrikate4k.fabricators.getKType
 
-open class Fabrikate(val config: FabricatorConfig = FabricatorConfig()) {
+open class Fabrikate(val config: FabricatorConfig = FabricatorConfig().withStandardMappings()) {
 
     inline fun <reified T : Any> random(): T =
         InstanceFabricator(config).makeRandomInstance(T::class, getKType<T>()) as T

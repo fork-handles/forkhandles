@@ -10,14 +10,6 @@ class FabricatorConfig(
     val random: Random = Random(seed)
     val mappings = mutableMapOf<KClass<*>, Fabricator<*>>()
 
-    init {
-        withStandardMappings()
-    }
-
-    inline fun <reified T : Any> register(noinline fabricator: Fabricator<T>) = apply {
-        mappings[T::class] = fabricator
-    }
-
     fun withStandardMappings() = apply {
         register(StringFabricator(random = random))
         register(LongFabricator(random))
@@ -42,5 +34,9 @@ class FabricatorConfig(
         register(FileFabricator())
         register(UUIDFabricator())
         register(AnyFabricator())
+    }
+
+    inline fun <reified T : Any> register(noinline fabricator: Fabricator<T>) = apply {
+        mappings[T::class] = fabricator
     }
 }
