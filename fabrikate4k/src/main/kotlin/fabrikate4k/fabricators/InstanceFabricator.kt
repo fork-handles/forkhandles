@@ -85,7 +85,7 @@ open class InstanceFabricator(
         }
     }
 
-    private fun makeRandomMap(classRef: KClass<*>, type: KType) = with(config) {
+    private fun makeRandomMap(classRef: KClass<*>, type: KType): Map<Any?, Any?> = with(config) {
         val numOfElements = random.nextInt(collectionSizes.first, collectionSizes.last + 1)
         val keyType = type.arguments[0].type!!
         val valType = type.arguments[1].type!!
@@ -94,11 +94,11 @@ open class InstanceFabricator(
         keys.zip(values).toMap()
     }
 
-    private fun makeRandomSet(classRef: KClass<*>, type: KType) {
+    private fun makeRandomSet(classRef: KClass<*>, type: KType): Set<Any?> = with(config) {
         makeRandomList(classRef, type).toSet()
     }
 
-    private fun makeRandomList(classRef: KClass<*>, type: KType) = with(config) {
+    private fun makeRandomList(classRef: KClass<*>, type: KType): List<Any?> = with(config) {
         val numOfElements = random.nextInt(collectionSizes.first, collectionSizes.last + 1)
         val elemType = type.arguments[0].type!!
         (1..numOfElements).map { makeRandomInstanceForParam(elemType, classRef, type) }
