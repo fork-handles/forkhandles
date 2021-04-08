@@ -15,21 +15,24 @@ open class InstanceFabricator(
 ) {
     class NoUsableConstructor : Error()
 
-    fun makeRandomInstance(classRef: KClass<*>, type: KType): Any =
-        when (val primitive = makeStandardInstanceOrNull(classRef, type)) {
-            null -> {
-                val constructors = findConstructorFunctions(classRef, type)
-                val factories = findFactoryFunctions(classRef, type)
-                (constructors + factories).forEach { (fn, transform) ->
-                    try {
-                        return fn.parameters.map(transform).toTypedArray().let(fn::call)!!
-                    } catch (ignore: Throwable) {
-                        // do nothing
+    fun makeRandomInstance(classRef: KClass<*>, type: KType): Any? =
+        when {
+            type.isMarkedNullable && config.random.nextBoolean() -> null
+            else -> when (val primitive = makeStandardInstanceOrNull(classRef, type)) {
+                null -> {
+                    val constructors = findConstructorFunctions(classRef, type)
+                    val factories = findFactoryFunctions(classRef, type)
+                    (constructors + factories).forEach { (fn, transform) ->
+                        try {
+                            return fn.parameters.map(transform).toTypedArray().let(fn::call)!!
+                        } catch (ignore: Throwable) {
+                            // do nothing
+                        }
                     }
+                    throw NoUsableConstructor()
                 }
-                throw NoUsableConstructor()
+                else -> primitive
             }
-            else -> primitive
         }
 
     private fun findFactoryFunctions(
@@ -51,7 +54,7 @@ open class InstanceFabricator(
     private fun findConstructorFunctions(
         classRef: KClass<*>,
         type: KType
-    ): List<Pair<KFunction<Any>, (KParameter) -> Any>> = classRef.constructors
+    ): List<Pair<KFunction<Any>, (KParameter) -> Any?>> = classRef.constructors
         .shuffled(config.random)
         .map { it to { param: KParameter -> makeRandomInstanceForParam(param.type, classRef, type) } }
 
@@ -59,7 +62,7 @@ open class InstanceFabricator(
         paramType: KType,
         classRef: KClass<*>,
         type: KType
-    ): Any = when (val classifier = paramType.classifier) {
+    ): Any? = when (val classifier = paramType.classifier) {
         is KClass<*> -> makeRandomInstance(classifier, paramType)
         is KTypeParameter -> {
             val typeParameterName = classifier.name
@@ -71,6 +74,8 @@ open class InstanceFabricator(
     }
 
     private fun makeStandardInstanceOrNull(classRef: KClass<*>, type: KType) = with(config) {
+
+
         when (classRef) {
             Set::class -> makeRandomSet(classRef, type)
             List::class, Collection::class -> makeRandomList(classRef, type)

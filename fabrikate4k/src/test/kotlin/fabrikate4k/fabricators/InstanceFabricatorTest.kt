@@ -338,8 +338,9 @@ class InstanceFabricatorTest {
     }
 
     interface Q
+
     @Suppress("DataClassPrivateConstructor")
-    data class R private constructor(val a: String): Q {
+    data class R private constructor(val a: String) : Q {
         companion object {
             fun of(name: String): Q = R(name)
             fun somethingElse(a: String): String = a
@@ -351,5 +352,13 @@ class InstanceFabricatorTest {
         val config = FabricatorConfig(19191).withStandardMappings()
         assertThat(Fabrikate(config).random<X>().toString(), equalTo("X(a=2018-12-07T16:10:15Z)"))
         assertThat(Fabrikate(config).random<R>().toString(), equalTo("R(a=2dfFRx3d6v)"))
+    }
+
+    data class S(val a: Instant?)
+
+    @Test
+    fun `creates nulls`() {
+        assertThat(Fabrikate(FabricatorConfig(1).withStandardMappings()).random<S>().toString(), equalTo("S(a=1982-07-13T19:53:20Z)"))
+        assertThat(Fabrikate(FabricatorConfig(2).withStandardMappings()).random<S>().toString(), equalTo("S(a=null)"))
     }
 }
