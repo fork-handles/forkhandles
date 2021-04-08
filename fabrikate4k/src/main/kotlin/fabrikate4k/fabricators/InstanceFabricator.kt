@@ -7,6 +7,7 @@ import kotlin.reflect.*
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.createType
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.memberFunctions
 
@@ -74,17 +75,17 @@ open class InstanceFabricator(
     }
 
     private fun makeStandardInstanceOrNull(classRef: KClass<*>, type: KType) = with(config) {
-
-
-        when (classRef) {
-            Set::class -> makeRandomSet(classRef, type)
-            List::class, Collection::class -> makeRandomList(classRef, type)
-            Map::class -> makeRandomMap(classRef, type)
+        when {
+            classRef == Set::class -> makeRandomSet(classRef, type)
+            classRef == List::class -> makeRandomList(classRef, type)
+            classRef == Collection::class -> makeRandomList(classRef, type)
+            classRef == Map::class -> makeRandomMap(classRef, type)
+            classRef.isSubclassOf(Enum::class) -> makeRandomEnum(classRef)
             else -> mappings[classRef]?.invoke()
         }
     }
 
-    private fun makeRandomMap(classRef: KClass<*>, type: KType): Map<Any?, Any?> = with(config) {
+    private fun makeRandomMap(classRef: KClass<*>, type: KType) = with(config) {
         val numOfElements = random.nextInt(collectionSizes.first, collectionSizes.last + 1)
         val keyType = type.arguments[0].type!!
         val valType = type.arguments[1].type!!
@@ -93,14 +94,21 @@ open class InstanceFabricator(
         keys.zip(values).toMap()
     }
 
-    private fun makeRandomSet(classRef: KClass<*>, type: KType): Set<Any?> = with(config) {
+    private fun makeRandomSet(classRef: KClass<*>, type: KType) {
         makeRandomList(classRef, type).toSet()
     }
 
-    private fun makeRandomList(classRef: KClass<*>, type: KType): List<Any?> = with(config) {
+    private fun makeRandomList(classRef: KClass<*>, type: KType) = with(config) {
         val numOfElements = random.nextInt(collectionSizes.first, collectionSizes.last + 1)
         val elemType = type.arguments[0].type!!
         (1..numOfElements).map { makeRandomInstanceForParam(elemType, classRef, type) }
+    }
+
+    private fun makeRandomEnum(classRef: KClass<*>): Any? = with(config) {
+        val enumConstants = classRef.java.enumConstants
+        val sizes = 0..enumConstants.toList().size
+        val randomIdx = random.nextInt(sizes.first(), sizes.last)
+        enumConstants[randomIdx]
     }
 }
 

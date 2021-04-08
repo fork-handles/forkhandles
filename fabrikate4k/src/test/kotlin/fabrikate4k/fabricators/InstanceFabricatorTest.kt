@@ -361,4 +361,15 @@ class InstanceFabricatorTest {
         assertThat(Fabrikate(FabricatorConfig(1).withStandardMappings()).random<S>().toString(), equalTo("S(a=1982-07-13T19:53:20Z)"))
         assertThat(Fabrikate(FabricatorConfig(2).withStandardMappings()).random<S>().toString(), equalTo("S(a=null)"))
     }
+
+    enum class RandomEnum {
+        A, B, C, D
+    }
+
+    data class T(val a: RandomEnum, val b: List<RandomEnum>)
+
+    @Test
+    fun `does enums`() {
+        assertThat(Fabrikate(FabricatorConfig(2).withStandardMappings()).random<T>().toString(), equalTo("T(a=D, b=[D, A, A, D, A])"))
+    }
 }
