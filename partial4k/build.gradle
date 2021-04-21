@@ -10,8 +10,8 @@ dependencies {
 // Increasing these requires a minor version increment.
 // Decreasing them is not backward compatible, and so requires a major version increment.
 ext.maxPlaceholderCount = 4
-ext.maxParamCount = 8
-assert maxParamCount > maxPlaceholderCount
+ext.maxArity = 8
+assert maxArity > maxPlaceholderCount
 
 ext.basePackageName = "dev.forkhandles.partial"
 ext.generatedSrcDir = new File("$buildDir/generated-src/main/kotlin")
@@ -75,45 +75,42 @@ task generatePlaceholders {
 }
 
 task generatePartials {
-    dependsOn "recreateGeneratedSrcDir"
+    dependsOn "generatePlaceholders"
 
     doLast {
-        generateSourceFile("partials.kt") { out ->
-            generatePartials(out, false)
+        (2..maxArity).forEach { arity ->
+            generateSourceFile("partials_${arity}.kt") { out ->
+                generatePartials(out, arity, false)
+            }
         }
     }
 }
 
 task generateCurries {
-    dependsOn "recreateGeneratedSrcDir"
+    dependsOn "generatePlaceholders"
 
     doLast {
-        generateSourceFile("curry.kt", "${basePackageName}.curry") { out ->
-            generatePartials(out, true)
+        (2..maxArity).forEach { arity ->
+            generateSourceFile("curry_${arity}.kt", "${basePackageName}.curry") { out ->
+                generatePartials(out, arity, true)
+            }
         }
     }
 }
 
 
-def generatePartials(PrintWriter out, Boolean invoke) {
+def generatePartials(PrintWriter out, Integer arity, Boolean invoke) {
     if (invoke) {
         out.println("import ${basePackageName}.*")
         out.println()
     }
 
-    placeholderCombinations().forEach {
+    placeholderCombinationsForArity(arity).forEach {
         generatePartial(out, it, invoke)
     }
 }
 
-def placeholderCombinations() {
-    (2..maxParamCount).collectMany { paramCount ->
-        placeholderCombinationsForFunction(paramCount)
-    }
-}
-
-
-def placeholderCombinationsForFunction(int paramCount) {
+def placeholderCombinationsForArity(int paramCount) {
     (1..[maxPlaceholderCount, paramCount - 1].min()).collectMany { placeholderCount ->
         ([true] * placeholderCount + [false] * (paramCount - placeholderCount))
             .permutations()
@@ -134,7 +131,7 @@ def generatePartial(PrintWriter out, List<Object> params, Boolean invoke) {
         .withIndex(1)
         .collect { it[1] }
 
-    placeholderIndices.permutations().forEach { List<Integer> pis ->
+    placeholderIndices.permutations().toSorted().forEach { List<Integer> pis ->
         if (invoke) {
             out.print("operator ")
         }
@@ -166,7 +163,6 @@ def partialParamsSrc(List<Boolean> params, List<Integer> placeholderIndices) {
 }
 
 task generateSrcMain {
-    dependsOn "generatePlaceholders"
     dependsOn "generatePartials"
     dependsOn "generateCurries"
 }

@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.util.Locale
+import dev.forkhandles.partial.curry.*
+
 
 class PartialExampleTest {
     @Test
@@ -30,6 +32,15 @@ class PartialExampleTest {
         fun f(x: String, y: Int, z: Double) = "$x,$y,$z"
         
         val f_zx = ::f.partial(`$2`, 10, `$1`)
+    
+        assertEquals("example,10,0.125", f_zx(0.125, "example"))
+    }
+    
+    @Test
+    fun currying() {
+        fun f(x: String, y: Int, z: Double) = "$x,$y,$z"
+    
+        val f_zx = (::f)(`$2`, 10, `$1`)
     
         assertEquals("example,10,0.125", f_zx(0.125, "example"))
     }
