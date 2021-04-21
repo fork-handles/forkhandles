@@ -13,10 +13,8 @@ ext.maxPlaceholderCount = 4
 ext.maxParamCount = 8
 assert maxParamCount > maxPlaceholderCount
 
-ext.packageName = "dev.forkhandles.partial"
-ext.packageSubdir = packageName.replace('.', '/')
+ext.basePackageName = "dev.forkhandles.partial"
 ext.generatedSrcDir = new File("$buildDir/generated-src/main/kotlin")
-ext.generatedPackageDir = new File("$generatedSrcDir/$packageSubdir")
 
 static def letter(int n) {
     return Character.toString('a'.toCharacter() + (n - 1))
@@ -39,11 +37,15 @@ static def param(int n) {
 }
 
 static def placeholder(n) {
-    return "`$n?`"
+    return "`\$$n`"
 }
 
-def generateSourceFile(name, contents) {
-    new File("$generatedPackageDir/$name").withPrintWriter("UTF-8") { out ->
+def generateSourceFile(name, String packageName = basePackageName, Closure<Void> contents) {
+    def packageSubdir = packageName.replace('.', '/')
+    def generatedPackageDir = new File("$generatedSrcDir/$packageSubdir")
+
+    generatedPackageDir.mkdirs()
+    new File(generatedPackageDir, name).withPrintWriter("UTF-8") { out ->
         out.println("// GENERATED CODE: DO NOT EDIT")
         out.println()
         out.println("package $packageName")
@@ -54,8 +56,8 @@ def generateSourceFile(name, contents) {
 
 task recreateGeneratedSrcDir {
     doLast {
-        delete generatedPackageDir
-        mkdir generatedPackageDir
+        delete generatedSrcDir
+        mkdir generatedSrcDir
     }
 }
 
@@ -77,14 +79,30 @@ task generatePartials {
 
     doLast {
         generateSourceFile("partials.kt") { out ->
-            generatePartials(out)
+            generatePartials(out, false)
         }
     }
 }
 
-def generatePartials(PrintWriter out) {
+task generateCurries {
+    dependsOn "recreateGeneratedSrcDir"
+
+    doLast {
+        generateSourceFile("curry.kt", "${basePackageName}.curry") { out ->
+            generatePartials(out, true)
+        }
+    }
+}
+
+
+def generatePartials(PrintWriter out, Boolean invoke) {
+    if (invoke) {
+        out.println("import ${basePackageName}.*")
+        out.println()
+    }
+
     placeholderCombinations().forEach {
-        generatePartial(out, it)
+        generatePartial(out, it, invoke)
     }
 }
 
@@ -103,7 +121,7 @@ def placeholderCombinationsForFunction(int paramCount) {
     }
 }
 
-def generatePartial(out, params) {
+def generatePartial(PrintWriter out, List<Object> params, Boolean invoke) {
     def n = params.size
 
     def replacements = params
@@ -117,10 +135,18 @@ def generatePartial(out, params) {
         .collect { it[1] }
 
     placeholderIndices.permutations().forEach { List<Integer> pis ->
-        out.print("fun <" + typeParamsSrc(n) + ", Result> ((" + typeParamsSrc(n) + ")->Result)." +
-            "partial(" + partialParamsSrc(params, pis) + ") = ")
+        if (invoke) {
+            out.print("operator ")
+        }
+        out.print("fun <" + typeParamsSrc(n) + ", Result> ((" + typeParamsSrc(n) + ")->Result).")
+        if (invoke) {
+            out.print("invoke")
+        } else {
+            out.print("partial")
+        }
+        out.print("(" + partialParamsSrc(params, pis) + ") = ")
         out.print("fun(" + pis.collect { pi ->
-            param(replacements[pi-1]) + ": " + typeParam(replacements[pi-1])
+            param(replacements[pi - 1]) + ": " + typeParam(replacements[pi - 1])
         }.join(", ") + ") = ")
         out.println(" this(" + (1..n).collect { param(it) }.join(", ") + ")")
     }
@@ -142,6 +168,7 @@ def partialParamsSrc(List<Boolean> params, List<Integer> placeholderIndices) {
 task generateSrcMain {
     dependsOn "generatePlaceholders"
     dependsOn "generatePartials"
+    dependsOn "generateCurries"
 }
 
 compileKotlin {
