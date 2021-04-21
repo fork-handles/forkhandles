@@ -7,9 +7,11 @@ dependencies {
     testApi Config.TestDependencies
 }
 
-// Increasing this requires a minor version increment.
-// Decreasing it is not backward compatible, and so requires a major version increment.
-ext.maxParamCount = 6
+// Increasing these requires a minor version increment.
+// Decreasing them is not backward compatible, and so requires a major version increment.
+ext.maxPlaceholderCount = 4
+ext.maxParamCount = 8
+assert maxParamCount > maxPlaceholderCount
 
 ext.packageName = "dev.forkhandles.partial"
 ext.packageSubdir = packageName.replace('.', '/')
@@ -63,7 +65,7 @@ task generatePlaceholders {
 
     doLast {
         generateSourceFile("placeholders.kt") { out ->
-            for (n in 1..maxParamCount - 1) {
+            for (n in 1..maxPlaceholderCount) {
                 out.println("object " + placeholder(n))
             }
         }
@@ -93,8 +95,8 @@ def placeholderCombinations() {
 }
 
 
-static def placeholderCombinationsForFunction(int paramCount) {
-    (1..paramCount - 1).collectMany { placeholderCount ->
+def placeholderCombinationsForFunction(int paramCount) {
+    (1..[maxPlaceholderCount, paramCount - 1].min()).collectMany { placeholderCount ->
         ([true] * placeholderCount + [false] * (paramCount - placeholderCount))
             .permutations()
             .toSorted()
