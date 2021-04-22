@@ -9,8 +9,8 @@ dependencies {
 
 // Increasing these requires a minor version increment.
 // Decreasing them is not backward compatible, and so requires a major version increment.
-ext.maxPlaceholderCount = 4
 ext.maxArity = 6
+ext.maxPlaceholderCount = 4
 assert maxArity > maxPlaceholderCount
 
 ext.basePackageName = "dev.forkhandles.partial"
@@ -114,7 +114,7 @@ def generatePartial(PrintWriter out, List<Object> params) {
         .collect { it[1] }
 
     placeholderIndices.permutations().toSorted().forEach { List<Integer> pis ->
-        out.print("fun <" + typeParamsSrc(n) + ", Result> ((" + typeParamsSrc(n) + ")->Result).")
+        out.print("@Suppress(\"UNUSED_PARAMETER\") fun <" + typeParamsSrc(n) + ", Result> ((" + typeParamsSrc(n) + ")->Result).")
         out.print("partial(" + partialParamsSrc(params, pis) + ")")
         out.print(": ((${pis.collect { pi -> typeParam(replacements[pi - 1]) }.join(", ")}) -> Result)")
         out.print(" = ")
