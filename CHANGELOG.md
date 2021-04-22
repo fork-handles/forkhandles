@@ -4,6 +4,10 @@ This list is not intended to be all-encompassing - it will document major and br
 when appropriate:
 
 ### v1.8.6.0
+- **fabrikate4k** : Add random test data generator module. H/T @toastshaman
+- **partial4k** : Add partial application module.
+
+### v1.8.6.0
 - **values4k** : Add unwrap() and fix validations.
 
 ### v1.8.5.0
