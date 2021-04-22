@@ -18,3 +18,41 @@ implementation(platform("dev.forkhandles:forkhandles-bom:X.Y.Z"))
 implementation("dev.forkhandles:partial4k")
 ```
 
+## Usage
+
+Import from `dev.forkhandles.partial`:
+
+```kotlin
+
+import dev.forkhandles.partial.partial
+import dev.forkhandles.partial.`$1`
+import dev.forkhandles.partial.`$2`
+```
+
+Use like this:
+
+```kotlin
+data class Footballer(val name: String, val dob: LocalDate, val locale: Locale)
+
+// you can create a partially applied function by a call to `partial`
+val english = ::Footballer.partial(`$2`, `$1`, Locale.UK)
+
+// or, if you import `dev.forkhandles.partial.invoke`, by currying
+val french = (::Footballer)(`$2`, `$1`, Locale.FRANCE)
+
+// The placeholders (`$1`, `$2`, etc.) specify the order in which parameters must be
+// passed to the partially applied function.  In this case, we have used them to
+// switch the order of the first parameters while binding the value of the last parameter.
+
+val davidBeckham = english(LocalDate.of(1975, 5, 2), "David Beckham")
+val ericCantona = french(LocalDate.of(1966, 5, 24), "Eric Cantona")
+
+assertEquals(
+    Footballer("David Beckham", LocalDate.of(1975, 5, 2), Locale.UK),
+    davidBeckham
+)
+assertEquals(
+    Footballer("Eric Cantona", LocalDate.of(1966, 5, 24), Locale.FRANCE),
+    ericCantona
+)
+```

@@ -4,18 +4,27 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.util.Locale
-import dev.forkhandles.partial.curry.*
+import dev.forkhandles.partial.invoke
 
 
 class PartialExampleTest {
+    
     @Test
     fun footballers() {
         data class Footballer(val name: String, val dob: LocalDate, val locale: Locale)
-        val english = ::Footballer.partial(`$1`, `$2`, Locale.UK)
-        val french = ::Footballer.partial(`$1`, `$2`, Locale.FRANCE)
         
-        val davidBeckham = english("David Beckham", LocalDate.of(1975, 5, 2))
-        val ericCantona = french("Eric Cantona", LocalDate.of(1966, 5, 24))
+        // you can create a partially applied function by a call to `partial`
+        val english = ::Footballer.partial(`$2`, `$1`, Locale.UK)
+        
+        // or, if you import `dev.forkhandles.partial.invoke`, by currying
+        val french = (::Footballer)(`$2`, `$1`, Locale.FRANCE)
+        
+        // The placeholders (`$1`, `$2`, etc.) specify the order in which parameters must be
+        // passed to the partially applied function.  In this case, we have used them to
+        // switch the order of the first parameters while binding the value of the last parameter.
+        
+        val davidBeckham = english(LocalDate.of(1975, 5, 2), "David Beckham")
+        val ericCantona = french(LocalDate.of(1966, 5, 24), "Eric Cantona")
         
         assertEquals(
             Footballer("David Beckham", LocalDate.of(1975, 5, 2), Locale.UK),
@@ -25,23 +34,5 @@ class PartialExampleTest {
             Footballer("Eric Cantona", LocalDate.of(1966, 5, 24), Locale.FRANCE),
             ericCantona
         )
-    }
-    
-    @Test
-    fun flipping() {
-        fun f(x: String, y: Int, z: Double) = "$x,$y,$z"
-        
-        val f_zx = ::f.partial(`$2`, 10, `$1`)
-    
-        assertEquals("example,10,0.125", f_zx(0.125, "example"))
-    }
-    
-    @Test
-    fun currying() {
-        fun f(x: String, y: Int, z: Double) = "$x,$y,$z"
-    
-        val f_zx = (::f)(`$2`, 10, `$1`)
-    
-        assertEquals("example,10,0.125", f_zx(0.125, "example"))
     }
 }
