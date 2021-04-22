@@ -16,6 +16,7 @@ Forkhandles (4k) contains foundational libraries for Kotlin
 - [Time4k](time4k) - Clock and deterministic scheduler
 - [Tuples4k](tuples4k) - Tuple classes
 - [Values4k](values4k) - Value classes aka Microtypes aka Tinytypes
+- [Fabrikate4k](fabrikate4k) - Test utility to instantiate objects with fake data
 
 ## Installation
 In Gradle, install the BOM and then any other modules in the dependency block: 
