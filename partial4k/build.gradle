@@ -81,9 +81,25 @@ task generatePartials {
         (2..maxArity).forEach { arity ->
             generateSourceFile("partials_${arity}.kt") { out ->
                 generatePartials(out, arity)
+                generateOneByOnePartial(out, arity)
             }
         }
     }
+}
+
+def generateOneByOnePartial(PrintWriter out, Integer arity) {
+    out.print("@Suppress(\"UNUSED_PARAMETER\") fun <" + typeParamsSrc(arity) + ", Result> ((" + typeParamsSrc(arity) + ")->Result).")
+    out.print("partial(" + partialParamsSrc([false], [0]) + ")")
+    out.print(": ((" + (2..arity).collect { pi -> param(pi) + ": " + typeParam(pi) }.join(", ") + ") -> Result)")
+    out.print(" = ")
+    out.print("fun(" + (2..arity).collect { pi -> param(pi) + ": " + typeParam(pi) }.join(", ") + "): Result = ")
+    out.println(" this(" + (1..arity).collect { pi -> param(pi) }.join(", ") + ")")
+
+    out.print("operator fun <" + typeParamsSrc(arity) + ", Result> ((" + typeParamsSrc(arity) + ")->Result).")
+    out.print("invoke(" + partialParamsSrc([false], [0]) + ")")
+    out.print(": ((" + (2..arity).collect { pi -> param(pi) + ": " + typeParam(pi) }.join(", ") + ") -> Result)")
+    out.print(" = ")
+    out.println(" this.partial(" + param(1) + ")")
 }
 
 def generatePartials(PrintWriter out, Integer arity) {
