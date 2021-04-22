@@ -1,0 +1,176 @@
+import static java.util.Locale.ROOT
+
+description = 'ForkHandles Partial Application library'
+
+dependencies {
+    api Libs.kotlin_stdlib_jdk8
+    testApi Config.TestDependencies
+}
+
+// Increasing these requires a minor version increment.
+// Decreasing them is not backward compatible, and so requires a major version increment.
+ext.maxArity = 6
+ext.maxPlaceholderCount = 4
+assert maxArity > maxPlaceholderCount
+
+ext.basePackageName = "dev.forkhandles.partial"
+ext.generatedSrcDir = new File("$buildDir/generated-src/main/kotlin")
+
+static def letter(int n) {
+    return Character.toString('a'.toCharacter() + (n - 1))
+}
+
+static def typeParam(int n) {
+    return letter(n).toUpperCase(ROOT)
+}
+
+static def typeParams(int n) {
+    return (1..n).collect { typeParam(it) }
+}
+
+static def typeParamsSrc(int n) {
+    return typeParams(n).join(", ")
+}
+
+static def param(int n) {
+    return letter(n).toLowerCase(ROOT)
+}
+
+static def placeholder(n) {
+    return "`\$$n`"
+}
+
+def generateSourceFile(name, String packageName = basePackageName, Closure<Void> contents) {
+    def packageSubdir = packageName.replace('.', '/')
+    def generatedPackageDir = new File("$generatedSrcDir/$packageSubdir")
+
+    generatedPackageDir.mkdirs()
+    new File(generatedPackageDir, name).withPrintWriter("UTF-8") { out ->
+        out.println("// GENERATED CODE: DO NOT EDIT")
+        out.println()
+        out.println("package $packageName")
+        out.println()
+        contents(out)
+    }
+}
+
+task recreateGeneratedSrcDir {
+    doLast {
+        delete generatedSrcDir
+        mkdir generatedSrcDir
+    }
+}
+
+
+task generatePlaceholders {
+    dependsOn "recreateGeneratedSrcDir"
+
+    doLast {
+        generateSourceFile("placeholders.kt") { out ->
+            for (n in 1..maxPlaceholderCount) {
+                out.println("object " + placeholder(n))
+            }
+        }
+    }
+}
+
+task generatePartials {
+    dependsOn "generatePlaceholders"
+
+    doLast {
+        (2..maxArity).forEach { arity ->
+            generateSourceFile("partials_${arity}.kt") { out ->
+                generatePartials(out, arity)
+                generateOneByOnePartial(out, arity)
+            }
+        }
+    }
+}
+
+def generateOneByOnePartial(PrintWriter out, Integer arity) {
+    out.print("@Suppress(\"UNUSED_PARAMETER\") fun <" + typeParamsSrc(arity) + ", Result> ((" + typeParamsSrc(arity) + ")->Result).")
+    out.print("partial(" + partialParamsSrc([false], [0]) + ")")
+    out.print(": ((" + (2..arity).collect { pi -> param(pi) + ": " + typeParam(pi) }.join(", ") + ") -> Result)")
+    out.print(" = ")
+    out.print("fun(" + (2..arity).collect { pi -> param(pi) + ": " + typeParam(pi) }.join(", ") + "): Result = ")
+    out.println(" this(" + (1..arity).collect { pi -> param(pi) }.join(", ") + ")")
+
+    out.print("operator fun <" + typeParamsSrc(arity) + ", Result> ((" + typeParamsSrc(arity) + ")->Result).")
+    out.print("invoke(" + partialParamsSrc([false], [0]) + ")")
+    out.print(": ((" + (2..arity).collect { pi -> param(pi) + ": " + typeParam(pi) }.join(", ") + ") -> Result)")
+    out.print(" = ")
+    out.println(" this.partial(" + param(1) + ")")
+}
+
+def generatePartials(PrintWriter out, Integer arity) {
+    placeholderCombinationsForArity(arity).forEach {
+        generatePartial(out, it)
+    }
+}
+
+def placeholderCombinationsForArity(int paramCount) {
+    (1..[maxPlaceholderCount, paramCount - 1].min()).collectMany { placeholderCount ->
+        ([true] * placeholderCount + [false] * (paramCount - placeholderCount))
+            .permutations()
+            .toSorted()
+    }
+}
+
+def generatePartial(PrintWriter out, List<Object> params) {
+    def n = params.size
+
+    def replacements = params
+        .withIndex(1)
+        .findAll { it[0] }
+        .collect { it[1] }
+
+    def placeholderIndices = params
+        .findAll { it }
+        .withIndex(1)
+        .collect { it[1] }
+
+    placeholderIndices.permutations().toSorted().forEach { List<Integer> pis ->
+        out.print("@Suppress(\"UNUSED_PARAMETER\") fun <" + typeParamsSrc(n) + ", Result> ((" + typeParamsSrc(n) + ")->Result).")
+        out.print("partial(" + partialParamsSrc(params, pis) + ")")
+        out.print(": ((${pis.collect { pi -> typeParam(replacements[pi - 1]) }.join(", ")}) -> Result)")
+        out.print(" = ")
+        out.print("fun(" + pis.collect { pi ->
+            param(replacements[pi - 1]) + ": " + typeParam(replacements[pi - 1])
+        }.join(", ") + "): Result = ")
+        out.println(" this(" + (1..n).collect { param(it) }.join(", ") + ")")
+
+        out.print("operator fun <" + typeParamsSrc(n) + ", Result> ((" + typeParamsSrc(n) + ")->Result).")
+        out.print("invoke(" + partialParamsSrc(params, pis) + ")")
+        out.print(": ((${pis.collect { pi -> typeParam(replacements[pi - 1]) }.join(", ")}) -> Result)")
+        out.print(" = ")
+        out.println(" this.partial(" + (1..n).collect { param(it) }.join(", ") + ")")
+    }
+    out.println()
+}
+
+def partialParamsSrc(List<Boolean> params, List<Integer> placeholderIndices) {
+    def paramSrcs = []
+    def nextPlaceholder = 0
+
+    params.eachWithIndex { boolean isPlaceholder, int index ->
+        def n = index + 1
+        paramSrcs += param(n) + ": " + (isPlaceholder ? placeholder(placeholderIndices[nextPlaceholder++]) : typeParam(n))
+    }
+
+    paramSrcs.join(", ")
+}
+
+task generateSrcMain {
+    dependsOn "generatePartials"
+}
+
+compileKotlin {
+    dependsOn "generateSrcMain"
+}
+
+sourceSets {
+    main.kotlin {
+        srcDir generatedSrcDir
+    }
+}
+
