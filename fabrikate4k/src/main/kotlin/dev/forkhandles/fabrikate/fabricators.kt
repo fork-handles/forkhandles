@@ -1,4 +1,4 @@
-package fabrikate4k.fabricators
+package dev.forkhandles.fabrikate
 
 import java.io.File
 import java.math.BigDecimal

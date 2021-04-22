@@ -1,10 +1,10 @@
-package fabrikate4k.fabricators
+package dev.forkhandles.fabrikate
 
 import kotlin.random.Random
 import kotlin.reflect.KClass
 
 class FabricatorConfig(
-    val seed: Int = 861_084_310,
+    seed: Int = 861_084_310,
     val collectionSizes: IntRange = 1..5,
 ) {
     val random: Random = Random(seed)

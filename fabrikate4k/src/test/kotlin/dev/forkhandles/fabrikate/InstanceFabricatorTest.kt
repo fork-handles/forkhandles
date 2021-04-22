@@ -1,10 +1,9 @@
-package fabrikate4k.fabricators
+package dev.forkhandles.fabrikate
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.present
-import fabrikate4k.Fabrikate
-import fabrikate4k.fabricators.InstanceFabricator.NoUsableConstructor
+import dev.forkhandles.fabrikate.InstanceFabricator.NoUsableConstructor
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -36,6 +35,7 @@ class InstanceFabricatorTest {
 
     data class B(val a: A)
     data class C(val b1: B, val c: Char, val b2: B, val str: String, val l: Long)
+
     class D {
         lateinit var a: A
 

@@ -1,4 +1,4 @@
-package fabrikate4k.fabricators
+package dev.forkhandles.fabrikate
 
 import java.lang.reflect.*
 import java.time.*
@@ -11,9 +11,8 @@ import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.memberFunctions
 
-open class InstanceFabricator(
-    private val config: FabricatorConfig
-) {
+class InstanceFabricator(private val config: FabricatorConfig) {
+
     class NoUsableConstructor : Error()
 
     fun makeRandomInstance(classRef: KClass<*>, type: KType): Any? =
