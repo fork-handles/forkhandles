@@ -18,7 +18,7 @@ class PartialExampleTest {
         val french = (::Footballer)(`$2`, `$1`, Locale.FRANCE)
 
         // or you can apply one argument at a time..
-        val brazilian = (::Footballer)("Pelé")(LocalDate.of(1940, 20, 23))(Locale.forLanguageTag("pt_BR"))
+        val brazilian = (::Footballer)("Pelé")(LocalDate.of(1940, 20, 23))
 
         // The placeholders (`$1`, `$2`, etc.) specify the order in which parameters must be
         // passed to the partially applied function.  In this case, we have used them to
@@ -26,6 +26,7 @@ class PartialExampleTest {
 
         val davidBeckham = english(LocalDate.of(1975, 5, 2), "David Beckham")
         val ericCantona = french(LocalDate.of(1966, 5, 24), "Eric Cantona")
+        val pele = brazilian((Locale.forLanguageTag("pt_BR")))
 
         assertEquals(
             Footballer("David Beckham", LocalDate.of(1975, 5, 2), Locale.UK),
@@ -34,6 +35,10 @@ class PartialExampleTest {
         assertEquals(
             Footballer("Eric Cantona", LocalDate.of(1966, 5, 24), Locale.FRANCE),
             ericCantona
+        )
+        assertEquals(
+            Footballer("Pelé", LocalDate.of(1940, 20, 23), Locale.forLanguageTag("pt_BR")),
+            pele
         )
     }
 }
