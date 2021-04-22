@@ -3,7 +3,7 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
-### v1.8.6.0
+### v1.8.7.0
 - **fabrikate4k** : Add random test data generator module. H/T @toastshaman
 - **partial4k** : Add partial application module.
 
