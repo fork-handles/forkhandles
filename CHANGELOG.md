@@ -6,6 +6,7 @@ when appropriate:
 ### v1.8.7.0
 - **fabrikate4k** : Add random test data generator module. H/T @toastshaman
 - **partial4k** : Add partial application module.
+- **result4k** : Add convenience typealias for `Result4k` (to avoid clashes with Kotlin StdLib)
 
 ### v1.8.6.0
 - **values4k** : Add unwrap() and fix validations.
