@@ -20,16 +20,25 @@ abstract class ValueFactory<DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any>(
         return coerceFn(value)
     }
 
-    fun parse(value: String) = validate(parseFn(value))
+    fun parse(value: String) = attempt { validate(parseFn(value)) }
 
     @Deprecated("use show()", ReplaceWith("show(value)"))
     fun print(value: DOMAIN) = show(value)
 
     fun show(value: DOMAIN) = showFn(unwrap(value))
 
-    fun of(value: PRIMITIVE) = validate(value)
+    fun of(value: PRIMITIVE) = attempt { validate(value) }
 
     fun unwrap(value: DOMAIN) = value.value
+
+    private fun <T> attempt(value: () -> T) = try {
+        value()
+    } catch (e: Exception) {
+        throw IllegalArgumentException(
+            this::class.java.name.substringBeforeLast('$') +
+                ": " + e::class.java.name + " " + e.localizedMessage
+        )
+    }
 }
 
 /**
