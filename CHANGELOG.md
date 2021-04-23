@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v1.9.1.0
+- **values4k** : Improved messages on error.
+
 ### v1.9.0.0
 - **partial4k** : Reduce scope of functions to arity 5 with 3 placeholders. Massively reduces JAR size.
 
