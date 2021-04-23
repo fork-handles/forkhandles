@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v1.9.0.0
+- **partial4k** : Reduce scope of functions to arity 5 with 3 placeholders. Massively reduces JAR size.
+
 ### v1.8.7.0
 - **fabrikate4k** : Add random test data generator module. H/T @toastshaman
 - **partial4k** : Add partial application module.

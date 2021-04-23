@@ -9,8 +9,8 @@ dependencies {
 
 // Increasing these requires a minor version increment.
 // Decreasing them is not backward compatible, and so requires a major version increment.
-ext.maxArity = 6
-ext.maxPlaceholderCount = 4
+ext.maxArity = 5
+ext.maxPlaceholderCount = 3
 assert maxArity > maxPlaceholderCount
 
 ext.basePackageName = "dev.forkhandles.partial"
