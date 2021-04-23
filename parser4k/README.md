@@ -9,13 +9,12 @@
 
 Recursive descent parser combinator library for Kotlin with support for [left recursion](https://en.wikipedia.org/wiki/Left_recursion).
 It aims to be:
-- **simple** - very few core concepts
+- **simple** - only three core concepts
 - **easy to use** - you can quickly figure out how to write a parser for a small language
 - **production-ready** - enough functionality and performance for real-world applications
 
 ## Installation
 In Gradle, install the ForkHandles BOM and then this module in the dependency block:
-
 ```kotlin
 implementation(platform("dev.forkhandles:forkhandles-bom:X.Y.Z"))
 implementation("dev.forkhandles:parser4k")
@@ -55,6 +54,7 @@ See also:
 
 
 ## Core concepts
+There are only three concepts you need to know:
  - `Parser` is any object which takes `Input`, attempts to extract some useful data from it and 
    returns `Output` if successful or `null` if `Parser` wasn't able to consume any data.
    `Parser`s can be mapped with `.map()` function similar to how collections are mapped in Kotlin.
@@ -108,13 +108,6 @@ fun <T, R> Parser<T>.map(transform: (T) -> R) = object : Parser<R> {
    e.g. `inOrder(ref { expr }, token("+"), ref { expr }).mapLeftAssoc(::Plus.asBinary())`
  - `commonparsers.Tokens` - parsers for basic bits of input (usually called "tokens"), e.g. `whitespace` or `number`
 
-
-## Installation
-In Gradle, install the ForkHandles BOM and then this module in the dependency block: 
-```groovy
-implementation platform("dev.forkhandles:forkhandles-bom:X.Y.Z")
-implementation "dev.forkhandles:parser4k"
-```
 
 ## See also
  - [Parser combinator koans](https://github.com/dkandalov/parser-combinator-koans)
