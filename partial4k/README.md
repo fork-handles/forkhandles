@@ -49,7 +49,7 @@ val brazilian = (::Footballer)("Pelé")(LocalDate.of(1940, 10, 23))
 
 val davidBeckham = english(LocalDate.of(1975, 5, 2), "David Beckham")
 val ericCantona = french(LocalDate.of(1966, 5, 24), "Eric Cantona")
-val pele = brazilian((Locale.forLanguageTag("pt_BR")))
+val pele = brazilian(Locale.forLanguageTag("pt_BR"))
 
 assertEquals(
     Footballer("David Beckham", LocalDate.of(1975, 5, 2), Locale.UK),
