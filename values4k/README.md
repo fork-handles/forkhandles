@@ -69,10 +69,12 @@ Constructing the instances then happens using one of the built-in or user-suppli
 Money.of(123) // returns Money(123)
 Money.of(0) // throws IllegalArgumentException
 SortCode.ofOrNull("123") // returns null
-SortCode.ofResult4k("asdf12") // returns Failure<Exception>
+SortCode.ofResult("asdf12") // returns Kotlin Result failure
+SortCode.ofResult4k("asdf12") // returns Result4k Failure<Exception>
 Money.parse("123") // returns Money(123)
 Money.parse("notmoney") // throws IllegalArgumentException
 SortCode.parseOrNull("123") // returns null
+SortCode.parseResult("asdf12") // returns Kotlin Result failure
 SortCode.parseResult4k("asdf12") // returns Failure<Exception>
 ```
 

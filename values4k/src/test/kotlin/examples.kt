@@ -26,9 +26,10 @@ class AccountNumber private constructor(value: String) : AbstractValue<String>(v
     companion object : StringValueFactory<AccountNumber>(::AccountNumber, "\\d{8}".regex)
 }
 
-// ...inline classes can also be used by extending the base Value interface.
-// ... private constructors are available in Kotlin 1.4.30 with the IR backend enabled
-inline class Money /*private constructor*/(override val value: Int) : Value<Int> {
+// ...value classes can also be used by extending the base Value interface.
+// ... private constructors are available in Kotlin 1.5.0
+@JvmInline
+value class Money private constructor(override val value: Int) : Value<Int> {
     companion object : IntValueFactory<Money>(::Money, 1.minValue)
 }
 

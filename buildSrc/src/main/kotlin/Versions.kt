@@ -22,8 +22,6 @@ object Versions {
 
     const val me_champeau_gradle_jmh_gradle_plugin: String = "0.5.2"
 
-    const val com_jfrog_bintray_gradle_plugin: String = "1.8.5"
-
     const val coveralls_gradle_plugin: String = "2.8.3"
 
     const val hamkrest: String = "1.8.0.1"
