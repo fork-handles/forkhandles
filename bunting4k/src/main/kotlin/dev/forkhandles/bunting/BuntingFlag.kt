@@ -192,7 +192,7 @@ fun Optional<String>.char() = map(String::first)
 fun Optional<String>.boolean() = map {
     when {
         it.toBoolean() -> it.toBoolean()
-        it.toLowerCase() != false.toString() -> throw IllegalArgumentException()
+        it.lowercase() != false.toString() -> throw IllegalArgumentException()
         else -> false
     }
 }

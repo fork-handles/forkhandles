@@ -31,7 +31,7 @@ class ValueFactoryTest {
     }
 
     @Test
-    fun `result factory`() {
+    fun `result4k factory`() {
         assertThat(MyValue.ofResult4k("hello"), equalTo(Success(MyValue.of("hello"))))
         assertThat(MyValue.ofResult4k("") is Failure<Exception>, equalTo(true))
 
@@ -41,6 +41,19 @@ class ValueFactoryTest {
             equalTo(Success(listOf(MyValue.of("hello"), MyValue.of("there"))))
         )
         assertThat(MyValue.ofListResult4k("hello", "") is Failure<Exception>, equalTo(true))
+    }
+
+    @Test
+    fun `kotlin result factory`() {
+        assertThat(MyValue.ofResult("hello"), equalTo(Result.success(MyValue.of("hello"))))
+        assertThat(MyValue.ofResult("").isFailure, equalTo(true))
+
+        assertThat(MyValue.ofListResult(), equalTo(Result.success(listOf())))
+        assertThat(
+            MyValue.ofListResult("hello", "there"),
+            equalTo(Result.success(listOf(MyValue.of("hello"), MyValue.of("there"))))
+        )
+        assertThat(MyValue.ofListResult("hello", "").isFailure, equalTo(true))
     }
 
     @Test
