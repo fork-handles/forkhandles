@@ -62,10 +62,6 @@ object Libs {
             "me.champeau.gradle.jmh:me.champeau.gradle.jmh.gradle.plugin:" +
             Versions.me_champeau_gradle_jmh_gradle_plugin
 
-    const val com_jfrog_bintray_gradle_plugin: String =
-            "com.jfrog.bintray:com.jfrog.bintray.gradle.plugin:" +
-            Versions.com_jfrog_bintray_gradle_plugin
-
     /**
      * http://github.com/kt3k/coveralls-gradle-plugin/
      */

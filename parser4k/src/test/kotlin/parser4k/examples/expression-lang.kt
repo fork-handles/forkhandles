@@ -48,6 +48,7 @@ import parser4k.shouldEqual
 import parser4k.skipWrapper
 import parser4k.str
 import parser4k.with
+import java.util.Locale
 
 private object ExpressionLang {
     private val cache = OutputCache<Expr>()
@@ -193,7 +194,8 @@ private object ExpressionLang {
                 val obj = left.eval()
                 when {
                     obj is List<*> && name == "reversed" -> obj.reversed()
-                    obj is String && name == "toUpperCase" -> obj.toUpperCase()
+                    obj is String && name == "toUpperCase" -> obj.uppercase()
+                    obj is String && name == "uppercase" -> obj.uppercase()
                     else -> error("Unsupported field '$name' on $obj")
                 }
             }

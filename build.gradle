@@ -6,13 +6,11 @@ buildscript {
     dependencies {
         classpath Libs.kotlin_gradle_plugin
         classpath Libs.coveralls_gradle_plugin
-        classpath Libs.com_jfrog_bintray_gradle_plugin
     }
 }
 
 plugins {
     id 'com.github.kt3k.coveralls' version "2.10.1"
-    id "com.jfrog.bintray" version "1.8.4"
     id 'de.fayard.buildSrcVersions' version "0.7.0"
     id "io.codearte.nexus-staging" version '0.22.0'
 }
@@ -28,7 +26,6 @@ allprojects {
     apply plugin: 'kotlin'
     apply plugin: 'jacoco'
     apply plugin: 'com.github.kt3k.coveralls'
-    apply plugin: 'com.jfrog.bintray'
     apply plugin: 'maven'
     apply plugin: 'maven-publish'
 
@@ -98,7 +95,6 @@ subprojects {
 
     def enableSigning = project.findProperty('sign') == "true"
 
-    apply plugin: 'com.jfrog.bintray'
     apply plugin: 'maven-publish' // required to configure bintray
     apply plugin: 'maven' // required to upload to sonatype
 
@@ -165,41 +161,6 @@ subprojects {
 
                 artifact sourcesJar
                 artifact javadocJar
-            }
-        }
-    }
-
-    bintray {
-        user = System.getenv('BINTRAY_USER')
-        key = System.getenv('BINTRAY_KEY')
-
-        publications = ['mavenJava']
-        dryRun = false
-        publish = true
-        pkg {
-            repo = 'maven'
-            userOrg = 'fork-handles'
-            name = project.name
-
-            desc = description
-            websiteUrl = 'https://forkhandles.dev'
-            issueTrackerUrl = 'https://github.com/fork-handles/forkhandles/issues'
-            vcsUrl = 'https://github.com/fork-handles/forkhandles.git'
-            licenses = ['Apache-2.0']
-            labels = []
-            publicDownloadNumbers = true
-            version {
-                name = project.version
-                vcsTag = project.version
-                gpg {
-                    sign = true
-                }
-                mavenCentralSync {
-                    sync = false
-                    user = System.getenv('SONATYPE_USER')
-                    password = System.getenv('SONATYPE_KEY')
-                    close = '1'
-                }
             }
         }
     }

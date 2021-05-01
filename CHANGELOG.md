@@ -3,6 +3,10 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v1.10.0.0
+- **values4k** : Added support for Kotlin Result type using naming of style.. `ofResult()`
+- **all** : Upgrade to Kotlin 1.5.0.
+
 ### v1.9.1.0
 - **values4k** : Improved messages on error.
 

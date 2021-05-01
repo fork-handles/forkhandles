@@ -12,17 +12,15 @@ import org.gradle.plugin.use.PluginDependencySpec
  * YOU are responsible for updating manually the dependency version.
  */
 object Versions {
-    const val org_jetbrains_kotlin: String = "1.4.30"
+    const val org_jetbrains_kotlin: String = "1.5.0"
 
-    const val org_junit_jupiter: String = "5.7.0"
+    const val org_junit_jupiter: String = "5.7.1"
 
     const val de_fayard_buildsrcversions_gradle_plugin: String = "0.7.0"
 
     const val com_github_kt3k_coveralls_gradle_plugin: String = "2.10.2"
 
     const val me_champeau_gradle_jmh_gradle_plugin: String = "0.5.2"
-
-    const val com_jfrog_bintray_gradle_plugin: String = "1.8.5"
 
     const val coveralls_gradle_plugin: String = "2.8.3"
 

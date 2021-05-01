@@ -24,7 +24,7 @@ class InstanceFabricator(private val config: FabricatorConfig) {
                     val factories = findFactoryFunctions(classRef, type)
                     (constructors + factories).forEach { (fn, transform) ->
                         try {
-                            return fn.parameters.map(transform).toTypedArray().let(fn::call)!!
+                            return fn.call(*fn.parameters.map(transform).toTypedArray())
                         } catch (ignore: Throwable) {
                             // do nothing
                         }
