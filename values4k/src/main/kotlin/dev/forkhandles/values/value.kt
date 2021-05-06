@@ -29,6 +29,9 @@ abstract class AbstractValue<T : Any> @JvmOverloads constructor(
     }
 }
 
-interface ComparableValue<T, V> : Comparable<V>, Value<T> where T : Any, T : Comparable<T>, V : Value<T> {
+/**
+ * Comparable mix-in.
+ */
+interface Comparable4k<T, V> : Comparable<V>, Value<T> where T : Any, T : Comparable<T>, V : Value<T> {
     override fun compareTo(other: V) = value.compareTo(other.value)
 }

@@ -15,7 +15,7 @@ class MyValue private constructor(value: String) : StringValue(value) {
 }
 
 class MyComparableValue private constructor(value: String) : StringValue(value),
-    ComparableValue<String, MyComparableValue> {
+    Comparable4k<String, MyComparableValue> {
     companion object : StringValueFactory<MyComparableValue>(::MyComparableValue)
 }
 
