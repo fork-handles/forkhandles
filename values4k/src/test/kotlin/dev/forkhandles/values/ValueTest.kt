@@ -13,12 +13,6 @@ import org.junit.jupiter.api.Test
 class MyValue private constructor(value: String) : StringValue(value) {
     companion object : StringValueFactory<MyValue>(::MyValue, String::isNotEmpty)
 }
-
-class MyComparableValue private constructor(value: String) : StringValue(value),
-    Comparable4k<String, MyComparableValue> {
-    companion object : StringValueFactory<MyComparableValue>(::MyComparableValue)
-}
-
 class MyIntValue private constructor(value: Int) : IntValue(value) {
     companion object : IntValueFactory<MyIntValue>(::MyIntValue, { it > 0 })
 }
@@ -60,13 +54,5 @@ class ValueTest {
         assertThat(myValue == myValue, equalTo(true))
         assertThat(myValue == MyValue.of("hello"), equalTo(true))
         assertThat(myValue == MyValue.of("hello2"), equalTo(false))
-    }
-
-    @Test
-    fun comparable() {
-        val myValue = MyComparableValue.of("hello")
-        assertThat(myValue.compareTo(myValue), equalTo(0))
-        assertThat(myValue.compareTo(MyComparableValue.of("hellz")), equalTo(-11))
-        assertThat(myValue.compareTo(MyComparableValue.of("hella")), equalTo(14))
     }
 }
