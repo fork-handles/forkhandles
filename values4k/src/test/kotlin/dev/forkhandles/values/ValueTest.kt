@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test
 class MyValue private constructor(value: String) : StringValue(value) {
     companion object : StringValueFactory<MyValue>(::MyValue, String::isNotEmpty)
 }
-
 class MyIntValue private constructor(value: Int) : IntValue(value) {
     companion object : IntValueFactory<MyIntValue>(::MyIntValue, { it > 0 })
 }
@@ -56,5 +55,4 @@ class ValueTest {
         assertThat(myValue == MyValue.of("hello"), equalTo(true))
         assertThat(myValue == MyValue.of("hello2"), equalTo(false))
     }
-
 }
