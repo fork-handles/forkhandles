@@ -32,12 +32,14 @@ fun transferMoneyTo(amount: Int, sortCode: String, accountNumber: String)
 
 The first problem here is that `accountNumber` and `sortCode` fields are both of type `String`, meaning that a coder could accidentally switch these values around and we would not potentially  notice until runtime.
 
-The base type provided by this lib is the interface `Value<T>`. This is extended by `AbstractValue<T>` or one of the typealiases, which are just a simple wrapper around a `value` field and can be used for defining your own domain types. Inline classes are also supported by just implementing `Value<T>`:
+The base type provided by this lib is the interface `Value<T>`. This is extended by `AbstractValue<T>` or one of the typealiases, which are just a simple wrapper around a `value` field and can be used for defining your own domain types. Value classes are also supported by just implementing `Value<T>`:
 
 ```kotlin
 class Money(value: Int): AbstractValue<Int>(value)
 class AccountNumber(value: String): StringValue(value)
-inline class SortCode(override val value: String): Value<String>
+
+@JvmInline
+value class SortCode(override val value: String): Value<String>
 
 fun transferMoneyTo(amount: Money, sortCode: SortCode, accountNumber: AccountNumber)
 ```
@@ -58,7 +60,8 @@ class AccountNumber private constructor(value: String) : StringValue(value) {
 
 // note that private constructors are only available on inline classes 
 // starting with Kotlin 1.5.0
-inline class SortCode private constructor(override val value: String) : Value<String> {
+@JvmInline
+value class SortCode private constructor(override val value: String) : Value<String> {
     companion object : StringValueFactory<SortCode>(::SortCode, "\\d{6}".regex)
 }
 ```
