@@ -8,23 +8,25 @@ abstract class ValueFactory<DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any>(
     private val validation: Validation<PRIMITIVE>? = null,
     internal val parseFn: (String) -> PRIMITIVE,
     internal val showFn: (PRIMITIVE) -> String = { it.toString() }
-) {
+) : (PRIMITIVE) -> DOMAIN {
     internal fun validate(value: PRIMITIVE): DOMAIN {
         validation?.check(value)
         return coerceFn(value)
     }
-
+    
+    final override operator fun invoke(p: PRIMITIVE): DOMAIN = of(p)
+    
     fun parse(value: String) = attempt { validate(parseFn(value)) }
-
+    
     @Deprecated("use show()", ReplaceWith("show(value)"))
     fun print(value: DOMAIN) = show(value)
-
+    
     fun show(value: DOMAIN) = showFn(unwrap(value))
-
+    
     fun of(value: PRIMITIVE) = attempt { validate(value) }
-
+    
     fun unwrap(value: DOMAIN) = value.value
-
+    
     private fun <T> attempt(value: () -> T) = try {
         value()
     } catch (e: Exception) {
