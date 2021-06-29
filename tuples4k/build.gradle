@@ -198,6 +198,21 @@ task generateAsNullableFunctions {
 }
 
 
+task generateContainsFunctions {
+    dependsOn "recreateGeneratedSrcDir"
+
+    doLast {
+        generateSourceFile("contains.kt") { out ->
+            for (n in 2..maxTupleSize) {
+                out.println("operator fun <T> Tuple$n<${(["T"] * n).join(", ")}>.contains(element: T): Boolean =")
+                out.println("    " + (1..n).collect {i -> "(element == val$i)" }.join(" || "))
+                out.println()
+            }
+        }
+    }
+}
+
+
 task generateSrcMain {
     dependsOn "generateTupleClasses"
     dependsOn "generateTupleFactoryFunctions"
@@ -206,6 +221,7 @@ task generateSrcMain {
     dependsOn "generatePlusFunctions"
     dependsOn "generateNonNullFunctions"
     dependsOn "generateAsNullableFunctions"
+    dependsOn "generateContainsFunctions"
 }
 
 compileKotlin {
