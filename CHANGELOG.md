@@ -3,6 +3,12 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v1.10.1.0
+
+- **tuples4k** : support the `in` and `!in` operators for tuples with all elements of the same type
+- **values4k** : interface and abstract base class for comparable values
+- **values4k** : ValueFactory implements (PRIMITIVE)->DOMAIN
+
 ### v1.10.0.0
 - **values4k** : Added support for Kotlin Result type using naming of style.. `ofResult()`
 - **all** : Upgrade to Kotlin 1.5.0.
