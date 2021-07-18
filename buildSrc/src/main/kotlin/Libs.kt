@@ -72,4 +72,7 @@ object Libs {
      * https://github.com/npryce/hamkrest
      */
     const val hamkrest: String = "com.natpryce:hamkrest:" + Versions.hamkrest
+
+    const val kotlinx_serialization: String = "org.jetbrains.kotlinx:kotlinx-serialization-json:" + Versions.kotlinx_serialization
+
 }

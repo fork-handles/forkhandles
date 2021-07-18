@@ -26,6 +26,8 @@ object Versions {
 
     const val hamkrest: String = "1.8.0.1"
 
+    const val kotlinx_serialization: String = "1.2.2"
+
     /**
      * Current version: "6.5.1"
      * See issue 19: How to update Gradle itself?

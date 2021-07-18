@@ -4,6 +4,7 @@ import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.present
 import dev.forkhandles.fabrikate.InstanceFabricator.NoUsableConstructor
+import kotlinx.serialization.Serializable
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -371,5 +372,15 @@ class InstanceFabricatorTest {
     @Test
     fun `does enums`() {
         assertThat(Fabrikate(FabricatorConfig(2).withStandardMappings()).random<T>().toString(), equalTo("T(a=D, b=[D, A, A, D, A])"))
+    }
+
+    @Serializable
+    data class KotlinSerializable(val string: String)
+
+    @Test
+    fun `does not create nulls on non-nullables for serializable classes`(){
+        val random = Fabrikate(FabricatorConfig(84).withStandardMappings()).random<KotlinSerializable>()
+        val nonNullableString = random.string
+        assertThat(nonNullableString, present())
     }
 }
