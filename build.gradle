@@ -13,6 +13,7 @@ plugins {
     id 'com.github.kt3k.coveralls' version "2.10.1"
     id 'de.fayard.buildSrcVersions' version "0.7.0"
     id "io.codearte.nexus-staging" version '0.22.0'
+    id 'org.jetbrains.kotlin.plugin.serialization' version "1.5.0"
 }
 
 apply plugin: 'io.codearte.nexus-staging'

@@ -54,9 +54,15 @@ class InstanceFabricator(private val config: FabricatorConfig) {
     private fun findConstructorFunctions(
         classRef: KClass<*>,
         type: KType
-    ): List<Pair<KFunction<Any>, (KParameter) -> Any?>> = classRef.constructors
-        .shuffled(config.random)
-        .map { it to { param: KParameter -> makeRandomInstanceForParam(param.type, classRef, type) } }
+    ): List<Pair<KFunction<Any>, (KParameter) -> Any?>> {
+        val allConstructors = classRef.constructors
+        val hiddenConstructors = allConstructors.filter { constructor -> constructor.annotations.isNotEmpty() &&
+            (constructor.annotations.filterIsInstance<Deprecated>().first().level == DeprecationLevel.HIDDEN) }
+        val nonHidden = allConstructors.filterNot { hiddenConstructors.contains(it) }
+        val selectedConstructors = if (nonHidden.isNotEmpty()) {nonHidden} else{hiddenConstructors}
+        return selectedConstructors.shuffled(config.random)
+            .map { it to { param: KParameter -> makeRandomInstanceForParam(param.type, classRef, type) } }
+    }
 
     private fun makeRandomInstanceForParam(
         paramType: KType,
