@@ -81,12 +81,13 @@ class InstanceFabricator(private val config: FabricatorConfig) {
 
     private fun makeStandardInstanceOrNull(classRef: KClass<*>, type: KType) = with(config) {
         when {
+            mappings.containsKey(classRef) -> mappings[classRef]!!.invoke()
             classRef == Set::class -> makeRandomSet(classRef, type)
             classRef == List::class -> makeRandomList(classRef, type)
             classRef == Collection::class -> makeRandomList(classRef, type)
             classRef == Map::class -> makeRandomMap(classRef, type)
             classRef.isSubclassOf(Enum::class) -> makeRandomEnum(classRef)
-            else -> mappings[classRef]?.invoke()
+            else -> null
         }
     }
 

@@ -6,6 +6,7 @@ import com.natpryce.hamkrest.present
 import dev.forkhandles.fabrikate.InstanceFabricator.NoUsableConstructor
 import kotlinx.serialization.Serializable
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -382,5 +383,27 @@ class InstanceFabricatorTest {
         val random = Fabrikate(FabricatorConfig(84).withStandardMappings()).random<KotlinSerializable>()
         val nonNullableString = random.string
         assertThat(nonNullableString, present())
+    }
+
+    class TestListFabricator: Fabricator<List<String>>{
+        override fun invoke(): List<String> {
+            return testList
+        }
+
+        companion object {
+            val testList = listOf("TestList")
+        }
+    }
+
+    @Test
+    fun `registered Fabricators override defaults`(){
+        val defaultFabrikate = Fabrikate(FabricatorConfig())
+        val overriddenFabrikate = Fabrikate(FabricatorConfig().register(TestListFabricator()))
+
+        val randomDefault = defaultFabrikate.random<List<String>>()
+        val randomOverridden = overriddenFabrikate.random<List<String>>()
+
+        assertNotEquals(randomDefault, randomOverridden)
+        assertThat(randomOverridden, equalTo(TestListFabricator.testList))
     }
 }
