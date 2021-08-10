@@ -3,6 +3,10 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v1.10.3.0
+
+- **fakrikate4k** Allow registered Fabricators to override defaults. H/T @LeoJohannsson-imtf
+
 ### v1.10.2.0
 
 - **fakrikate4k** Use deprecated hidden constructors as last option only. H/T @saibot
@@ -15,7 +19,6 @@ when appropriate:
 - **values4k** : ValueFactory implements (PRIMITIVE)->DOMAIN
 
 ### v1.10.0.0
-
 - **values4k** : Added support for Kotlin Result type using naming of style.. `ofResult()`
 - **all** : Upgrade to Kotlin 1.5.0.
 
