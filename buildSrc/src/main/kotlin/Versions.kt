@@ -11,7 +11,7 @@ import org.gradle.plugin.use.PluginDependencySpec
  * YOU are responsible for updating manually the dependency version.
  */
 object Versions {
-    const val org_jetbrains_kotlin: String = "1.5.21"
+    const val org_jetbrains_kotlin: String = "1.5.30"
 
     const val org_junit_jupiter: String = "5.7.2"
 
