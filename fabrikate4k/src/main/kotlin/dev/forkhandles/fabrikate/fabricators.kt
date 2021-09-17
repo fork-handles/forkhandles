@@ -12,13 +12,19 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.OffsetTime
+import java.time.YearMonth
 import java.time.ZoneOffset.UTC
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Date
+import java.util.UUID
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
 
 typealias Fabricator<T> = () -> T
+
+class BooleanFabricator(private val random: Random = Random) : Fabricator<Boolean> {
+    override fun invoke() = random.nextBoolean()
+}
 
 class LongFabricator(private val random: Random = Random) : Fabricator<Long> {
     override fun invoke() = random.nextLong()
@@ -67,6 +73,12 @@ class CharFabricator(
     override fun invoke(): Char = charPool.random(random)
 }
 
+class ByteFabricator(
+    private val random: Random = Random
+) : Fabricator<Byte> {
+    override fun invoke(): Byte = random.nextBytes(1).first()
+}
+
 class BytesFabricator(
     private val size: Int = 10,
     private val random: Random = Random,
@@ -88,6 +100,10 @@ class LocalTimeFabricator(private val random: Random = Random) : Fabricator<Loca
 
 class LocalDateTimeFabricator(private val random: Random = Random) : Fabricator<LocalDateTime> {
     override fun invoke(): LocalDateTime = LocalDateTime.ofInstant(InstantFabricator(random)(), UTC)
+}
+
+class YearMonthFabricator(private val random: Random = Random) : Fabricator<YearMonth> {
+    override fun invoke(): YearMonth = YearMonth.of(random.nextInt(1970, 2030), random.nextInt(1, 12))
 }
 
 class OffsetDateTimeFabricator(private val random: Random = Random) : Fabricator<OffsetDateTime> {

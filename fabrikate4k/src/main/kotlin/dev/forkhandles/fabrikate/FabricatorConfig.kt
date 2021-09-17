@@ -1,12 +1,13 @@
 package dev.forkhandles.fabrikate
 
+import dev.forkhandles.fabrikate.FabricatorConfig.NullableStrategy.RandomlySetToNull
 import kotlin.random.Random
 import kotlin.reflect.KClass
 
 class FabricatorConfig(
     seed: Int = 861_084_310,
     val collectionSizes: IntRange = 1..5,
-    val nullableStrategy: NullableStrategy = NullableStrategy.RandomlySetToNull
+    val nullableStrategy: NullableStrategy = RandomlySetToNull
 ) {
     enum class NullableStrategy { RandomlySetToNull, NeverSetToNull, AlwaysSetToNull }
 
@@ -16,6 +17,8 @@ class FabricatorConfig(
     fun withStandardMappings() = apply {
         register(StringFabricator(random = random))
         register(LongFabricator(random))
+        register(BooleanFabricator(random))
+        register(ByteFabricator(random))
         register(IntFabricator(random))
         register(DoubleFabricator(random))
         register(FloatFabricator(random))
@@ -27,6 +30,7 @@ class FabricatorConfig(
         register(LocalDateFabricator(random))
         register(LocalTimeFabricator(random))
         register(LocalDateTimeFabricator(random))
+        register(YearMonthFabricator(random))
         register(OffsetDateTimeFabricator(random))
         register(OffsetTimeFabricator(random))
         register(ZonedDateTimeFabricator(random))
