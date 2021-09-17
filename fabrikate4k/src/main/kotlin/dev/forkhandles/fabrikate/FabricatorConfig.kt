@@ -6,7 +6,10 @@ import kotlin.reflect.KClass
 class FabricatorConfig(
     seed: Int = 861_084_310,
     val collectionSizes: IntRange = 1..5,
+    val nullableStrategy: NullableStrategy = NullableStrategy.RandomlySetToNull
 ) {
+    enum class NullableStrategy { RandomlySetToNull, NeverSetToNull, AlwaysSetToNull }
+
     val random: Random = Random(seed)
     val mappings = mutableMapOf<KClass<*>, Fabricator<*>>()
 
