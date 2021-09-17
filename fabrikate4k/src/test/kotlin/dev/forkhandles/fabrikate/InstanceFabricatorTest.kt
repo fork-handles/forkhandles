@@ -69,10 +69,12 @@ class InstanceFabricatorTest {
         assertTrue("A" in a.toString())
     }
 
+    data class U(val p:P)
+
     @Test
     fun `throws NoUsableConstructor error if there is no constructor that could be used`() {
         try {
-            Fabrikate().random<P>()
+            Fabrikate().random<U>()
             error("makeRandomInstance should throw NoUsableConstructor error")
         } catch (e: NoUsableConstructor) {
             assertNotNull(e.cause)
