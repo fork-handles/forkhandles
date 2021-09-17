@@ -1,7 +1,5 @@
 description = 'ForkHandles CLI Flag library'
 
 dependencies {
-    api Libs.kotlin_stdlib_jdk8
     api Libs.kotlin_reflect
-    testApi Config.TestDependencies
 }

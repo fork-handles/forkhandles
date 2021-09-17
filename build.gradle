@@ -93,6 +93,11 @@ subprojects {
         archives sourcesJar, javadocJar
     }
 
+    dependencies {
+        api Libs.kotlin_stdlib_jdk8
+        testApi Config.TestDependencies
+    }
+
     def enableSigning = project.findProperty('sign') == "true"
 
     apply plugin: 'maven-publish' // required to configure bintray

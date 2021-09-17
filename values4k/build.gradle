@@ -1,10 +1,9 @@
 description = 'ForkHandles Value-types library'
 
 dependencies {
-    api Libs.kotlin_stdlib_jdk8
     implementation(project(":result4k"))
-    testApi Config.TestDependencies
 }
+
 compileTestKotlin {
     kotlinOptions {
         freeCompilerArgs = ["-Xinline-classes"]
