@@ -1,10 +1,5 @@
 description = 'ForkHandles Tuples library'
 
-dependencies {
-    api Libs.kotlin_stdlib_jdk8
-    testApi Config.TestDependencies
-}
-
 // Increasing this requires a minor version increment.
 // Decreasing it is not backward compatible, and so requires a major version increment.
 ext.maxTupleSize = 8

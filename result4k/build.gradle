@@ -5,9 +5,7 @@ plugins {
 description = 'A friendly Kotlin Result type'
 
 dependencies {
-    api Libs.kotlin_stdlib_jdk8
-    testApi Config.TestDependencies
-    testApi Libs.kotlin_test
+    testApi "org.jetbrains.kotlin:kotlin-test:_"
 }
 
 compileJmhKotlin.kotlinOptions.jvmTarget = "1.8"

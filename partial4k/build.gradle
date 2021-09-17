@@ -2,11 +2,6 @@ import static java.util.Locale.ROOT
 
 description = 'ForkHandles Partial Application library'
 
-dependencies {
-    api Libs.kotlin_stdlib_jdk8
-    testApi Config.TestDependencies
-}
-
 // Increasing these requires a minor version increment.
 // Decreasing them is not backward compatible, and so requires a major version increment.
 ext.maxArity = 5

@@ -3,10 +3,17 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v1.11.1.0
+
+- **all** : Upgrade of dependencies
+- **fakrikate4k** Make Nullable creation behaviour configurable. H/T @huanlui
+
 ### v1.11.0.0
+
 - **all** : Upgrade of dependencies, including Kotlin to 1.5.30.
 
 ### v1.10.3.0
+
 - **fakrikate4k** Allow registered Fabricators to override defaults. H/T @LeoJohannsson-imtf
 
 ### v1.10.2.0

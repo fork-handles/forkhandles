@@ -1,9 +1,7 @@
 description = 'ForkHandles Parser Combinator library'
 
 dependencies {
-    api Libs.kotlin_stdlib_jdk8
     api project(":tuples4k")
-    testApi Config.TestDependencies
 }
 
 tasks.configureEach {
