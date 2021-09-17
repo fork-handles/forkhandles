@@ -20,6 +20,10 @@ import kotlin.random.asJavaRandom
 
 typealias Fabricator<T> = () -> T
 
+class BooleanFabricator(private val random: Random = Random) : Fabricator<Boolean> {
+    override fun invoke() = random.nextBoolean()
+}
+
 class LongFabricator(private val random: Random = Random) : Fabricator<Long> {
     override fun invoke() = random.nextLong()
 }
@@ -65,6 +69,10 @@ class CharFabricator(
     private val random: Random = Random
 ) : Fabricator<Char> {
     override fun invoke(): Char = charPool.random(random)
+}
+
+class ByteFabricator(private val random: Random = Random): Fabricator<Byte> {
+    override fun invoke(): Byte = random.nextInt().toByte()
 }
 
 class BytesFabricator(

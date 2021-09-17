@@ -106,6 +106,8 @@ class InstanceFabricatorTest {
         assertTrue(Fabrikate().random<Float>() is Float)
         assertTrue(Fabrikate().random<Char>() is Char)
         assertTrue(Fabrikate().random<String>() is String)
+        assertTrue(Fabrikate().random<Boolean>() is Boolean)
+        assertTrue(Fabrikate().random<Byte>() is Byte)
         //... etc. Don't forget about arrays
     }
 
@@ -323,6 +325,8 @@ class InstanceFabricatorTest {
         val w: File,
         val x: UUID,
         val y: Duration,
+        val z: Boolean,
+        val za: Byte
     )
 
     @Test

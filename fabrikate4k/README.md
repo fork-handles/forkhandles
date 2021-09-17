@@ -75,12 +75,14 @@ Person(
 
 ## Supported Types
 
+* Byte
 * Int
 * Long
 * Double
 * Float
 * Char
 * String
+* Boolean
 * ByteArray
 * BigInteger
 * BigDecimal
