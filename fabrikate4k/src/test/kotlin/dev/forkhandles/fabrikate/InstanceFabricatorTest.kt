@@ -7,6 +7,7 @@ import dev.forkhandles.fabrikate.InstanceFabricator.NoUsableConstructor
 import kotlinx.serialization.Serializable
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -21,6 +22,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.OffsetTime
+import java.time.YearMonth
 import java.time.ZonedDateTime
 import java.util.*
 
@@ -73,7 +75,7 @@ class InstanceFabricatorTest {
             Fabrikate().random<P>()
             error("makeRandomInstance should throw NoUsableConstructor error")
         } catch (e: NoUsableConstructor) {
-            // no-op
+            assertNotNull(e.cause)
         }
     }
 
