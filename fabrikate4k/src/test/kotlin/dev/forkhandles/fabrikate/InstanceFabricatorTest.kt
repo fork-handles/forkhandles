@@ -359,9 +359,25 @@ class InstanceFabricatorTest {
     data class S(val a: Instant?)
 
     @Test
-    fun `creates nulls`() {
+    fun `randomly sets nullable properties to null by default`() {
         assertThat(Fabrikate(FabricatorConfig(1).withStandardMappings()).random<S>().toString(), equalTo("S(a=1982-07-13T19:53:20Z)"))
         assertThat(Fabrikate(FabricatorConfig(2).withStandardMappings()).random<S>().toString(), equalTo("S(a=null)"))
+    }
+
+    @Test
+    fun `does not set nullable properties to null if explicitly configured`() {
+        assertThat(Fabrikate(FabricatorConfig(1, nullableStrategy = FabricatorConfig.NullableStrategy.NeverSetToNull)
+            .withStandardMappings()).random<S>().toString(), equalTo("S(a=1992-11-18T07:29:28Z)"))
+        assertThat(Fabrikate(FabricatorConfig(2,nullableStrategy = FabricatorConfig.NullableStrategy.NeverSetToNull)
+            .withStandardMappings()).random<S>().toString(), equalTo("S(a=2002-01-05T13:32:51Z)"))
+    }
+
+    @Test
+    fun `sets nullable properties to null if explicitly configured`() {
+        assertThat(Fabrikate(FabricatorConfig(1, nullableStrategy = FabricatorConfig.NullableStrategy.AlwaysSetToNull)
+            .withStandardMappings()).random<S>().toString(), equalTo("S(a=null)"))
+        assertThat(Fabrikate(FabricatorConfig(2,nullableStrategy = FabricatorConfig.NullableStrategy.AlwaysSetToNull)
+            .withStandardMappings()).random<S>().toString(), equalTo("S(a=null)"))
     }
 
     enum class RandomEnum {

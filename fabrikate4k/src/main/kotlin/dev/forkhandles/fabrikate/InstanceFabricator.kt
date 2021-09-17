@@ -1,5 +1,8 @@
 package dev.forkhandles.fabrikate
 
+import dev.forkhandles.fabrikate.FabricatorConfig.NullableStrategy.AlwaysSetToNull
+import dev.forkhandles.fabrikate.FabricatorConfig.NullableStrategy.NeverSetToNull
+import dev.forkhandles.fabrikate.FabricatorConfig.NullableStrategy.RandomlySetToNull
 import java.lang.reflect.*
 import java.time.*
 import java.util.*
@@ -17,7 +20,7 @@ class InstanceFabricator(private val config: FabricatorConfig) {
 
     fun makeRandomInstance(classRef: KClass<*>, type: KType): Any? =
         when {
-            type.isMarkedNullable && config.random.nextBoolean() -> null
+            type.isMarkedNullable && mustSetNullableToNull() -> null
             else -> when (val primitive = makeStandardInstanceOrNull(classRef, type)) {
                 null -> {
                     val constructors = findConstructorFunctions(classRef, type)
@@ -34,6 +37,12 @@ class InstanceFabricator(private val config: FabricatorConfig) {
                 else -> primitive
             }
         }
+
+    private fun mustSetNullableToNull() = when(config.nullableStrategy) {
+        AlwaysSetToNull -> true
+        NeverSetToNull -> false
+        RandomlySetToNull -> config.random.nextBoolean()
+    }
 
     private fun findFactoryFunctions(
         classRef: KClass<*>,
