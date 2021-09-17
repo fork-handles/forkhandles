@@ -4,8 +4,8 @@ buildscript {
     }
 
     dependencies {
-        classpath Libs.kotlin_gradle_plugin
-        classpath Libs.coveralls_gradle_plugin
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:_"
+        classpath "org.kt3k.gradle.plugin:coveralls-gradle-plugin:_"
     }
 }
 
@@ -94,8 +94,10 @@ subprojects {
     }
 
     dependencies {
-        api Libs.kotlin_stdlib_jdk8
-        testApi Config.TestDependencies
+        api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:_"
+        testApi "org.junit.jupiter:junit-jupiter-api:_"
+        testApi "org.junit.jupiter:junit-jupiter-engine:_"
+        testApi "com.natpryce:hamkrest:_"
     }
 
     def enableSigning = project.findProperty('sign') == "true"

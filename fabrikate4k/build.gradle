@@ -3,7 +3,7 @@ description = 'ForkHandles test utility to instantiate objects with fake data'
 apply plugin: 'kotlinx-serialization'
 
 dependencies {
-    api Libs.kotlin_reflect
-    testApi Libs.kotlin_test
-    testApi Libs.kotlinx_serialization
+    api "org.jetbrains.kotlin:kotlin-reflect:_"
+    testApi "org.jetbrains.kotlin:kotlin-test:_"
+    testApi "org.jetbrains.kotlinx:kotlinx-serialization-json:_"
 }

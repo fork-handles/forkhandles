@@ -1,5 +1,5 @@
 description = 'ForkHandles CLI Flag library'
 
 dependencies {
-    api Libs.kotlin_reflect
+    api "org.jetbrains.kotlin:kotlin-reflect:_"
 }
