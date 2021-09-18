@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v1.11.2.0 (uncut)
+- **fabrikate4k** : Provide more information when InstanceFabricator cannot create an instance H/T @huanlui
+
 ### v1.11.1.0
 - **all** : Upgrade of dependencies
 - **fabrikate4k** Make Nullable creation behaviour configurable. H/T @huanlui
