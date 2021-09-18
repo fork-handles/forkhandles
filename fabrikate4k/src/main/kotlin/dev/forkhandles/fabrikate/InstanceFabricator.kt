@@ -16,7 +16,7 @@ import kotlin.reflect.full.memberFunctions
 
 class InstanceFabricator(private val config: FabricatorConfig) {
 
-    class NoUsableConstructor : Error()
+    class NoUsableConstructor(type: KType, innerCause: Throwable? = null) : Error(type.toString(), innerCause)
 
     fun makeRandomInstance(classRef: KClass<*>, type: KType): Any? =
         when {
@@ -28,11 +28,13 @@ class InstanceFabricator(private val config: FabricatorConfig) {
                     (constructors + factories).forEach { (fn, transform) ->
                         try {
                             return fn.call(*fn.parameters.map(transform).toTypedArray())
+                        } catch (childNoUsableConstructor: NoUsableConstructor) {
+                            throw NoUsableConstructor(type, childNoUsableConstructor)
                         } catch (ignore: Throwable) {
                             // do nothing
                         }
                     }
-                    throw NoUsableConstructor()
+                    throw NoUsableConstructor(type)
                 }
                 else -> primitive
             }
