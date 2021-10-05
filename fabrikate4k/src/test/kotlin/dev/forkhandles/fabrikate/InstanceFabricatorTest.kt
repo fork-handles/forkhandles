@@ -26,6 +26,7 @@ import java.time.YearMonth
 import java.time.ZonedDateTime
 import java.util.Date
 import java.util.UUID
+import kotlin.random.Random
 
 @Suppress(
     "ConvertSecondaryConstructorToPrimary",
@@ -429,5 +430,10 @@ class InstanceFabricatorTest {
 
         assertNotEquals(randomDefault, randomOverridden)
         assertThat(randomOverridden, equalTo(TestListFabricator.testList))
+    }
+
+    @Test
+    fun `deterministic uuid fabricator`() {
+        assertThat(UUIDFabricator(Random(123456L))(), equalTo(UUID.fromString("06f05ba9-00ca-1755-8236-ec271195468f")))
     }
 }
