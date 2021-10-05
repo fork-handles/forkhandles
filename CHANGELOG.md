@@ -3,8 +3,10 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
-### v1.11.2.0 (uncut)
+### v1.11.2.0
+
 - **fabrikate4k** : Provide more information when InstanceFabricator cannot create an instance H/T @huanlui
+- **fabrikate4k** : Fix Random generation of UUIDs so it is deterministic
 
 ### v1.11.1.0
 - **all** : Upgrade of dependencies
@@ -12,20 +14,16 @@ when appropriate:
 - **fabrikate4k** Fix #26 - added Boolean fabricator.
 
 ### v1.11.0.0
-
 - **all** : Upgrade of dependencies, including Kotlin to 1.5.30.
 
 ### v1.10.3.0
-
 - **fabrikate4k** Allow registered Fabricators to override defaults. H/T @LeoJohannsson-imtf
 
 ### v1.10.2.0
-
 - **fabrikate4k** Use deprecated hidden constructors as last option only. H/T @saibot
 - **all** : Upgrade of dependencies, including Kotlin to 1.5.21.
 
 ### v1.10.1.0
-
 - **tuples4k** : support the `in` and `!in` operators for tuples with all elements of the same type
 - **values4k** : interface and abstract base class for comparable values
 - **values4k** : ValueFactory implements (PRIMITIVE)->DOMAIN

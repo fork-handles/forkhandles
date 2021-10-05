@@ -126,8 +126,8 @@ class DurationFabricator(private val random: Random = Random) : Fabricator<Durat
     override fun invoke(): Duration = Duration.ofDays(random.nextLong(1, 10))
 }
 
-class UUIDFabricator : Fabricator<UUID> {
-    override fun invoke(): UUID = UUID.randomUUID()
+class UUIDFabricator(private val random: Random = Random) : Fabricator<UUID> {
+    override fun invoke(): UUID = UUID(random.nextLong(), random.nextLong())
 }
 
 class UriFabricator(private val random: Random = Random) : Fabricator<URI> {

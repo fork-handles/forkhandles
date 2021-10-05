@@ -39,7 +39,7 @@ class FabricatorConfig(
         register(UriFabricator(random))
         register(UrlFabricator(random))
         register(FileFabricator())
-        register(UUIDFabricator())
+        register(UUIDFabricator(random))
         register(AnyFabricator())
     }
 
