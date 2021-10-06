@@ -3,8 +3,10 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
-### v1.11.2.0
+### v1.11.2.1
+- **fabrikate4k** : Revert change to provide more info on InstanceFabrikator as was blowing up on first try.
 
+### v1.11.2.0
 - **fabrikate4k** : Provide more information when InstanceFabricator cannot create an instance H/T @huanlui
 - **fabrikate4k** : Fix Random generation of UUIDs so it is deterministic
 
