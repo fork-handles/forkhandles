@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v1.12.0.0
+- **all** : Upgrade of dependencies, including Kotlin to 1.6.0
+
 ### v1.11.2.1
 - **fabrikate4k** : Revert change to provide more info on InstanceFabrikator as was blowing up on first try.
 

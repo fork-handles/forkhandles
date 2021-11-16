@@ -115,74 +115,75 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
             .also { add(it) }
 
 
-    override fun scheduleAtFixedRate(command: Runnable, initialDelay: Long, period: Long, unit: TimeUnit): ScheduledFuture<*> {
-        return scheduleWithFixedDelay(command, initialDelay, period, unit)
-    }
+    override fun scheduleAtFixedRate(
+        command: Runnable,
+        initialDelay: Long,
+        period: Long,
+        unit: TimeUnit
+    ): ScheduledFuture<*> = scheduleWithFixedDelay(command, initialDelay, period, unit)
 
-    override fun scheduleWithFixedDelay(command: Runnable, initialDelay: Long, delay: Long, unit: TimeUnit): ScheduledFuture<*> =
+    override fun scheduleWithFixedDelay(
+        command: Runnable,
+        initialDelay: Long,
+        delay: Long,
+        unit: TimeUnit
+    ): ScheduledFuture<*> =
         ScheduledTask(
             command = command.asCallable(),
             delay = duration(initialDelay, unit),
-            repeatDelay = duration(delay, unit))
+            repeatDelay = duration(delay, unit)
+        )
             .also { add(it) }
 
     @Throws(InterruptedException::class)
     override fun awaitTermination(timeout: Long, unit: TimeUnit): Boolean {
-        throw blockingOperationsNotSupported()
+        blockingOperationsNotSupported()
     }
 
     @Throws(InterruptedException::class)
     override fun <T> invokeAll(tasks: Collection<Callable<T>?>): List<Future<T>> {
-        throw blockingOperationsNotSupported()
+        blockingOperationsNotSupported()
     }
 
     @Throws(InterruptedException::class)
     override fun <T> invokeAll(tasks: Collection<Callable<T>?>, timeout: Long, unit: TimeUnit): List<Future<T>> {
-        throw blockingOperationsNotSupported()
+        blockingOperationsNotSupported()
     }
 
     @Throws(InterruptedException::class, ExecutionException::class)
     override fun <T> invokeAny(tasks: Collection<Callable<T>?>): T {
-        throw blockingOperationsNotSupported()
+        blockingOperationsNotSupported()
     }
 
     @Throws(InterruptedException::class, ExecutionException::class, TimeoutException::class)
     override fun <T> invokeAny(tasks: Collection<Callable<T>?>, timeout: Long, unit: TimeUnit): T {
-        throw blockingOperationsNotSupported()
+        blockingOperationsNotSupported()
     }
 
     override fun isShutdown(): Boolean {
-        throw shutdownNotSupported()
+        shutdownNotSupported()
     }
 
     override fun isTerminated(): Boolean {
-        throw shutdownNotSupported()
+        shutdownNotSupported()
     }
 
     override fun shutdown() {
-        throw shutdownNotSupported()
+        shutdownNotSupported()
     }
 
     override fun shutdownNow(): List<Runnable> {
-        throw shutdownNotSupported()
+        shutdownNotSupported()
     }
 
-    override fun <T> submit(callable: Callable<T>): Future<T> {
-        return schedule(callable, 0, SECONDS)
-    }
+    override fun <T> submit(callable: Callable<T>) = schedule(callable, 0, SECONDS)
 
-    override fun submit(command: Runnable): Future<*> {
-        return submit<Any?>(command, null)
-    }
+    override fun submit(command: Runnable): Future<*> = submit<Any?>(command, null)
 
-    override fun <T> submit(command: Runnable, result: T): Future<T> {
-        return submit(CallableRunnableAdapter(command, result))
-    }
+    override fun <T> submit(command: Runnable, result: T) = submit(CallableRunnableAdapter(command, result))
 
     private class CallableRunnableAdapter<T>(private val runnable: Runnable, private val result: T) : Callable<T> {
-        override fun toString(): String {
-            return runnable.toString()
-        }
+        override fun toString() = runnable.toString()
 
         @Throws(Exception::class)
         override fun call(): T {
@@ -209,9 +210,7 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
         private var futureResult: T? = null
         private var failure: Exception? = null
 
-        override fun toString(): String {
-            return "$command repeatDelay=$repeatDelay"
-        }
+        override fun toString(): String = "$command repeatDelay=$repeatDelay"
 
         override fun getDelay(unit: TimeUnit) =
             delayOf(this)?.let(unit::convert) ?: -1
@@ -237,13 +236,9 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
         override fun get(timeout: Long, unit: TimeUnit): T? =
             get()
 
-        override fun isCancelled(): Boolean {
-            return isCancelled
-        }
+        override fun isCancelled(): Boolean = isCancelled
 
-        override fun isDone(): Boolean {
-            return isDone
-        }
+        override fun isDone(): Boolean = isDone
 
         override fun run() {
             try {
@@ -322,7 +317,8 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
 
     private fun blockingOperationsNotSupported(): Nothing =
         throw UnsupportedSynchronousOperationException(
-            "cannot perform blocking wait on a task scheduled on a " + javaClass.simpleName)
+            "cannot perform blocking wait on a task scheduled on a " + javaClass.simpleName
+        )
 
     private fun shutdownNotSupported(): Nothing =
         throw UnsupportedOperationException("shutdown not supported")
