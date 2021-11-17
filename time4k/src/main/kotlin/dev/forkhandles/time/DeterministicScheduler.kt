@@ -225,7 +225,7 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
 
         override fun get(): T? {
             if (!isDone) {
-                throw blockingOperationsNotSupported()
+                blockingOperationsNotSupported()
             }
             if (failure != null) {
                 throw ExecutionException(failure)
