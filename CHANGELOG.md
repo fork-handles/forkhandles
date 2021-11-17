@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v1.12.2.0
+- **all** : Downgrade to Java 8 target - as not needed really.
+
 ### v1.12.1.0
 - **all** : Upgrade to Java 11 target, gradle to v7.
 
