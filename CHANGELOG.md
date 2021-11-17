@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v1.12.1.0
+- **all** : Upgrade to Java 11 target, gradle to v7.
+
 ### v1.12.0.0
 - **all** : Upgrade of dependencies, including Kotlin to 1.6.0
 
