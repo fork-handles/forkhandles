@@ -135,7 +135,7 @@ class UriFabricator(private val random: Random = Random) : Fabricator<URI> {
 }
 
 class UrlFabricator(private val random: Random = Random) : Fabricator<URL> {
-    override fun invoke(): URL = URL("https://${StringFabricator(random = random)()}.com")
+    override fun invoke(): URL = URL("https://${StringFabricator(random = random)().filter { it.isLetterOrDigit() }}.com")
 }
 
 class FileFabricator : Fabricator<File> {
