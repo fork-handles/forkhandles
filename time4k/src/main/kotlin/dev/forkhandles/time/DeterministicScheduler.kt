@@ -3,6 +3,7 @@ package dev.forkhandles.time
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.Callable
+import java.util.concurrent.CancellationException
 import java.util.concurrent.Delayed
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeoutException
 class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExecutorService {
     private var head: ScheduledTask<*>? = null
     private var currentTime = startTime
+    private var isShutdown = false
 
     /**
      * Simulated current time that progresses as the scheduler is ticked.
@@ -77,7 +79,7 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
 
         task.run()
 
-        if (!task.isCancelled && task.repeatDelay != null) {
+        if (! ( task.isCancelled || task.isFailure() ) && task.repeatDelay != null) {
             task.delay = task.repeatDelay
             add(task)
         }
@@ -137,6 +139,9 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
 
     @Throws(InterruptedException::class)
     override fun awaitTermination(timeout: Long, unit: TimeUnit): Boolean {
+        if ( isShutdown ) {
+            return true
+        }
         blockingOperationsNotSupported()
     }
 
@@ -161,19 +166,20 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
     }
 
     override fun isShutdown(): Boolean {
-        shutdownNotSupported()
+        return isShutdown
     }
 
     override fun isTerminated(): Boolean {
-        shutdownNotSupported()
+        return isShutdown
     }
 
     override fun shutdown() {
-        shutdownNotSupported()
+        isShutdown = true
     }
 
     override fun shutdownNow(): List<Runnable> {
-        shutdownNotSupported()
+        shutdown()
+        return listOf()
     }
 
     override fun <T> submit(callable: Callable<T>) = schedule(callable, 0, SECONDS)
@@ -210,6 +216,8 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
         private var futureResult: T? = null
         private var failure: Exception? = null
 
+        fun isFailure(): Boolean = failure != null
+
         override fun toString(): String = "$command repeatDelay=$repeatDelay"
 
         override fun getDelay(unit: TimeUnit) =
@@ -219,11 +227,17 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
             throw UnsupportedOperationException("not supported")
 
         override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
-            isCancelled = true
-            return remove(this)
+            if ( ! isDone || isFailure() ) {
+                isCancelled = true
+                return remove(this)
+            }
+            return false
         }
 
         override fun get(): T? {
+            if ( isCancelled ) {
+                throw CancellationException("task was cancelled")
+            }
             if (!isDone) {
                 blockingOperationsNotSupported()
             }
@@ -238,7 +252,7 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
 
         override fun isCancelled(): Boolean = isCancelled
 
-        override fun isDone(): Boolean = isDone
+        override fun isDone(): Boolean = isDone || isCancelled
 
         override fun run() {
             try {
@@ -253,6 +267,10 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
     private fun add(newTask: ScheduledTask<*>) {
         var prev: ScheduledTask<*>? = null
         var next = head
+
+        if ( isShutdown ) {
+            return
+        }
 
         while (next != null && next.delay <= newTask.delay) {
             newTask.delay -= next.delay
@@ -319,9 +337,6 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
         throw UnsupportedSynchronousOperationException(
             "cannot perform blocking wait on a task scheduled on a " + javaClass.simpleName
         )
-
-    private fun shutdownNotSupported(): Nothing =
-        throw UnsupportedOperationException("shutdown not supported")
 
     private fun duration(delay: Long, unit: TimeUnit) =
         Duration.of(delay, unit.toChronoUnit())
