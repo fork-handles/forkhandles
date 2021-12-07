@@ -1,5 +1,6 @@
 package dev.forkhandles.time
 
+import java.lang.IllegalArgumentException
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.Callable
@@ -270,6 +271,12 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
 
         if ( isShutdown ) {
             return
+        }
+
+        if ( newTask.repeatDelay != null ) {
+            if (newTask.repeatDelay.isNegative || newTask.repeatDelay.isZero) {
+                throw IllegalArgumentException("repeat ${newTask.repeatDelay} is zero or negative ")
+            }
         }
 
         while (next != null && next.delay <= newTask.delay) {

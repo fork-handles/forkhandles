@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
+import java.lang.IllegalArgumentException
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.Callable
@@ -308,6 +309,14 @@ class DeterministicSchedulerTests {
         future.get()
     }
 
+    @Test
+    fun rejectScheduleIfOutOfBounds() {
+        val task = trackedRunnable("thing")
+        assertThrows(IllegalArgumentException::class.java) { scheduler.scheduleWithFixedDelay(task, 1, -1, MILLISECONDS) }
+        assertThrows(IllegalArgumentException::class.java) { scheduler.scheduleWithFixedDelay(task, 1, 0, MILLISECONDS) }
+        assertThrows(IllegalArgumentException::class.java) { scheduler.scheduleAtFixedRate(task, 1, -1, MILLISECONDS) }
+        assertThrows(IllegalArgumentException::class.java) { scheduler.scheduleAtFixedRate(task, 1, 0, MILLISECONDS) }
+    }
 
     @Test
     fun isNotShutdownUntilItIs() {
