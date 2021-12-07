@@ -8,14 +8,18 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
+import java.lang.IllegalArgumentException
+import java.time.Duration
 import java.time.Instant
-import java.util.ArrayList
-import java.util.Arrays
 import java.util.concurrent.Callable
+import java.util.concurrent.CancellationException
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.SECONDS
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 
 class DeterministicSchedulerTests {
     private val scheduler = DeterministicScheduler()
@@ -61,7 +65,7 @@ class DeterministicSchedulerTests {
 
         scheduler.runUntilIdle()
 
-        assertEquals(Arrays.asList(commandA), invoked)
+        assertEquals(listOf(commandA), invoked)
         assertTrue(future.isDone, "future should be done after running the task")
         assertNull(future.get(), "result of future should be null")
     }
@@ -168,8 +172,10 @@ class DeterministicSchedulerTests {
 
     @Test
     fun tickingTimeForwardRunsCommandsExecutedByScheduledCommands() {
-        scheduler.schedule({ scheduler.execute { scheduler.execute(commandC) } },
-            1, MILLISECONDS)
+        scheduler.schedule(
+            { scheduler.execute { scheduler.execute(commandC) } },
+            1, MILLISECONDS
+        )
 
         scheduler.schedule(commandD, 2, MILLISECONDS)
 
@@ -257,7 +263,8 @@ class DeterministicSchedulerTests {
     @Test
     fun testCanScheduleCallablesAndGetTheirResultAfterTheyHaveBeenExecuted() {
         val future = scheduler.schedule(
-            trackedCallable("A"), 1, SECONDS)
+            trackedCallable("A"), 1, SECONDS
+        )
         assertFalse(future.isDone, "is not done")
         scheduler.tick(1, SECONDS)
         assertTrue(future.isDone, "is done")
@@ -273,6 +280,113 @@ class DeterministicSchedulerTests {
         assertThrows(UnsupportedOperationException::class.java) { future[TIMEOUT_IGNORED.toLong(), SECONDS] }
     }
 
+
+    @Test
+    fun testCancellingAFutureThatIsNotYetExecuted() {
+        val task = trackedCallable("result")
+        val future = scheduler.schedule(task, 1, SECONDS)
+        val wasAbleToCancel = future.cancel(true)
+        assertEquals(true, wasAbleToCancel, "was able to cancel")
+        assertEquals(true, future.isCancelled, "isCancelled")
+        assertEquals(true, future.isDone, "isDone")
+        assertThrows(CancellationException::class.java) { future.get() }
+    }
+
+    @Test
+    fun testCancellingAFutureThatIsAlreadyExecuted() {
+        val task = trackedCallable("result")
+        val future = scheduler.schedule(task, 1, SECONDS)
+        assertEquals(false, future.isDone, "isDone")
+
+        scheduler.tick(Duration.ofSeconds(1))
+
+        assertEquals(true, future.isDone, "isDone")
+
+        val wasAbleToCancel = future.cancel(true)
+
+        assertEquals(false, wasAbleToCancel, "was able to cancel")
+        assertEquals(false, future.isCancelled, "isCancelled")
+        future.get()
+    }
+
+    @Test
+    fun rejectScheduleIfOutOfBounds() {
+        val task = trackedRunnable("thing")
+        assertThrows(IllegalArgumentException::class.java) { scheduler.scheduleWithFixedDelay(task, 1, -1, MILLISECONDS) }
+        assertThrows(IllegalArgumentException::class.java) { scheduler.scheduleWithFixedDelay(task, 1, 0, MILLISECONDS) }
+        assertThrows(IllegalArgumentException::class.java) { scheduler.scheduleAtFixedRate(task, 1, -1, MILLISECONDS) }
+        assertThrows(IllegalArgumentException::class.java) { scheduler.scheduleAtFixedRate(task, 1, 0, MILLISECONDS) }
+    }
+
+    @Test
+    fun isNotShutdownUntilItIs() {
+        assertEquals(false, scheduler.isShutdown)
+        scheduler.shutdown()
+        assertEquals(true, scheduler.isShutdown)
+    }
+
+    @Test
+    fun isNotShutdownUntilItIsNow() {
+        assertEquals(false, scheduler.isShutdown)
+        scheduler.shutdownNow()
+        assertEquals(true, scheduler.isShutdown)
+    }
+
+    @Test
+    fun isTerminatedAsSoonAsItIsShutdown() {
+        assertEquals(false, scheduler.isTerminated)
+        scheduler.shutdown()
+        assertEquals(true, scheduler.isTerminated)
+    }
+
+    @Test
+    fun cannotWaitForTerminationUntilShutdown() {
+        // this is a small bodge to the differences between sync and async operation - but here we assume the same
+        // thread calls shutdown & await termination, like if shutting down a service under test
+        assertThrows(UnsupportedSynchronousOperationException::class.java) { scheduler.awaitTermination(1, SECONDS) }
+    }
+
+    @Test
+    fun waitForTerminationWhenShutdown() {
+        scheduler.shutdown()
+        assertTrue(scheduler.awaitTermination(1, SECONDS))
+    }
+
+    @Test
+    fun tasksSubmittedAfterShutdownAreIgnored() {
+        val counter = AtomicInteger()
+        scheduler.shutdown()
+        scheduler.schedule({ counter.incrementAndGet() }, 1, SECONDS)
+        scheduler.tick(Duration.ofSeconds(2))
+        assertEquals(0, counter.get())
+    }
+
+    @Test
+    fun tasksAreExecutedUntilShutdown() {
+        val counter = AtomicInteger()
+        scheduler.schedule({ counter.incrementAndGet(); scheduler.shutdown() }, 1, SECONDS)
+        scheduler.tick(Duration.ofSeconds(2))
+        assertEquals(1, counter.get())
+    }
+
+    @Test
+    fun longTimePeriodsWillInvolveRunningTheServiceMultipleTimes() {
+
+        val counter = AtomicLong(0)
+
+        scheduler.scheduleAtFixedRate({ counter.incrementAndGet() }, 1, 5, TimeUnit.MINUTES)
+        scheduler.tick(Duration.ofHours(1))
+
+        assertEquals(12, counter.get())
+    }
+
+    @Test
+    fun periodicTaskThrowingExceptionSuppressesSubsequentExecutions() {
+        val counter = AtomicLong(0)
+        scheduler.scheduleAtFixedRate({ counter.incrementAndGet(); throw NullPointerException() }, 0, 1, SECONDS)
+        scheduler.tick(Duration.ofSeconds(3))
+        assertEquals(1, counter.get())
+    }
 
     private fun trackedRunnable(name: String): Runnable {
         return object : Runnable {
