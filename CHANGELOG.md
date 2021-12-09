@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v1.13.0.0
+- **time4k** : Added TaskScheduler classes.
+
 ### v1.12.2.0
 - **all** : Downgrade to Java 8 target - as not needed really.
 
