@@ -388,6 +388,16 @@ class DeterministicSchedulerTests {
         assertEquals(1, counter.get())
     }
 
+    @Test
+    fun bug_schedulingMultipleTasksWithSameDelay() {
+        scheduler.scheduleWithFixedDelay(commandA, 2L, 3L, SECONDS)
+        scheduler.scheduleWithFixedDelay(commandB, 2L, 3L, SECONDS)
+
+        scheduler.tick(8L, SECONDS)
+
+        assertEquals(listOf(commandA, commandB, commandA, commandB, commandA, commandB), invoked)
+    }
+
     private fun trackedRunnable(name: String): Runnable {
         return object : Runnable {
             override fun run() {
