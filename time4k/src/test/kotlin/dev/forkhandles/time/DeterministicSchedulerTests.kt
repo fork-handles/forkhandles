@@ -389,7 +389,7 @@ class DeterministicSchedulerTests {
     }
 
     @Test
-    fun bug_schedulingMultipleTasksWithSameDelay() {
+    fun bugfixed_schedulingMultipleTasksWithSameDelay_ShouldNoLongerCrash() {
         scheduler.scheduleWithFixedDelay(commandA, 2L, 3L, SECONDS)
         scheduler.scheduleWithFixedDelay(commandB, 2L, 3L, SECONDS)
 
