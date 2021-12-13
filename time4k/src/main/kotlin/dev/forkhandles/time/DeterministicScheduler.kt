@@ -1,8 +1,9 @@
 package dev.forkhandles.time
 
-import java.lang.IllegalArgumentException
+import dev.forkhandles.time.executors.SimpleScheduler
 import java.time.Duration
 import java.time.Instant
+import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.CancellationException
 import java.util.concurrent.Delayed
@@ -11,7 +12,6 @@ import java.util.concurrent.Future
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeUnit.SECONDS
 import java.util.concurrent.TimeoutException
 
 /**
@@ -21,109 +21,146 @@ import java.util.concurrent.TimeoutException
  * [java.util.concurrent.Executor]s or [java.util.concurrent.ExecutorService]s if
  * you just want to control background execution and don't need to schedule commands.
  */
-class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExecutorService {
-    private var head: ScheduledTask<*>? = null
-    private var currentTime = startTime
+class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExecutorService, SimpleScheduler {
+
+    private var clock = startTime
     private var isShutdown = false
+    private var tasks = emptyTaskList()
 
-    /**
-     * Simulated current time that progresses as the scheduler is ticked.
-     *
-     * You can use a reference to this method as a [TimeSource]
-     */
-    fun currentTime() = currentTime
+    fun currentTime() = clock
+
+    private fun emptyTaskList(): Queue<SimpleScheduleTask<*>> =
+        PriorityQueue(Comparator.comparingLong { tasks -> tasks.getDelay(TimeUnit.MILLISECONDS) })
 
 
-    /**
-     * Runs time forwards by a given duration, executing any commands scheduled for
-     * execution during that time period, and any background tasks spawned by the
-     * scheduled tasks.  Therefore, when a call to tick returns, the executor
-     * will be idle.
-     */
-    fun tick(duration: Duration) {
-        var remaining = duration
-        var head = this.head
-
-        while (head != null && head.delay <= remaining) {
-            remaining -= head.delay
-            currentTime += head.delay
-            head.delay = Duration.ZERO
-
-            runNextPendingCommand()
-
-            head = this.head
-        }
-
-        head?.apply { delay -= remaining }
-        currentTime += remaining
+    override fun submit(task: Runnable): Future<*> {
+        return schedule(task, Duration.ZERO)
     }
 
-    fun tick(duration: Long, timeUnit: TimeUnit) {
-        tick(duration(duration, timeUnit))
+    override fun <T> submit(task: Callable<T>): Future<T> {
+        return schedule(task, Duration.ZERO)
     }
 
-    /**
-     * Runs all commands scheduled to be executed immediately but does
-     * not tick time forward.
-     */
+    override fun isShutdown(): Boolean = isShutdown
+
+    override fun <T> schedule(callable: Callable<T>, delay: Duration): ScheduledFuture<T> =
+        enqueue(SimpleScheduleTask(callable, clock + delay))
+
+    private fun <T> enqueue(task: SimpleScheduleTask<T>): ScheduledFuture<T> {
+        if (!isShutdown) tasks.add(task)
+        return task
+    }
+
+    override fun schedule(runnable: Runnable, delay: Duration): ScheduledFuture<*> =
+        enqueue(
+            SimpleScheduleTask(
+                {
+                    runnable.run()
+                    null
+                },
+                clock + delay
+            )
+        )
+
+    override fun scheduleWithFixedDelay(
+        runnable: Runnable,
+        initialDelay: Duration,
+        delay: Duration
+    ): ScheduledFuture<*> = enqueue(
+        SimpleScheduleTask(
+            { runnable.run() },
+            delay,
+            clock + initialDelay
+        )
+    )
+
+    override fun scheduleAtFixedRate(runnable: Runnable, initialDelay: Duration, period: Duration): ScheduledFuture<*> =
+        enqueue(
+            SimpleScheduleTask<Unit>(
+                { runnable.run() },
+                period,
+                clock + initialDelay
+            )
+        )
+
+    override fun shutdown() {
+        isShutdown = true
+    }
+
+    fun clear() {
+        tasks.clear()
+    }
+
+    fun isIdle(): Boolean {
+        return tasks.size == 0 || tasks.peek().timeToRun > clock
+    }
+
     fun runUntilIdle() {
-        while (!isIdle()) {
-            runNextPendingCommand()
+        tick(Duration.ZERO)
+    }
+
+    fun tick(quantity: Long, unit: TimeUnit) {
+        tick(asDuration(quantity, unit))
+    }
+
+    fun tick(duration: Duration) {
+
+        val endOfPeriod = clock + duration
+
+        while (true) {
+            if (!runNextTask(endOfPeriod)) break
         }
+        clock = endOfPeriod
     }
 
-    /**
-     * Runs the next command scheduled to be executed immediately.
-     */
-    fun runNextPendingCommand() {
-        val task = pop()
+    private fun runNextTask(endOfPeriod: Instant): Boolean {
 
-        task.run()
+        val nextTasks = emptyTaskList()
+        var ranSomething = false
+        var execute = true
+        val currentTasks = tasks.toList()
 
-        if (! ( task.isCancelled || task.isFailure() ) && task.repeatDelay != null) {
-            task.delay = task.repeatDelay
-            add(task)
+        tasks.clear()
+
+        for (task in currentTasks) {
+            if (task.isCancelled) continue
+            val executionTimeOfTask = task.timeToRun
+            if (execute && executionTimeOfTask <= endOfPeriod) {
+                clock = executionTimeOfTask
+                ranSomething = true
+                val success = task.execute()
+                if (task.isPeriodic && success && !task.isCancelled) {
+                    nextTasks.add(task.atNextExecutionTimeAfter(executionTimeOfTask))
+                }
+
+                if ( tasks.size > 0 ) {
+                    // if a task added another task, then we need to drop out
+                    // so that the added task runs in the correct order
+                    execute = false
+                }
+
+            } else {
+                nextTasks.add(task)
+            }
         }
+        tasks.addAll(nextTasks)
+        return ranSomething
     }
 
-    private fun pop(): ScheduledTask<*> {
-        val head = this.head
-
-        check(head != null) { "cannot pop from an empty schedule" }
-        check(head.delay <= Duration.ZERO) { "cannot pop a task when it has a non-zero delay" }
-
-        this.head = head.next
-        return head
+    override fun <T : Any?> submit(task: Runnable, result: T): Future<T> {
+        return schedule(Callable { task.run(); result }, Duration.ZERO)
     }
 
-
-    /**
-     * Reports whether scheduler is "idle": has no commands pending immediate execution.
-     *
-     * @return true if there are no commands pending immediate execution,
-     * false if there are commands pending immediate execution.
-     */
-    fun isIdle(): Boolean =
-        head.let { it == null || it.delay > Duration.ZERO }
-
-    override fun execute(command: Runnable) {
-        schedule(command, 0, SECONDS)
+    override fun schedule(command: Runnable, delay: Long, unit: TimeUnit): ScheduledFuture<*> {
+        return schedule(command, asDuration(delay, unit))
     }
 
-    override fun schedule(command: Runnable, delay: Long, unit: TimeUnit): ScheduledFuture<*> =
-        schedule(command.asCallable(), delay, unit)
+    override fun <V : Any?> schedule(callable: Callable<V>, delay: Long, unit: TimeUnit): ScheduledFuture<V> {
+        return schedule(callable, asDuration(delay, unit))
+    }
 
-    override fun <V> schedule(callable: Callable<V>, delay: Long, unit: TimeUnit): ScheduledFuture<V> =
-        ScheduledTask(command = callable, delay = duration(delay, unit))
-            .also { add(it) }
-
-
-    override fun scheduleAtFixedRate(
-        command: Runnable,
-        initialDelay: Long,
-        period: Long,
-        unit: TimeUnit
-    ): ScheduledFuture<*> = scheduleWithFixedDelay(command, initialDelay, period, unit)
+    private fun asDuration(delay: Long, unit: TimeUnit) =
+        Duration.ofMillis(TimeUnit.MILLISECONDS.convert(delay, unit))
 
     override fun scheduleWithFixedDelay(
         command: Runnable,
@@ -131,51 +168,26 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
         delay: Long,
         unit: TimeUnit
     ): ScheduledFuture<*> =
-        ScheduledTask(
-            command = command.asCallable(),
-            delay = duration(initialDelay, unit),
-            repeatDelay = duration(delay, unit)
+        scheduleWithFixedDelay(
+            command,
+            initialDelay = asDuration(initialDelay, unit),
+            delay = asDuration(delay, unit)
         )
-            .also { add(it) }
 
-    @Throws(InterruptedException::class)
-    override fun awaitTermination(timeout: Long, unit: TimeUnit): Boolean {
-        if ( isShutdown ) {
-            return true
-        }
-        blockingOperationsNotSupported()
-    }
+    override fun scheduleAtFixedRate(
+        command: Runnable,
+        initialDelay: Long,
+        period: Long,
+        unit: TimeUnit
+    ): ScheduledFuture<*> =
+        scheduleAtFixedRate(
+            command,
+            initialDelay = asDuration(initialDelay, unit),
+            period = asDuration(period, unit)
+        )
 
-    @Throws(InterruptedException::class)
-    override fun <T> invokeAll(tasks: Collection<Callable<T>?>): List<Future<T>> {
-        blockingOperationsNotSupported()
-    }
-
-    @Throws(InterruptedException::class)
-    override fun <T> invokeAll(tasks: Collection<Callable<T>?>, timeout: Long, unit: TimeUnit): List<Future<T>> {
-        blockingOperationsNotSupported()
-    }
-
-    @Throws(InterruptedException::class, ExecutionException::class)
-    override fun <T> invokeAny(tasks: Collection<Callable<T>?>): T {
-        blockingOperationsNotSupported()
-    }
-
-    @Throws(InterruptedException::class, ExecutionException::class, TimeoutException::class)
-    override fun <T> invokeAny(tasks: Collection<Callable<T>?>, timeout: Long, unit: TimeUnit): T {
-        blockingOperationsNotSupported()
-    }
-
-    override fun isShutdown(): Boolean {
-        return isShutdown
-    }
-
-    override fun isTerminated(): Boolean {
-        return isShutdown
-    }
-
-    override fun shutdown() {
-        isShutdown = true
+    override fun execute(command: Runnable) {
+        submit(command)
     }
 
     override fun shutdownNow(): List<Runnable> {
@@ -183,168 +195,111 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
         return listOf()
     }
 
-    override fun <T> submit(callable: Callable<T>) = schedule(callable, 0, SECONDS)
-
-    override fun submit(command: Runnable): Future<*> = submit<Any?>(command, null)
-
-    override fun <T> submit(command: Runnable, result: T) = submit(CallableRunnableAdapter(command, result))
-
-    private class CallableRunnableAdapter<T>(private val runnable: Runnable, private val result: T) : Callable<T> {
-        override fun toString() = runnable.toString()
-
-        @Throws(Exception::class)
-        override fun call(): T {
-            runnable.run()
-            return result
-        }
+    override fun isTerminated(): Boolean {
+        return isShutdown
     }
 
-    private fun Runnable.asCallable(): Callable<Nothing?> =
-        Callable {
-            run()
-            null
+    override fun awaitTermination(timeout: Long, unit: TimeUnit): Boolean {
+        if (isShutdown) {
+            return true
         }
+        blockingOperationsNotSupported()
+    }
 
-    private inner class ScheduledTask<T>(
-        val command: Callable<T>,
-        var delay: Duration,
-        val repeatDelay: Duration? = null
-    ) : ScheduledFuture<T>, Runnable {
-        var next: ScheduledTask<*>? = null
+    override fun <T : Any?> invokeAll(tasks: MutableCollection<out Callable<T>>): MutableList<Future<T>> =
+        blockingOperationsNotSupported()
 
+    override fun <T : Any?> invokeAll(
+        tasks: MutableCollection<out Callable<T>>,
+        timeout: Long,
+        unit: TimeUnit
+    ): MutableList<Future<T>> =
+        blockingOperationsNotSupported()
+
+    override fun <T : Any?> invokeAny(tasks: MutableCollection<out Callable<T>>): T = blockingOperationsNotSupported()
+
+    override fun <T : Any?> invokeAny(tasks: MutableCollection<out Callable<T>>, timeout: Long, unit: TimeUnit): T =
+        blockingOperationsNotSupported()
+
+    private inner class SimpleScheduleTask<T>(
+        private val callable: Callable<T>,
+        private val period: Duration?,
+        val timeToRun: Instant
+    ) :
+        ScheduledFuture<T> {
         private var isCancelled = false
         private var isDone = false
-        private var futureResult: T? = null
-        private var failure: Exception? = null
+        private var result: T? = null
+        private var error: Throwable? = null
 
-        fun isFailure(): Boolean = failure != null
-
-        override fun toString(): String = "$command repeatDelay=$repeatDelay"
-
-        override fun getDelay(unit: TimeUnit) =
-            delayOf(this)?.let(unit::convert) ?: -1
-
-        override fun compareTo(other: Delayed): Nothing =
-            throw UnsupportedOperationException("not supported")
-
-        override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
-            if ( ! isDone || isFailure() ) {
-                isCancelled = true
-                return remove(this)
-            }
-            return false
+        init {
+            period?.run { if (this <= Duration.ZERO) throw IllegalArgumentException("period/rate must be > 0") }
         }
 
-        override fun get(): T? {
-            if ( isCancelled ) {
-                throw CancellationException("task was cancelled")
-            }
-            if (!isDone) {
-                blockingOperationsNotSupported()
-            }
-            if (failure != null) {
-                throw ExecutionException(failure)
-            }
-            return futureResult
+        val isPeriodic: Boolean
+            get() = period != null
+
+        constructor(callable: Callable<T>, timeToRun: Instant) : this(callable, null, timeToRun) {}
+
+        override fun getDelay(unit: TimeUnit): Long =
+            unit.convert(timeToRun.toEpochMilli() - clock.toEpochMilli(), TimeUnit.MILLISECONDS)
+
+        override fun compareTo(other: Delayed): Int {
+            throw UnsupportedOperationException("james didn't write")
         }
-
-        override fun get(timeout: Long, unit: TimeUnit): T? =
-            get()
-
-        override fun isCancelled(): Boolean = isCancelled
 
         override fun isDone(): Boolean = isDone || isCancelled
 
-        override fun run() {
-            try {
-                futureResult = command.call()
+        override fun isCancelled(): Boolean = isCancelled
+
+        override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
+            if (isDone) {
+                return false
+            }
+            isCancelled = true
+            return true
+        }
+
+        @Throws(InterruptedException::class, ExecutionException::class)
+        override fun get(): T? {
+            if (isCancelled) throw CancellationException("get() on cancelled task")
+            if (error != null) throw ExecutionException(error)
+            if (isDone) return result
+            throw UnsupportedSynchronousOperationException(
+                "task not scheduled to run for another " + Duration.ofMillis(
+                    timeToRun.toEpochMilli() - clock.toEpochMilli()
+                )
+            )
+        }
+
+        @Throws(InterruptedException::class, ExecutionException::class, TimeoutException::class)
+        override fun get(timeout: Long, unit: TimeUnit): T? {
+            return get()
+        }
+
+        fun execute(): Boolean {
+            return try {
+                if (!isCancelled) {
+                    result = callable.call()
+                }
+                true
             } catch (e: Exception) {
-                failure = e
-            }
-            isDone = true
-        }
-    }
-
-    private fun add(newTask: ScheduledTask<*>) {
-        var prev: ScheduledTask<*>? = null
-        var next = head
-
-        if ( isShutdown ) {
-            return
-        }
-
-        if ( newTask.repeatDelay != null ) {
-            if (newTask.repeatDelay.isNegative || newTask.repeatDelay.isZero) {
-                throw IllegalArgumentException("repeat ${newTask.repeatDelay} is zero or negative ")
+                error = e
+                false
+            } finally {
+                isDone = true
             }
         }
 
-        while (next != null && next.delay <= newTask.delay) {
-            newTask.delay -= next.delay
-            prev = next
-            next = next.next
-        }
-
-        if (prev == null) {
-            head = newTask
-        } else {
-            prev.next = newTask
-        }
-
-        if (next != null) {
-            next.delay -= newTask.delay
-            newTask.next = next
+        fun atNextExecutionTimeAfter(clock: Instant): SimpleScheduleTask<T> {
+            return SimpleScheduleTask(
+                callable, period, clock + period!!
+            )
         }
     }
-
-    private fun remove(element: ScheduledTask<*>): Boolean {
-        var prev: ScheduledTask<*>? = null
-        var node = head
-
-        while (node != null && node !== element) {
-            prev = node
-            node = node.next
-        }
-
-        if (node == null) {
-            return false
-        }
-
-        val next = node.next
-
-        if (next != null) {
-            next.delay += node.delay
-        }
-
-        if (prev == null) {
-            head = node.next
-        } else {
-            prev.next = node.next
-        }
-
-        return true
-    }
-
-    private fun delayOf(element: ScheduledTask<*>): Duration? {
-        var ret = Duration.ZERO
-        var next = head
-        while (next != null) {
-            ret += next.delay
-            if (next == element) {
-                return ret
-            }
-            next = next.next
-        }
-
-        return null
-    }
-
 
     private fun blockingOperationsNotSupported(): Nothing =
         throw UnsupportedSynchronousOperationException(
             "cannot perform blocking wait on a task scheduled on a " + javaClass.simpleName
         )
-
-    private fun duration(delay: Long, unit: TimeUnit) =
-        Duration.of(delay, unit.toChronoUnit())
 }
