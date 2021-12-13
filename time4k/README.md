@@ -25,4 +25,4 @@ The Java `Clock` is an abstract class, which is a pain. Time4k represents the cl
 typealias TimeSource = () -> Instant
 ```
 
-The library also provides a `TaskScheduler` interface and implementations which replace usages of `ScheduledExecutorService`. The test implementation, `TaskListControllableTaskScheduler` allows you to control time and and make the scheduler move forward in a controlled and deterministic manner.
+The library also provides a DeterministicScheduler which is a drop-in test replacement for using a `ScheduledExecutorService`. You can control time and make the scheduler move forward in a controlled manner.
