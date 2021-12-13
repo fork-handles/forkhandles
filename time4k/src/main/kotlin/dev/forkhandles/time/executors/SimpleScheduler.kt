@@ -8,7 +8,7 @@ import java.util.concurrent.ScheduledFuture
 /**
  * Simpler interface for threaded tasks.
  */
-interface TaskScheduler {
+interface SimpleScheduler {
     fun <T> schedule(callable: Callable<T>, delay: Duration): ScheduledFuture<T>
 
     fun schedule(runnable: Runnable, delay: Duration): ScheduledFuture<*>

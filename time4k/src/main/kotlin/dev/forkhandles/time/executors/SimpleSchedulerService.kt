@@ -4,14 +4,16 @@ import java.time.Duration
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
+import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
 /**
- * This is an Task Scheduler backed by a real Scheduled thread pool. For production use.
+ * This is a SimpleScheduler backed by a ScheduledExecutorService. For production use.
  */
-class ThreadPoolTaskScheduler(size: Int) : TaskScheduler {
-    private val executor = Executors.newScheduledThreadPool(size)
+class SimpleSchedulerService(private val executor: ScheduledExecutorService) : SimpleScheduler {
+
+    constructor(threads: Int): this(Executors.newScheduledThreadPool(threads))
 
     override fun <T> schedule(callable: Callable<T>, delay: Duration): ScheduledFuture<T> =
         executor.schedule(callable, delay.toMillis(), TimeUnit.MILLISECONDS)
