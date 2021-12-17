@@ -3,7 +3,7 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
-### v1.14.0.0 (uncut)
+### v1.14.0.0
 - **time4k** : [Breaking] Merge DeterministicScheduler and TaskScheduler. One is a drop-in replacement for the other. H/T @time4tea
 
 ### v1.13.0.0
