@@ -6,7 +6,7 @@ when appropriate:
 ### v2.0.0.0
 - **all** : Upgrade of dependencies, including Kotlin to 1.6.10
 - **all** : Removal of deprecated methods.
-- **values4k** : [Breaking] Removal of ValueFactory `invoke()` method. This enforces the usage of the of() method which will NOT bypass the validation.
+- **values4k** : [Breaking] Deprecation of ValueFactory `invoke()` method. This enforces the usage of the of() method which will NOT bypass the validation.
 
 ### v1.14.0.1
 - **time4k** : [Breaking] Merge DeterministicScheduler and TaskScheduler. One is a drop-in replacement for the other. H/T @time4tea
