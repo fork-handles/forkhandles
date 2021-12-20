@@ -19,11 +19,11 @@ class ValueFactoryTest {
         assertThat(MyIntValue.ofList(123, 456), equalTo(listOf(MyIntValue.of(123), MyIntValue.of(456))))
         assertThat({ MyIntValue.ofList(0, 1) }, throws<IllegalArgumentException>())
     }
-    
+
     @Test
     fun `throwable factory as function`() {
-        assertThat(MyIntValue(123), equalTo(MyIntValue(123)))
-        assertThat({ MyIntValue(0) }, throws<IllegalArgumentException>())
+        assertThat(MyIntValue.of(123), equalTo(MyIntValue.of(123)))
+        assertThat({ MyIntValue.of(0) }, throws<IllegalArgumentException>())
     }
 
     @Test
