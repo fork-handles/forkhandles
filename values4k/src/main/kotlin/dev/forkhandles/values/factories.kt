@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 import java.time.format.DateTimeFormatter.ISO_OFFSET_TIME
 import java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME
 import java.util.UUID
+import kotlin.random.Random
 
 open class StringValueFactory<DOMAIN : Value<String>>(
     fn: (String) -> DOMAIN, validation: Validation<String>? = null,
@@ -40,36 +41,50 @@ open class NonBlankStringValueFactory<DOMAIN : Value<String>>(
 
 open class IntValueFactory<DOMAIN : Value<Int>>(
     fn: (Int) -> DOMAIN, validation: Validation<Int>? = null
-) : ValueFactory<DOMAIN, Int>(fn, validation, String::toInt)
+) : ValueFactory<DOMAIN, Int>(fn, validation, String::toInt) {
+    fun random(random: Random = Random) = of(random.nextInt())
+}
 
 open class LongValueFactory<DOMAIN : Value<Long>>(
     fn: (Long) -> DOMAIN, validation: Validation<Long>? = null
-) : ValueFactory<DOMAIN, Long>(fn, validation, String::toLong)
+) : ValueFactory<DOMAIN, Long>(fn, validation, String::toLong) {
+    fun random(random: Random = Random) = of(random.nextLong())
+}
 
 open class DoubleValueFactory<DOMAIN : Value<Double>>(
     fn: (Double) -> DOMAIN, validation: Validation<Double>? = null
-) : ValueFactory<DOMAIN, Double>(fn, validation, String::toDouble)
+) : ValueFactory<DOMAIN, Double>(fn, validation, String::toDouble) {
+    fun random(random: Random = Random) = of(random.nextDouble())
+}
 
 open class FloatValueFactory<DOMAIN : Value<Float>>(
     fn: (Float) -> DOMAIN, validation: Validation<Float>? = null
-) : ValueFactory<DOMAIN, Float>(fn, validation, String::toFloat)
+) : ValueFactory<DOMAIN, Float>(fn, validation, String::toFloat) {
+    fun random(random: Random = Random) = of(random.nextFloat())
+}
 
 open class BooleanValueFactory<DOMAIN : Value<Boolean>>(
     fn: (Boolean) -> DOMAIN, validation: Validation<Boolean>? = null
-) : ValueFactory<DOMAIN, Boolean>(fn, validation, String::toBoolean)
+) : ValueFactory<DOMAIN, Boolean>(fn, validation, String::toBoolean) {
+    fun random(random: Random = Random) = of(random.nextBoolean())
+}
 
 open class BigIntegerValueFactory<DOMAIN : Value<BigInteger>>(
     fn: (BigInteger) -> DOMAIN, validation: Validation<BigInteger>? = null
-) : ValueFactory<DOMAIN, BigInteger>(fn, validation, String::toBigInteger)
+) : ValueFactory<DOMAIN, BigInteger>(fn, validation, String::toBigInteger) {
+    fun random(random: Random = Random) = of(BigInteger.valueOf(random.nextLong()))
+}
 
 open class BigDecimalValueFactory<DOMAIN : Value<BigDecimal>>(
     fn: (BigDecimal) -> DOMAIN, validation: Validation<BigDecimal>? = null
-) : ValueFactory<DOMAIN, BigDecimal>(fn, validation, String::toBigDecimal)
+) : ValueFactory<DOMAIN, BigDecimal>(fn, validation, String::toBigDecimal) {
+    fun random(random: Random = Random) = of(BigDecimal(random.nextDouble()))
+}
 
 open class UUIDValueFactory<DOMAIN : Value<UUID>>(
     fn: (UUID) -> DOMAIN, validation: Validation<UUID>? = null
 ) : ValueFactory<DOMAIN, UUID>(fn, validation, UUID::fromString) {
-    fun random() = of(UUID.randomUUID())
+    fun random(random: Random = Random) = of(UUID(random.nextLong(), random.nextLong()))
 }
 
 open class URLValueFactory<DOMAIN : Value<URL>>(

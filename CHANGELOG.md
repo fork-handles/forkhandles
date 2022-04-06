@@ -3,6 +3,10 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.0.1.0
+- **all** : Upgrade of dependencies, including Kotlin to 1.6.20
+- **values4k** : Adding utility methods to get `ZERO` and `random()` values
+
 ### v2.0.0.0
 - **all** : Upgrade of dependencies, including Kotlin to 1.6.10
 - **all** : Removal of deprecated methods.
