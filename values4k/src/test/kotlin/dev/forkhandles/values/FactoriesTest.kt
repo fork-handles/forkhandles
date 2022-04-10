@@ -7,8 +7,10 @@ import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.net.URL
+import java.time.Clock
 import java.time.Duration
 import java.time.Instant
+import java.time.Instant.EPOCH
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -17,6 +19,7 @@ import java.time.OffsetTime
 import java.time.Period
 import java.time.Year
 import java.time.YearMonth
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.UUID
 import kotlin.random.Random
@@ -59,7 +62,7 @@ class FactoriesTest {
     }
 
     @Test
-    fun extensions() {
+    fun random() {
         assertThat(IntValueFactory(::TV).random(Random(0)), equalTo(TV(-1934310868)))
         assertThat(LongValueFactory(::TV).random(Random(0)), equalTo(TV(-8307801916948173232)))
         assertThat(BooleanValueFactory(::TV).random(Random(0)), equalTo(TV(true)))
@@ -69,5 +72,24 @@ class FactoriesTest {
         assertThat(BigDecimalValueFactory(::TV).random(Random(0)), equalTo(TV(BigDecimal("0.5496331502214799602512584897340275347232818603515625"))))
         assertThat(UUIDValueFactory(::TV).random(Random(0)), equalTo(TV(UUID.fromString("8cb4c22c-53fe-ae50-d94e-97b2a94e6b1e"))))
     }
-}
 
+    @Test
+    fun zero() {
+        assertThat(IntValueFactory(::TV).ZERO, equalTo(TV(0)))
+        assertThat(LongValueFactory(::TV).ZERO, equalTo(TV(0L)))
+        assertThat(DoubleValueFactory(::TV).ZERO, equalTo(TV(0.0)))
+        assertThat(FloatValueFactory(::TV).ZERO, equalTo(TV(0.0f)))
+        assertThat(BigIntegerValueFactory(::TV).ZERO, equalTo(TV(BigInteger.ZERO)))
+        assertThat(BigDecimalValueFactory(::TV).ZERO, equalTo(TV(BigDecimal.ZERO)))
+    }
+
+    @Test
+    fun epoch() {
+        val clock = Clock.fixed(EPOCH, ZoneId.of("UTC"))
+        assertThat(LocalDateValueFactory(::TV).now(clock), equalTo(TV(LocalDate.EPOCH)))
+        assertThat(LocalDateTimeValueFactory(::TV).now(clock), equalTo(TV(LocalDateTime.ofInstant(EPOCH, ZoneId.of("UTC")))))
+        assertThat(ZonedDateTimeValueFactory(::TV).now(clock), equalTo(TV(ZonedDateTime.ofInstant(EPOCH, ZoneId.of("UTC")))))
+        assertThat(OffsetDateTimeValueFactory(::TV).now(clock), equalTo(TV(OffsetDateTime.ofInstant(EPOCH, ZoneId.of("UTC")))))
+        assertThat(InstantValueFactory(::TV).now(clock), equalTo(TV(EPOCH)))
+    }
+}
