@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.1.0.1
+- **values4k** : [Fix] Accidentally removed `InstantValue` typealias.
+
 ### v2.1.0.0
 - **values4k** : [Possible break] More utility methods for construction. Moved to extension functions so may require import.
 

@@ -5,6 +5,7 @@ package dev.forkhandles.values
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.Duration
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -25,6 +26,7 @@ typealias FloatValue = AbstractValue<Float>
 typealias UUIDValue = AbstractValue<UUID>
 typealias BigDecimalValue = AbstractValue<BigDecimal>
 typealias BigIntegerValue = AbstractValue<BigInteger>
+typealias InstantValue = AbstractValue<Instant>
 typealias LocalTimeValue = AbstractValue<LocalTime>
 typealias LocalDateValue = AbstractValue<LocalDate>
 typealias LocalDateTimeValue = AbstractValue<LocalDateTime>
