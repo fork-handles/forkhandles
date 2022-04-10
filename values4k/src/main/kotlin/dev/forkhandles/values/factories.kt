@@ -41,51 +41,35 @@ open class NonBlankStringValueFactory<DOMAIN : Value<String>>(
 
 open class IntValueFactory<DOMAIN : Value<Int>>(
     fn: (Int) -> DOMAIN, validation: Validation<Int>? = null
-) : ValueFactory<DOMAIN, Int>(fn, validation, String::toInt) {
-    fun random(random: Random = Random) = of(random.nextInt())
-}
+) : ValueFactory<DOMAIN, Int>(fn, validation, String::toInt)
 
 open class LongValueFactory<DOMAIN : Value<Long>>(
     fn: (Long) -> DOMAIN, validation: Validation<Long>? = null
-) : ValueFactory<DOMAIN, Long>(fn, validation, String::toLong) {
-    fun random(random: Random = Random) = of(random.nextLong())
-}
+) : ValueFactory<DOMAIN, Long>(fn, validation, String::toLong)
 
 open class DoubleValueFactory<DOMAIN : Value<Double>>(
     fn: (Double) -> DOMAIN, validation: Validation<Double>? = null
-) : ValueFactory<DOMAIN, Double>(fn, validation, String::toDouble) {
-    fun random(random: Random = Random) = of(random.nextDouble())
-}
+) : ValueFactory<DOMAIN, Double>(fn, validation, String::toDouble)
 
 open class FloatValueFactory<DOMAIN : Value<Float>>(
     fn: (Float) -> DOMAIN, validation: Validation<Float>? = null
-) : ValueFactory<DOMAIN, Float>(fn, validation, String::toFloat) {
-    fun random(random: Random = Random) = of(random.nextFloat())
-}
+) : ValueFactory<DOMAIN, Float>(fn, validation, String::toFloat)
 
 open class BooleanValueFactory<DOMAIN : Value<Boolean>>(
     fn: (Boolean) -> DOMAIN, validation: Validation<Boolean>? = null
-) : ValueFactory<DOMAIN, Boolean>(fn, validation, String::toBoolean) {
-    fun random(random: Random = Random) = of(random.nextBoolean())
-}
+) : ValueFactory<DOMAIN, Boolean>(fn, validation, String::toBoolean)
 
 open class BigIntegerValueFactory<DOMAIN : Value<BigInteger>>(
     fn: (BigInteger) -> DOMAIN, validation: Validation<BigInteger>? = null
-) : ValueFactory<DOMAIN, BigInteger>(fn, validation, String::toBigInteger) {
-    fun random(random: Random = Random) = of(BigInteger.valueOf(random.nextLong()))
-}
+) : ValueFactory<DOMAIN, BigInteger>(fn, validation, String::toBigInteger)
 
 open class BigDecimalValueFactory<DOMAIN : Value<BigDecimal>>(
     fn: (BigDecimal) -> DOMAIN, validation: Validation<BigDecimal>? = null
-) : ValueFactory<DOMAIN, BigDecimal>(fn, validation, String::toBigDecimal) {
-    fun random(random: Random = Random) = of(BigDecimal(random.nextDouble()))
-}
+) : ValueFactory<DOMAIN, BigDecimal>(fn, validation, String::toBigDecimal)
 
 open class UUIDValueFactory<DOMAIN : Value<UUID>>(
     fn: (UUID) -> DOMAIN, validation: Validation<UUID>? = null
-) : ValueFactory<DOMAIN, UUID>(fn, validation, UUID::fromString) {
-    fun random(random: Random = Random) = of(UUID(random.nextLong(), random.nextLong()))
-}
+) : ValueFactory<DOMAIN, UUID>(fn, validation, UUID::fromString)
 
 open class URLValueFactory<DOMAIN : Value<URL>>(
     fn: (URL) -> DOMAIN, validation: Validation<URL>? = null

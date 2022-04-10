@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.1.0.0
+- **values4k** : [Possible break] More utility methods for construction. Moved to extension functions so may require import.
+
 ### v2.0.1.0
 - **all** : Upgrade of dependencies, including Kotlin to 1.6.20
 - **values4k** : Adding utility methods to get `ZERO` and `random()` values

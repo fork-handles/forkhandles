@@ -10,7 +10,6 @@ interface ComparableValue<DOMAIN, PRIMITIVE> :
     override fun compareTo(other: DOMAIN) = value.compareTo(other.value)
 }
 
-
 abstract class AbstractComparableValue<DOMAIN, PRIMITIVE>(value: PRIMITIVE) :
     AbstractValue<PRIMITIVE>(value),
     ComparableValue<DOMAIN, PRIMITIVE>

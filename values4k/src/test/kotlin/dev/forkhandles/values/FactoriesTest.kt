@@ -19,6 +19,7 @@ import java.time.Year
 import java.time.YearMonth
 import java.time.ZonedDateTime
 import java.util.UUID
+import kotlin.random.Random
 
 class TV<T : Any>(value: T) : AbstractValue<T>(value)
 
@@ -56,4 +57,17 @@ class FactoriesTest {
         YearMonth.now().also { assertThat(YearMonthValueFactory(::TV).parse(it.toString()), equalTo(TV(it))) }
         ZonedDateTime.now().also { assertThat(ZonedDateTimeValueFactory(::TV).parse(it.toString()), equalTo(TV(it))) }
     }
+
+    @Test
+    fun extensions() {
+        assertThat(IntValueFactory(::TV).random(Random(0)), equalTo(TV(-1934310868)))
+        assertThat(LongValueFactory(::TV).random(Random(0)), equalTo(TV(-8307801916948173232)))
+        assertThat(BooleanValueFactory(::TV).random(Random(0)), equalTo(TV(true)))
+        assertThat(DoubleValueFactory(::TV).random(Random(0)), equalTo(TV(0.54963315022148)))
+        assertThat(FloatValueFactory(::TV).random(Random(0)), equalTo(TV(0.54963315f)))
+        assertThat(BigIntegerValueFactory(::TV).random(Random(0)), equalTo(TV(BigInteger.valueOf(-8307801916948173232))))
+        assertThat(BigDecimalValueFactory(::TV).random(Random(0)), equalTo(TV(BigDecimal("0.5496331502214799602512584897340275347232818603515625"))))
+        assertThat(UUIDValueFactory(::TV).random(Random(0)), equalTo(TV(UUID.fromString("8cb4c22c-53fe-ae50-d94e-97b2a94e6b1e"))))
+    }
 }
+

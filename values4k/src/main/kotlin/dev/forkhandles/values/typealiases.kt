@@ -5,7 +5,6 @@ package dev.forkhandles.values
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.Duration
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -32,7 +31,6 @@ typealias LocalDateTimeValue = AbstractValue<LocalDateTime>
 typealias OffsetTimeValue = AbstractValue<OffsetTime>
 typealias OffsetDateTimeValue = AbstractValue<OffsetDateTime>
 typealias ZonedDateTimeValue = AbstractValue<ZonedDateTime>
-typealias InstantValue = AbstractValue<Instant>
 typealias YearMonthValue = AbstractValue<YearMonth>
 typealias YearValue = AbstractValue<Year>
 typealias MonthValue = AbstractValue<Month>
