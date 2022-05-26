@@ -17,11 +17,11 @@ abstract class ValueFactory<DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any>(
     @Deprecated("Use of()", ReplaceWith("of(value)"))
     operator fun invoke(value: PRIMITIVE): Any = error("invoke() factory method is not to be used for building microtypes -  use of() instead!")
 
-    fun parse(value: String) = attempt { validate(parseFn(value)) }
+    open fun parse(value: String) = attempt { validate(parseFn(value)) }
 
     fun show(value: DOMAIN) = showFn(unwrap(value))
 
-    fun of(value: PRIMITIVE) = attempt { validate(value) }
+    open fun of(value: PRIMITIVE) = attempt { validate(value) }
 
     fun unwrap(value: DOMAIN) = value.value
 
