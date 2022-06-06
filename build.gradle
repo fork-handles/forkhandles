@@ -164,6 +164,15 @@ subprojects {
                 }
                 from components.java
 
+                // replace all runtime dependencies with provided
+                pom.withXml {
+                    asNode().dependencies."*".findAll() {
+                        it.scope.text() == "runtime"
+                    }.each() {
+                        it.scope*.value = "provided"
+                    }
+                }
+
                 artifact sourcesJar
                 artifact javadocJar
             }
