@@ -93,7 +93,7 @@ subprojects {
     }
 
     dependencies {
-        api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:_"
+        api "org.jetbrains.kotlin:kotlin-stdlib:_"
         testApi "org.junit.jupiter:junit-jupiter-api:_"
         testApi "org.junit.jupiter:junit-jupiter-engine:_"
         testApi "com.natpryce:hamkrest:_"

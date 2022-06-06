@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.2.0.0 (uncut)
+- **all** : [Unlikely break] Remove dependency on kotlin stdlib JDK 8 as we don't need it to compile. If this causes a problem, simply re-add `api(Kotlin.stdlib.jdk8)` to your project dependency list.
+
 ### v2.1.2.0
 
 - **values4k** : Open up `of()` and `parse()` so that custom implementations can be supplied.
