@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.3.0.0 (uncut)
+- **all** : Upgrade of dependencies, including Kotlin to 1.7.0
+
 ### v2.2.0.0
 - **all** : [Unlikely break] Remove dependency on kotlin stdlib JDK 8 as we don't need it to compile. If this causes a problem, simply re-add `api(Kotlin.stdlib.jdk8)` to your project dependency list.
 - **all-*** : Fix provided dependencies included as runtime.
