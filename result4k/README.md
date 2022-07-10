@@ -27,6 +27,12 @@ You can use a `when` expression to determine if a Result represents a success or
 
 Result4k works with the grain of the Kotlin language. Kotlin does not have language support for monads (known as "do notation" or "for comprehensions" in other languages). A pure monadic approach becomes verbose and awkward.  Therefore, Result4k lets you use early returns to avoid deep nesting when propagating errors.
 
+## Documentation
+
+We really need some - but everyone is so busy. If you'd like to write a blog post send a PR and we'll reference it here.
+
+In the meantime there is a [YouTube playlist](https://youtube.com/playlist?list=PL1ssMPpyqochiZj41oLAtvht4ScUurHJH) that demonstrates how to refactor from Kotlin exceptions to Result4k, or you can read Chapter 19 of the excellent (ahem) book [Java to Kotlin - A Refactoring Guidebook](https://java-to-kotlin.dev/).
+
 ## Testing
 
 There is a supplementary library for Kotest matchers available [here](https://github.com/MrBergin/result4k-kotest-matchers).
