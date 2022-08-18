@@ -4,6 +4,7 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import dev.forkhandles.result4k.map
+import dev.forkhandles.result4k.recover
 import dev.forkhandles.result4k.resultFrom
 
 /**
@@ -35,9 +36,8 @@ private fun <IN, DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> List<IN>.toResult4k
     else ->
         drop(1)
             .fold(fn(first()).map(::listOf)) { acc, next ->
-                when (acc) {
-                    is Success -> fn(next).map { acc.value + it }
-                    is Failure -> acc
-                }
+                acc
+                    .map { value -> fn(next).map { value + it }}
+                    .recover { acc }
             }
 }
