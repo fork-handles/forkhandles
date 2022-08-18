@@ -21,15 +21,15 @@ inline fun <T : Any, E> Result<T?, E>.filterNotNull(failureDescription: () -> E)
 /**
  * Returns the success value, or null if the Result is a failure.
  */
-fun <T, E> Result<T, E>.valueOrNull() = when (this) {
-    is Success<T> -> value
-    is Failure<E> -> null
+fun <T, E> Result<T, E>.valueOrNull() = when {
+    isSuccess() -> unsafeValue
+    else -> null
 }
 
 /**
  * Returns the failure reason, or null if the Result is a success.
  */
-fun <T, E> Result<T, E>.failureOrNull() = when (this) {
-    is Success<T> -> null
-    is Failure<E> -> reason
+fun <T, E> Result<T, E>.failureOrNull() = when {
+    isFailure() -> unsafeReason
+    else -> null
 }
