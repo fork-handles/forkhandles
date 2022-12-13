@@ -91,3 +91,18 @@ inline fun <T, E> Result<T, E>.peek(f: (T) -> Unit) =
 inline fun <T, E> Result<T, E>.peekFailure(f: (E) -> Unit) =
     apply { if (this is Failure<E>) f(reason) }
 
+/**
+ * Become a Failure if the condition is met.
+ */
+fun <S, E> Result<S, E>.failIf(cond: (S) -> Boolean, f: (S) -> E) = when(this) {
+    is Success -> if (cond(value)) Failure(f(value)) else this
+    is Failure -> this
+}
+
+/**
+ * Become a Success if the condition is met.
+ */
+fun <S, E> Result<S, E>.recoverIf(cond: (E) -> Boolean, f: (E) -> S) = when(this) {
+    is Success -> this
+    is Failure -> if (cond(reason)) Success(f(reason)) else this
+}
