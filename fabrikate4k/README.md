@@ -10,6 +10,7 @@
 A test utility to instantiate objects with fake data.
 
 ## Installation
+
 In Gradle, install the ForkHandles BOM and then this module in the dependency block:
 
 ```kotlin
@@ -43,6 +44,8 @@ Person(
  */
 ```
 
+### Creating a custom `Fabrikator`
+
 If you need more control over the randomly created data you can register your own implementation:
 
 ```kotlin
@@ -72,6 +75,35 @@ Person(
 )
  */
 ```
+
+### Configuring the fabrication
+
+`FabrikatorConfig` can be configured by passing parameters to adjust the
+behavior during fabrication.
+
+| Parameter          | Description                                                                                                                                                                                                                                   |
+|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `seed`             | An `Int` used as a seed to the random number generator. This is useful if you want to control creation, e.g. in tests.                                                                                                                        |
+| `nullableStrategy` | A `NullableStrategy` that will prevent the creation of `null` values for nullable types when set to `NeverSetToNull`, or always creates `null` values for nullable types when set to `AlwaysSetToNull`.<br/> Defaults to `RandomlySetToNull`. |
+| `collectionSizes`  | An `IntRange` that defines the number of elements to create when fabricating collections. Defaults to `1..5`.                                                                                                                                 |  
+
+### Pitfalls
+
+#### Standard mappings
+
+When a `FabrikatorConfig` is instantiated, none of the default mappings
+will be applied.
+If you want to make use of those, make sure to
+call `.withStandardMappings()`.
+
+#### Registration ordering
+
+The `register()` method of `FabrikatorConfig` will override the already
+existing `Fabrikator` for that type.
+If you need to provide a custom `Fabrikator` for one of supported types
+and want to use the standard mappings also, make sure to
+call `.register()` for your custom `Fabrikator` _after_
+calling `.withStandardMappings()`.
 
 ## Supported Types
 
