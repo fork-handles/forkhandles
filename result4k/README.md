@@ -33,6 +33,10 @@ We really need some - but everyone is so busy. If you'd like to write a blog pos
 
 In the meantime there is a [YouTube playlist](https://youtube.com/playlist?list=PL1ssMPpyqochiZj41oLAtvht4ScUurHJH) that demonstrates how to refactor from Kotlin exceptions to Result4k, or you can read Chapter 19 of the excellent (ahem) book [Java to Kotlin - A Refactoring Guidebook](https://java-to-kotlin.dev/).
 
+## Example
+
+Check out the [AdoptionService](src/test/kotlin/dev/forkhandles/result4k/petStoreExample.kt) example.
+
 ## Testing
 
 There is a supplementary library for Kotest matchers available [here](https://github.com/MrBergin/result4k-kotest-matchers).
