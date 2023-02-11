@@ -1,19 +1,20 @@
 package dev.forkhandles.result4k
 
 
+@Suppress("UNCHECKED_CAST")
 fun <T, E> Iterable<Result<T, E>>.allValues(): Result<List<T>, E> =
-    Success(map { r -> r.onFailure { return it } })
+    Success(map { r -> r.onFailure { return it as Result<List<T>, E> } })
 
 fun <T, E> Iterable<Result<T, E>>.anyValues(): List<T> =
-    filterIsInstance<Success<T>>().map { it.value }
+    filter { it.isSuccess() }.map { it.unsafeValue }
 
 fun <T, E> Iterable<Result<T, E>>.partition(): Pair<List<T>, List<E>> {
     val oks = mutableListOf<T>()
     val errs = mutableListOf<E>()
     forEach {
-        when (it) {
-            is Success<T> -> oks.add(it.value)
-            is Failure<E> -> errs.add(it.reason)
+        when {
+            it.isSuccess() -> oks.add(it.unsafeValue)
+            else -> errs.add(it.unsafeReason)
         }
     }
     return Pair(oks, errs)
