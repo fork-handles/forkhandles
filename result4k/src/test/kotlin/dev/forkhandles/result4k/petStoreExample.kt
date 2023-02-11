@@ -33,6 +33,7 @@ class AdoptionService(
             .find { it.id == petId }
             .asResultOr { PetError.PetNotFound }  // convert to failure if pet not found
             .map { pet -> Adoption(humanId, pet) } // if pet found, convert to Adoption and return
+            .peek { adoption -> adoptions += adoption } // Perform a side-effect with the success value
     }
 
     fun brag(adoption: Adoption) {
