@@ -1,5 +1,8 @@
 package dev.forkhandles.result4k.kotest
 
+import com.natpryce.hamkrest.assertion.assertThat
+import com.natpryce.hamkrest.equalTo
+import com.natpryce.hamkrest.present
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.Test
@@ -12,18 +15,16 @@ class MatchersTest {
         val expectedValue = "Test failed"
         val result = Failure(expectedValue)
 
-        assertThrows<AssertionError>("Failure(reason=Test failed) should be Success") {
+        expectsAssertionError("Failure(reason=Test failed) should be Success") {
             result.shouldBeSuccess()
         }
 
-        assertThrows<AssertionError>("Failure(reason=Test failed) should be Success") {
+        expectsAssertionError("Failure(reason=Test failed) should be Success") {
             result.shouldBeSuccess { }
         }
 
-        assertThrows<AssertionError>("Failure(reason=Test failed) should be Success(value=Test failed)") {
-            result.shouldBeSuccess(
-                expectedValue
-            )
+        expectsAssertionError("Failure(reason=Test failed) should be Success(value=Test failed)") {
+            result.shouldBeSuccess(expectedValue)
         }
     }
 
@@ -32,18 +33,21 @@ class MatchersTest {
         val expectedValue = "Test successful"
         val result = Success(expectedValue)
 
-        assertThrows<AssertionError>("Success(value=Test successful) should be Failuree") {
+        expectsAssertionError("Success(value=Test successful) should be Failure") {
             result.shouldBeFailure()
         }
 
-        assertThrows<AssertionError>("Failure(reason=Test failed) should be Success") {
+        expectsAssertionError("Success(value=Test successful) should be Failure") {
             result.shouldBeFailure { }
         }
 
-        assertThrows<AssertionError>("Failure(reason=Test failed) should be Success(value=Test failed)") {
+        expectsAssertionError("Success(value=Test successful) should be Failure(reason=Test successful)") {
             result.shouldBeFailure(
                 expectedValue
             )
         }
     }
+
+    private fun expectsAssertionError(message: String, block: () -> Unit) =
+        assertThrows<AssertionError> { block() }.also { assertThat(it.message, present(equalTo(message))) }
 }
