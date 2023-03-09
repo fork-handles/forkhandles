@@ -35,7 +35,7 @@ In the meantime there is a [YouTube playlist](https://youtube.com/playlist?list=
 
 ## Example
 
-Check out the [AdoptionService](src/test/kotlin/dev/forkhandles/result4k/petStoreExample.kt) example.
+Check out the [AdoptionService](core/src/test/kotlin/dev/forkhandles/result4k/petStoreExample.kt) example.
 
 ## Testing
 

@@ -10,10 +10,15 @@ fun String.includeSubModule(name: String) {
     project(":$projectName").projectDir = File("$this/${name.replace(':', '/')}")
 }
 
+fun String.includeDirectory(name: String, dir: String) {
+    include(":$name")
+    project(":$name").projectDir = File(dir)
+}
+
 fun includeModule(name: String) {
     name.apply {
-        include(this)
-        includeSubModule("testing:kotest")
+        includeDirectory(name, "$name/core")
+        includeSubModule("kotest")
     }
 }
 
