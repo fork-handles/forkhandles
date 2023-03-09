@@ -1,8 +1,14 @@
 plugins {
-    id("de.fayard.refreshVersions").version("0.50.2")
+    id("de.fayard.refreshVersions").version("0.51.0")
 }
 
 rootProject.name = "forkhandles"
+
+fun String.includeModule(name: String) {
+    val projectName = "$this-$name"
+    include(":$projectName")
+    project(":$projectName").projectDir = File("$this/${name.replace(':', '/')}")
+}
 
 include("forkhandles-bom")
 

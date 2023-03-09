@@ -14,8 +14,8 @@ test {
     include 'dev/forkhandles/**'
     scanForTestClasses true
     reports {
-        junitXml.enabled = true
-        html.enabled = true
+        junitXml.required = true
+        html.required = true
     }
 
     beforeTest { desc ->

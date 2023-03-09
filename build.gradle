@@ -12,7 +12,7 @@ buildscript {
 plugins {
     id 'com.github.kt3k.coveralls' version "2.12.0"
     id "io.codearte.nexus-staging" version '0.30.0'
-    id 'org.jetbrains.kotlin.plugin.serialization' version "1.5.30"
+    id 'org.jetbrains.kotlin.plugin.serialization' version "1.8.10"
 }
 
 apply plugin: 'io.codearte.nexus-staging'
@@ -29,7 +29,7 @@ allprojects {
     apply plugin: 'maven-publish'
 
     jacoco {
-        toolVersion = '0.8.6'
+        toolVersion = '0.8.8'
     }
 
     compileKotlin.kotlinOptions.jvmTarget = "1.8"
@@ -47,8 +47,8 @@ allprojects {
 
     jacocoTestReport {
         reports {
-            html.enabled = true
-            xml.enabled = true
+            html.required = true
+            xml.required = true
         }
     }
 
@@ -69,17 +69,17 @@ subprojects {
     }
 
     task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
+        archiveClassifier = 'sources'
         from sourceSets.main.allSource
     }
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
+        archiveClassifier = 'javadoc'
         from javadoc.destinationDir
     }
 
     task testJar(type: Jar) {
-        classifier "test"
+        archiveClassifier = "test"
         from sourceSets.test.output
     }
 
@@ -197,10 +197,10 @@ task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
     getExecutionData().from(subprojects.findAll { it.name != 'forkhandles-bom' }.jacocoTestReport.executionData)
 
     reports {
-        html.enabled = true
-        xml.enabled = true
-        csv.enabled = false
-        xml.destination = file("${buildDir}/reports/jacoco/test/jacocoRootReport.xml")
+        html.required = true
+        csv.required = false
+        xml.required = true
+        xml.outputLocation = file("${buildDir}/reports/jacoco/test/jacocoRootReport.xml")
     }
 }
 
