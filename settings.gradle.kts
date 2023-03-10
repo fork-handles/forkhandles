@@ -4,22 +4,15 @@ plugins {
 
 rootProject.name = "forkhandles"
 
-fun String.includeSubModule(name: String) {
+fun String.includeAsSubModule(name: String) {
     val projectName = "$this-${name.replace(':', '-')}"
     include(":$projectName")
     project(":$projectName").projectDir = File("$this/${name.replace(':', '/')}")
 }
 
-fun String.includeDirectory(name: String, dir: String) {
-    include(":$name")
-    project(":$name").projectDir = File(dir)
-}
-
-fun includeModule(name: String) {
-    name.apply {
-        includeDirectory(name, "$name/core")
-        includeSubModule("kotest")
-    }
+fun String.includeAsModule(dir: String) {
+    include(":$this")
+    project(":$this").projectDir = File("$this/$dir")
 }
 
 include("forkhandles-bom")
@@ -28,7 +21,10 @@ include("bunting4k")
 include("fabrikate4k")
 include("parser4k")
 include("partial4k")
-includeModule("result4k")
+"result4k".apply {
+    includeAsModule("core")
+    includeAsSubModule("kotest")
+}
 include("time4k")
 include("tuples4k")
 include("values4k")
