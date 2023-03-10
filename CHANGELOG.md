@@ -3,7 +3,7 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
-### v2.4.0.0 (uncut)
+### v2.4.0.0
 
 - **all** : Upgrade of dependencies, including Kotlin to 1.8.10 and Gradle to 8.0.2
 - **result4k-kotest** : Added Kotest matchers for result4k
