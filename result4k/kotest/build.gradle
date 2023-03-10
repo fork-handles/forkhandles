@@ -2,5 +2,5 @@ description = 'ForkHandles Library Testing Helpers (Kotest)'
 
 dependencies {
     implementation(project(":result4k"))
-    api("io.kotest:kotest-assertions-core-jvm:_")
+    implementation("io.kotest:kotest-assertions-core-jvm:_")
 }
