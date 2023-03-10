@@ -1,0 +1,6 @@
+description = 'ForkHandles Library Testing Helpers (Kotest)'
+
+dependencies {
+    implementation(project(":result4k"))
+    implementation("com.natpryce:hamkrest:_")
+}
