@@ -6,6 +6,8 @@ when appropriate:
 ### v2.4.0.0 (uncut)
 
 - **all** : Upgrade of dependencies, including Kotlin to 1.8.10
+- **result4k-kotest** : Added kotest matchers for result4k
+- **result4k-hamkrest** : Added hamkrest matchers for result4k
 
 ### v2.3.0.0
 
