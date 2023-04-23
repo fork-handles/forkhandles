@@ -9,7 +9,7 @@ data class Adoption(val humanId: HumanId, val pet: Pet)
 // define some potential errors (a sealed interface works well too!)
 enum class PetError { PetNotFound, PetNotForAdoption, OwnerBlacklisted }
 
-class AdoptionService(
+class PetStoreExample(
     val pets: Set<Pet>,
     val blacklist: Set<HumanId>,
     val adoptions: MutableSet<Adoption>
@@ -49,7 +49,7 @@ class AdoptionService(
  *
  * If any of the functions fails, the subsequent ones will not execute, and the failure will be returned instead
  */
-fun AdoptionService.adoptByNameAndBrag(humanId: HumanId, name: String): Result<Adoption, PetError> = findPet(name)
+fun PetStoreExample.adoptByNameAndBrag(humanId: HumanId, name: String): Result<Adoption, PetError> = findPet(name)
     .flatMap { pet -> adopt(humanId, pet.id) }
     .peek { adoption -> brag(adoption) } // bragging returns Unit, so we use "peek" to ignore the Success value
 
@@ -61,7 +61,7 @@ fun main() {
     val pet2 = Pet(2, "Freya")
     val pet3 = Pet(3, "Snowball")
 
-    val service = AdoptionService(
+    val service = PetStoreExample(
         pets = setOf(pet1, pet2, pet3),
         blacklist = setOf(human1),
         adoptions = mutableSetOf(Adoption(human2, pet1))

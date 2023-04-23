@@ -35,8 +35,107 @@ In the meantime there is a [YouTube playlist](https://youtube.com/playlist?list=
 
 ## Example
 
-Check out the [AdoptionService](core/src/test/kotlin/dev/forkhandles/result4k/petStoreExample.kt) example.
+```kotlin
+data class Weather(val kelvin: BigDecimal, val pascals: Int)
+data class Conditions(val message: String)
+data class WeatherError(val code: Int, val message: String)
+
+private val cold = 283.15.toBigDecimal()
+private val hot = 298.15.toBigDecimal()
+
+fun getWeather(location: Int): Result<Weather, WeatherError> = when(location) {
+    in 1..100 -> Success(Weather(kelvin = BigDecimal("295.15"), pascals = 101_390))
+    else -> Failure(WeatherError(code = 404, message = "unsupported location"))
+}
+
+fun Weather.toConditions(): Result<Conditions, WeatherError> {
+     return when {
+         kelvin < BigDecimal.ZERO -> Failure(WeatherError(400, "impossible!"))
+         kelvin < cold -> Success(Conditions("cold :("))
+         kelvin > hot -> Success(Conditions("HOT! X("))
+         else -> Success(Conditions("Nice :)"))
+     }
+}
+
+/**
+ * Get the current weather, interpret the conditions, and print them
+ */
+fun main() {
+    val forecast: String = getWeather(20) // get initial result (success or failure)
+        .flatMap(Weather::toConditions) // convert success to result (success or failure)
+        .map { it.message } // convert success to success
+        .mapFailure { message -> "WARNING: $message" } // convert failure to failure
+        .peekFailure { println("Physics has imploded!") }  // perform side-effect if failure
+        .get() // unwrap success, or failure if same type as success (in this case, String)
+    
+    println(forecast) 
+}
+```
+
+There is also an additional [PetStoreExample](core/src/test/kotlin/dev/forkhandles/result4k/petStoreExample.kt).
 
 ## Testing
 
-There is a supplementary library for Kotest matchers available [here](https://github.com/MrBergin/result4k-kotest-matchers).
+There are built-in assertions for Kotest and Hamkrest.
+
+### Kotest
+
+```kotlin
+implementation(platform("dev.forkhandles:forkhandles-bom:X.Y.Z"))
+implementation("dev.forkhandles:result4k-kotest")
+```
+
+```kotlin
+class WeatherExampleKotest {
+    @Test
+    fun `assert any success`() = getWeather(30).shouldBeSuccess()
+
+    @Test
+    fun `assert exact success`() = getWeather(20) shouldBeSuccess Weather(BigDecimal("295.15"), 101_390)
+
+    @Test
+    fun `assert success block`() = getWeather(10) shouldBeSuccess { weather ->
+        weather.pascals shouldBeGreaterThan 100_000
+    }
+
+    @Test
+    fun `assert any failure`() = getWeather(9001).shouldBeFailure()
+
+    @Test
+    fun `assert exact failure`() = getWeather(9001) shouldBeFailure WeatherError(404, "unsupported location")
+
+    @Test
+    fun `assert failure block`() = getWeather(9001) shouldBeFailure { error ->
+        error.code shouldBeInRange 400..499
+    }
+}
+```
+
+### Hamkrest
+
+```kotlin
+implementation(platform("dev.forkhandles:forkhandles-bom:X.Y.Z"))
+implementation("dev.forkhandles:result4k-hamkrest")
+```
+
+```kotlin
+class WeatherExampleHamkrest {
+    @Test
+    fun `assert any success`() = assertThat(getWeather(30), isSuccess())
+
+    @Test
+    fun `assert exact success`() = assertThat(
+        getWeather(20),
+        isSuccess(Weather(BigDecimal("295.15"), 101_390))
+    )
+
+    @Test
+    fun `assert any failure`() = assertThat(getWeather(9001), isFailure())
+
+    @Test
+    fun `assert exact failure`() = assertThat(
+        getWeather(9001),
+        isFailure(WeatherError(404, "unsupported location"))
+    )
+}
+```
