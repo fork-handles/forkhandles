@@ -21,22 +21,31 @@ object Maskers {
     /**
      * Provides a random output which hides the length and content of the underlying value.
      */
-    fun obfuscated(c: Char = '*'): Masking<Any> = { "$c".repeat(Random.nextInt(toString().length / 2, toString().length * 2)) }
+    fun obfuscated(c: Char = '*'): Masking<Any> =
+        { "$c".repeat(Random.nextInt(toString().length / 2, toString().length * 2)) }
 
     /**
      * Masks the specified substring of the value.
      */
-    fun substring(from: Int = 0, to: Int? = null, c: Char = '*'): Masking<Any> =
-        to?.let {
-            {
-                val range = IntRange(from, to)
-                toString().replaceRange(range, "$c".repeat(range.last - range.first))
-            }
+    fun substring(from: Int = 0, to: Int? = null, c: Char = '*'): Masking<Any> = {
+        toString().run {
+            val range = IntRange(from, to ?: (length - 1))
+            replaceRange(range, "$c".repeat(range.last - range.first))
         }
-            ?: {
-                toString().run {
-                    val range = IntRange(from, length)
-                    replaceRange(range, "$c".repeat(range.last - range.first))
-                }
-            }
+    }
+
+    /**
+     * Reveals the specified substring of the value.
+     */
+    fun reveal(from: Int = 0, to: Int? = null, c: Char = '*'): Masking<Any> = {
+        toString().run {
+            val startRange = (0 until from)
+            val endRange = ((to ?: (length - 1)) + 1 until length)
+
+            replaceRange(startRange, "$c".repeat(startRange.last - startRange.first + 1))
+                .replaceRange(
+                    endRange, "$c".repeat(endRange.last - endRange.first + 1)
+                )
+        }
+    }
 }

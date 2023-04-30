@@ -3,6 +3,11 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.5.0.0
+
+- **all** : Upgrade of dependencies, including Kotlin to 1.8.21 and Gradle to 8.1.1
+- **values4k** : [Fix] Bug in Maskers.substring and added Maskers.reveal
+
 ### v2.4.0.0
 
 - **all** : Upgrade of dependencies, including Kotlin to 1.8.10 and Gradle to 8.0.2
@@ -14,26 +19,21 @@ when appropriate:
 - **all** : Upgrade of dependencies, including Kotlin to 1.7.20
 
 ### v2.2.0.0
-
 - **all** : [Unlikely break] Remove dependency on kotlin stdlib JDK 8 as we don't need it to compile. If this causes a
   problem, simply re-add `api(Kotlin.stdlib.jdk8)` to your project dependency list.
 - **all-*** : Fix provided dependencies included as runtime.
 
 ### v2.1.2.0
-
 - **values4k** : Open up `of()` and `parse()` so that custom implementations can be supplied.
 
 ### v2.1.1.0
-
 - **values4k** : [Fix] Accidental removal of `InstantValue` typealias.
 
 ### v2.1.0.0
-
 - **values4k** : [Possible break] More utility methods for construction. Moved to extension functions so may require
   import.
 
 ### v2.0.1.0
-
 - **all** : Upgrade of dependencies, including Kotlin to 1.6.20
 - **values4k** : Adding utility methods to get `ZERO` and `random()` values
 
