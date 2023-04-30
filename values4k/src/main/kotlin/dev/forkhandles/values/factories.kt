@@ -22,7 +22,11 @@ import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 import java.time.format.DateTimeFormatter.ISO_OFFSET_TIME
 import java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME
 import java.util.UUID
-import kotlin.random.Random
+
+private val rfcBase64Alphabet get() = "^[0-9A-Za-z+/]+$".toRegex() // https://www.rfc-editor.org/rfc/rfc4648.html#section-4
+private val rfcBase32Alphabet get() = "^[2-7A-Z]+$".toRegex()  // https://www.rfc-editor.org/rfc/rfc4648.html#section-6
+private val rfcBase16Alphabet get() = "^[0-9A-F]+$".toRegex() // https://www.rfc-editor.org/rfc/rfc4648.html#section-8
+private val base36Alphabet get() = "^[0-9A-Z]+$".toRegex()
 
 open class StringValueFactory<DOMAIN : Value<String>>(
     fn: (String) -> DOMAIN, validation: Validation<String>? = null,
@@ -38,6 +42,34 @@ open class NonBlankStringValueFactory<DOMAIN : Value<String>>(
     fn: (String) -> DOMAIN,
     showFn: (String) -> String = { it }
 ) : ValueFactory<DOMAIN, String>(fn, 1.minLength.let { v -> { v(it.trim()) } }, { it }, showFn)
+
+open class Base64StringValueFactory<DOMAIN : Value<String>>(
+    fn: (String) -> DOMAIN,
+    validation: Validation<String> = { true },
+    parseFn: (String) -> String = { it },
+    showFn: (String) -> String = { it },
+) : ValueFactory<DOMAIN, String>(fn, rfcBase64Alphabet::matches.and(validation), parseFn, showFn)
+
+open class Base36StringValueFactory<DOMAIN : Value<String>>(
+    fn: (String) -> DOMAIN,
+    validation: Validation<String> = { true },
+    parseFn: (String) -> String = { it },
+    showFn: (String) -> String = { it },
+) : ValueFactory<DOMAIN, String>(fn, base36Alphabet::matches.and(validation), parseFn, showFn)
+
+open class Base32StringValueFactory<DOMAIN : Value<String>>(
+    fn: (String) -> DOMAIN,
+    validation: Validation<String> = { true },
+    parseFn: (String) -> String = { it },
+    showFn: (String) -> String = { it },
+) : ValueFactory<DOMAIN, String>(fn, rfcBase32Alphabet::matches.and(validation), parseFn, showFn)
+
+open class Base16StringValueFactory<DOMAIN : Value<String>>(
+    fn: (String) -> DOMAIN,
+    validation: Validation<String> = { true },
+    parseFn: (String) -> String = { it },
+    showFn: (String) -> String = { it },
+) : ValueFactory<DOMAIN, String>(fn, rfcBase16Alphabet::matches.and(validation), parseFn, showFn)
 
 open class IntValueFactory<DOMAIN : Value<Int>>(
     fn: (Int) -> DOMAIN, validation: Validation<Int>? = null

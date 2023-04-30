@@ -98,6 +98,10 @@ class ValueFactoryTest {
     @Test
     fun show() {
         assertThat(MyIntValue.show(MyIntValue.of(123)), equalTo("123"))
+        assertThat(MyBase64Value.show(MyBase64Value.of("ABC")), equalTo("ABC"))
+        assertThat(MyBase36Value.show(MyBase36Value.of("ABC")), equalTo("ABC"))
+        assertThat(MyBase32Value.show(MyBase32Value.of("ABC")), equalTo("ABC"))
+        assertThat(Mybase16Value.show(Mybase16Value.of("ABC")), equalTo("ABC"))
     }
 
     @Test
