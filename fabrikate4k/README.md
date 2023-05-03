@@ -49,9 +49,9 @@ Person(
 If you need more control over the randomly created data you can register your own implementation:
 
 ```kotlin
-val myRandomString: Fabricator<String> = UUID.randomUUID()::toString
+val myRandomString: Fabricator<String> = Fabricator { UUID.randomUUID().toString() }
 
-val myRandomInt: Fabricator<Int> = { Random.nextInt(20, 60) }
+val myRandomInt: Fabricator<Int> = Fabricator { Random.nextInt(20, 60) }
 
 val config = FabricatorConfig()
     .register(myRandomString)
@@ -76,6 +76,48 @@ Person(
  */
 ```
 
+A fabricator can use the instance of `Fabrikate` if needed :
+
+```kotlin
+interface Person {
+    val name: String
+}
+
+data class Parent(
+    override val name: String,
+    val children: List<Person>,
+) : Person
+
+data class Child(
+    override val name: String,
+) : Person
+
+val myRandomParent: Fabricator<Parent> = Fabricator {
+    Parent(it.random(), it.random<List<Child>>())
+}
+
+val myRandomPerson: Fabricator<Person> = Fabricator {
+    if (!it.config.random.nextBoolean()) it.random<Parent>()
+    else it.random<Child>()
+}
+
+val config = FabricatorConfig()
+    .register(StringFabricator())
+    .register(myRandomParent)
+    .register(myRandomPerson)
+
+val randomPerson: Person = Fabrikate(config).random()
+
+/*
+Parent(
+    name=DAel,
+    children=[
+        Child(name=P56I7)
+    ]
+)
+*/
+```
+
 ### Configuring the fabrication
 
 `FabrikatorConfig` can be configured by passing parameters to adjust the
@@ -86,6 +128,36 @@ behavior during fabrication.
 | `seed`             | An `Int` used as a seed to the random number generator. This is useful if you want to control creation, e.g. in tests.                                                                                                                        |
 | `nullableStrategy` | A `NullableStrategy` that will prevent the creation of `null` values for nullable types when set to `NeverSetToNull`, or always creates `null` values for nullable types when set to `AlwaysSetToNull`.<br/> Defaults to `RandomlySetToNull`. |
 | `collectionSizes`  | An `IntRange` that defines the number of elements to create when fabricating collections. Defaults to `1..5`.                                                                                                                                 |  
+
+If you want to call a fabricator as a standalone :
+```kotlin
+val myRandomString: Fabricator<String> = Fabricator { UUID.randomUUID().toString() }
+
+myRandomString()
+```
+
+You can also configure it :
+```kotlin
+val myRandomString: Fabricator<String> = Fabricator { UUID.randomUUID().toString() }
+
+val randomPerson = Fabrikate().random<Person> { config ->
+    config.withMapping(myRandomString)
+}
+```
+
+It is possible to use `withMapping` like this as a shorthand :
+```kotlin
+val randomPerson = Fabrikate().random<Person> { config ->
+    config.withMapping<String> { UUID.randomUUID().toString() }
+}
+```
+
+Finally, you can create `Fabrikate` with a builder-like syntax :
+```kotlin
+val fabrikate = Fabrikate
+    .withStandardMappings()
+    .withMapping(myRandomPerson)
+```
 
 ### Pitfalls
 
@@ -123,12 +195,15 @@ calling `.withStandardMappings()`.
 * OffsetTime
 * OffsetDateTime
 * ZonedDateTime
+* Date
+* Year
+* Month
+* YearMonth
 * Set
 * List
 * Map
 * URI
 * URL
-* Date
 * File
 * UUID
 * Duration
