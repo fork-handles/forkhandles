@@ -4,7 +4,6 @@ import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.greaterThan
 import com.natpryce.hamkrest.has
-import com.natpryce.hamkrest.isA
 import com.natpryce.hamkrest.lessThan
 import dev.forkhandles.result4k.Weather
 import dev.forkhandles.result4k.WeatherError
@@ -40,6 +39,6 @@ class WeatherExampleHamkrest {
     @Test
     fun `assert ranged failure`() = assertThat(
         getWeather(9001),
-        isFailure(isA<WeatherError>(has(WeatherError::code, greaterThan(400) and lessThan(500))))
+        isFailure(has(WeatherError::code, greaterThan(400) and lessThan(500)))
     )
 }
