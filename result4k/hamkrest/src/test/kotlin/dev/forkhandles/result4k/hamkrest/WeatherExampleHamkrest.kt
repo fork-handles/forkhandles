@@ -23,7 +23,7 @@ class WeatherExampleHamkrest {
     )
 
     @Test
-    fun `assert ranged success failure`() = assertThat(
+    fun `assert ranged success`() = assertThat(
         getWeather(20),
         isSuccess(has(Weather::pascals, greaterThan(100_000) and lessThan(200_000)))
     )
