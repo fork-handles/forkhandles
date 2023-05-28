@@ -4,18 +4,15 @@ This list is not intended to be all-encompassing - it will document major and br
 when appropriate:
 
 ### v2.6.0.0
-
 - **all** : Upgrade of dependencies
 - **fabrikate4k** : [Breaking] Changes to API to allow for recursive scenarios. See readme for details.
 
 ### v2.5.0.0
-
 - **all** : Upgrade of dependencies, including Kotlin to 1.8.21 and Gradle to 8.1.1
 - **values4k** : [Fix] Bug in Maskers.substring and added Maskers.reveal
 - **values4k** : Add base 16, 32, 36, and 64 value factories H/T @oharaandrew314
 
 ### v2.4.0.0
-
 - **all** : Upgrade of dependencies, including Kotlin to 1.8.10 and Gradle to 8.0.2
 - **result4k-kotest** : Added Kotest matchers for result4k
 - **result4k-hamkrest** : Added HamKrest matchers for result4k
