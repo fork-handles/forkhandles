@@ -1,20 +1,16 @@
 package dev.forkhandles.fabrikate
 
-import dev.forkhandles.fabrikate.FabricatorConfig.NullableStrategy.AlwaysSetToNull
-import dev.forkhandles.fabrikate.FabricatorConfig.NullableStrategy.NeverSetToNull
-import dev.forkhandles.fabrikate.FabricatorConfig.NullableStrategy.RandomlySetToNull
+import dev.forkhandles.fabrikate.FabricatorConfig.NullableStrategy.*
 import java.lang.reflect.*
 import java.time.*
 import java.util.*
 import kotlin.reflect.*
-import kotlin.reflect.full.companionObject
-import kotlin.reflect.full.companionObjectInstance
-import kotlin.reflect.full.createType
-import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.full.isSubtypeOf
-import kotlin.reflect.full.memberFunctions
+import kotlin.reflect.full.*
 
-class InstanceFabricator(private val config: FabricatorConfig) {
+class InstanceFabricator(private val fabrikate: Fabrikate) {
+
+    private val config: FabricatorConfig
+        get() = fabrikate.config
 
     class NoUsableConstructor : Error()
 
@@ -34,11 +30,12 @@ class InstanceFabricator(private val config: FabricatorConfig) {
                     }
                     throw NoUsableConstructor()
                 }
+
                 else -> primitive
             }
         }
 
-    private fun mustSetNullableToNull() = when(config.nullableStrategy) {
+    private fun mustSetNullableToNull() = when (config.nullableStrategy) {
         AlwaysSetToNull -> true
         NeverSetToNull -> false
         RandomlySetToNull -> config.random.nextBoolean()
@@ -46,7 +43,7 @@ class InstanceFabricator(private val config: FabricatorConfig) {
 
     private fun findFactoryFunctions(
         classRef: KClass<*>,
-        type: KType
+        type: KType,
     ): List<Pair<KFunction<*>, (KParameter) -> Any?>> = (classRef.companionObject
         ?.memberFunctions
         ?.filter { it.returnType == type || type.isSubtypeOf(it.returnType) }
@@ -62,7 +59,7 @@ class InstanceFabricator(private val config: FabricatorConfig) {
 
     private fun findConstructorFunctions(
         classRef: KClass<*>,
-        type: KType
+        type: KType,
     ): List<Pair<KFunction<Any>, (KParameter) -> Any?>> {
         val allConstructors = classRef.constructors
         val hiddenConstructors = allConstructors.filter { constructor -> constructor.annotations.isNotEmpty() &&
@@ -76,7 +73,7 @@ class InstanceFabricator(private val config: FabricatorConfig) {
     private fun makeRandomInstanceForParam(
         paramType: KType,
         classRef: KClass<*>,
-        type: KType
+        type: KType,
     ): Any? = when (val classifier = paramType.classifier) {
         is KClass<*> -> makeRandomInstance(classifier, paramType)
         is KTypeParameter -> {
@@ -85,12 +82,14 @@ class InstanceFabricator(private val config: FabricatorConfig) {
             val parameterType = type.arguments[typeParameterId].type ?: getKType<Any>()
             makeRandomInstance(parameterType.classifier as KClass<*>, parameterType)
         }
+
         else -> throw Error("Type of the classifier $classifier is not supported")
     }
 
-    private fun makeStandardInstanceOrNull(classRef: KClass<*>, type: KType) = with(config) {
-        when {
-            mappings.containsKey(classRef) -> mappings[classRef]!!.invoke()
+    private fun makeStandardInstanceOrNull(classRef: KClass<*>, type: KType): Any? {
+        val mapping = config.mappings[classRef]
+        return when {
+            mapping != null -> mapping(fabrikate)
             classRef == Set::class -> makeRandomSet(classRef, type)
             classRef == List::class -> makeRandomList(classRef, type)
             classRef == Collection::class -> makeRandomList(classRef, type)
@@ -101,7 +100,7 @@ class InstanceFabricator(private val config: FabricatorConfig) {
     }
 
     private fun makeRandomMap(classRef: KClass<*>, type: KType): Map<Any?, Any?> = with(config) {
-        val numOfElements = random.nextInt(collectionSizes.first, collectionSizes.last + 1)
+        val numOfElements = collectionSizes.random(random)
         val keyType = type.arguments[0].type!!
         val valType = type.arguments[1].type!!
         val keys = (1..numOfElements).map { makeRandomInstanceForParam(keyType, classRef, type) }
@@ -114,17 +113,13 @@ class InstanceFabricator(private val config: FabricatorConfig) {
     }
 
     private fun makeRandomList(classRef: KClass<*>, type: KType): List<Any?> = with(config) {
-        val numOfElements = random.nextInt(collectionSizes.first, collectionSizes.last + 1)
+        val numOfElements = collectionSizes.random(random)
         val elemType = type.arguments[0].type!!
         (1..numOfElements).map { makeRandomInstanceForParam(elemType, classRef, type) }
     }
 
-    private fun makeRandomEnum(classRef: KClass<*>): Any? = with(config) {
-        val enumConstants = classRef.java.enumConstants
-        val sizes = 0..enumConstants.toList().size
-        val randomIdx = random.nextInt(sizes.first(), sizes.last)
-        enumConstants[randomIdx]
-    }
+    private fun makeRandomEnum(classRef: KClass<*>): Any? =
+        classRef.java.enumConstants.random(config.random)
 }
 
 // --- Interface ---
@@ -160,12 +155,14 @@ fun Type.toKTypeProjection(): KTypeProjection = when (this) {
             })
         )
     }
+
     is WildcardType -> when {
         lowerBounds.isNotEmpty() -> KTypeProjection.contravariant(lowerBounds.single().toKType())
         upperBounds.isNotEmpty() -> KTypeProjection.covariant(upperBounds.single().toKType())
         // This looks impossible to obtain through Java reflection API, but someone may construct and pass such an instance here anyway
         else -> KTypeProjection.STAR
     }
+
     is GenericArrayType -> Array<Any>::class.toInvariantFlexibleProjection(listOf(genericComponentType.toKTypeProjection()))
     is TypeVariable<*> -> TODO() // TODO
     else -> throw IllegalArgumentException("Unsupported type: $this")

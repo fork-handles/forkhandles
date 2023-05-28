@@ -5,143 +5,173 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.net.URI
 import java.net.URL
-import java.time.Duration
-import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.time.OffsetTime
-import java.time.YearMonth
+import java.time.*
 import java.time.ZoneOffset.UTC
-import java.time.ZonedDateTime
-import java.util.Date
-import java.util.UUID
-import kotlin.random.Random
+import java.util.*
 import kotlin.random.asJavaRandom
 
-typealias Fabricator<T> = () -> T
+fun interface Fabricator<T> : (Fabrikate) -> T
 
-class BooleanFabricator(private val random: Random = Random) : Fabricator<Boolean> {
-    override fun invoke() = random.nextBoolean()
+class BooleanFabricator : Fabricator<Boolean> {
+    override fun invoke(fabrikate: Fabrikate): Boolean = fabrikate.config.random.nextBoolean()
 }
 
-class LongFabricator(private val random: Random = Random) : Fabricator<Long> {
-    override fun invoke() = random.nextLong()
+class IntFabricator(
+    private val from: Int? = null,
+    private val until: Int? = null,
+) : Fabricator<Int> {
+    constructor(range: ClosedRange<Int>) : this(range.start, range.endInclusive)
+
+    override fun invoke(fabrikate: Fabrikate): Int = when {
+        until == null -> fabrikate.config.random.nextInt()
+        from != null -> fabrikate.config.random.nextInt(from, until)
+        else -> fabrikate.config.random.nextInt(until)
+    }
 }
 
-class IntFabricator(private val random: Random = Random) : Fabricator<Int> {
-    override fun invoke() = random.nextInt()
+class LongFabricator(
+    private val from: Long? = null,
+    private val until: Long? = null,
+) : Fabricator<Long> {
+    constructor(range: ClosedRange<Long>) : this(range.start, range.endInclusive)
+
+    override fun invoke(fabrikate: Fabrikate): Long = when {
+        until == null -> fabrikate.config.random.nextLong()
+        from != null -> fabrikate.config.random.nextLong(from, until)
+        else -> fabrikate.config.random.nextLong(until)
+    }
 }
 
-class DoubleFabricator(private val random: Random = Random) : Fabricator<Double> {
-    override fun invoke() = random.nextDouble()
+class DoubleFabricator(
+    private val from: Double? = null,
+    private val until: Double? = null,
+) : Fabricator<Double> {
+    constructor(range: ClosedRange<Double>) : this(range.start, range.endInclusive)
+
+    override fun invoke(fabrikate: Fabrikate): Double = when {
+        until == null -> fabrikate.config.random.nextDouble()
+        from != null -> fabrikate.config.random.nextDouble(from, until)
+        else -> fabrikate.config.random.nextDouble(until)
+    }
 }
 
-class FloatFabricator(private val random: Random = Random) : Fabricator<Float> {
-    override fun invoke() = random.nextFloat()
+class FloatFabricator : Fabricator<Float> {
+    override fun invoke(fabrikate: Fabrikate): Float = fabrikate.config.random.nextFloat()
 }
 
 class BigDecimalFabricator(
     private val size: Int = 10,
-    private val random: Random = Random
 ) : Fabricator<BigDecimal> {
-    override fun invoke() = BigInteger(size, random.asJavaRandom()).toBigDecimal()
+    override fun invoke(fabrikate: Fabrikate) = BigInteger(size, fabrikate.config.random.asJavaRandom()).toBigDecimal()
 }
 
 class BigIntegerFabricator(
     private val size: Int = 10,
-    private val random: Random = Random
 ) : Fabricator<BigInteger> {
-    override fun invoke() = BigInteger(size, random.asJavaRandom())
+    override fun invoke(fabrikate: Fabrikate) = BigInteger(size, fabrikate.config.random.asJavaRandom())
 }
 
 class StringFabricator(
     private val length: IntRange = IntRange(1, 10),
     private val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9'),
-    private val random: Random = Random,
 ) : Fabricator<String> {
-    override fun invoke() = (1..random.nextInt(length.first, length.last + 1))
-        .map { charPool.random(random) }
+    override fun invoke(fabrikate: Fabrikate) = (1..length.random(fabrikate.config.random))
+        .map { charPool.random(fabrikate.config.random) }
         .joinToString("")
 }
 
 class CharFabricator(
     private val charPool: CharRange = ('A'..'z'),
-    private val random: Random = Random
 ) : Fabricator<Char> {
-    override fun invoke(): Char = charPool.random(random)
+    override fun invoke(fabrikate: Fabrikate): Char = charPool.random(fabrikate.config.random)
 }
 
-class ByteFabricator(
-    private val random: Random = Random
-) : Fabricator<Byte> {
-    override fun invoke(): Byte = random.nextBytes(1).first()
+class ByteFabricator : Fabricator<Byte> {
+    override fun invoke(fabrikate: Fabrikate): Byte = fabrikate.config.random.nextBytes(1).first()
 }
 
 class BytesFabricator(
     private val size: Int = 10,
-    private val random: Random = Random,
 ) : Fabricator<ByteArray> {
-    override fun invoke() = random.nextBytes(size)
+    override fun invoke(fabrikate: Fabrikate): ByteArray = fabrikate.config.random.nextBytes(size)
 }
 
-class InstantFabricator(private val random: Random = Random) : Fabricator<Instant> {
-    override fun invoke(): Instant = Instant.ofEpochSecond(random.nextLong(0, 1735689600))
+class InstantFabricator : Fabricator<Instant> {
+    override fun invoke(fabrikate: Fabrikate): Instant =
+        Instant.ofEpochSecond(fabrikate.config.random.nextLong(0, 1735689600))
 }
 
-class LocalDateFabricator(private val random: Random = Random) : Fabricator<LocalDate> {
-    override fun invoke(): LocalDate = LocalDate.ofInstant(InstantFabricator(random)(), UTC)
+class LocalDateFabricator : Fabricator<LocalDate> {
+    override fun invoke(fabrikate: Fabrikate): LocalDate =
+        LocalDate.ofInstant(InstantFabricator()(fabrikate), UTC)
 }
 
-class LocalTimeFabricator(private val random: Random = Random) : Fabricator<LocalTime> {
-    override fun invoke(): LocalTime = LocalTime.ofInstant(InstantFabricator(random)(), UTC)
+class LocalTimeFabricator : Fabricator<LocalTime> {
+    override fun invoke(fabrikate: Fabrikate): LocalTime =
+        LocalTime.ofInstant(InstantFabricator()(fabrikate), UTC)
 }
 
-class LocalDateTimeFabricator(private val random: Random = Random) : Fabricator<LocalDateTime> {
-    override fun invoke(): LocalDateTime = LocalDateTime.ofInstant(InstantFabricator(random)(), UTC)
+class LocalDateTimeFabricator : Fabricator<LocalDateTime> {
+    override fun invoke(fabrikate: Fabrikate): LocalDateTime =
+        LocalDateTime.ofInstant(InstantFabricator()(fabrikate), UTC)
 }
 
-class YearMonthFabricator(private val random: Random = Random) : Fabricator<YearMonth> {
-    override fun invoke(): YearMonth = YearMonth.of(random.nextInt(1970, 2030), random.nextInt(1, 12))
+class YearFabricator : Fabricator<Year> {
+    override fun invoke(fabrikate: Fabrikate): Year =
+        Year.of(fabrikate.config.random.nextInt(1970, 2030))
 }
 
-class OffsetDateTimeFabricator(private val random: Random = Random) : Fabricator<OffsetDateTime> {
-    override fun invoke(): OffsetDateTime = OffsetDateTime.ofInstant(InstantFabricator(random)(), UTC)
+class MonthFabricator : Fabricator<Month> {
+    override fun invoke(fabrikate: Fabrikate): Month = Month.values().random(fabrikate.config.random)
 }
 
-class OffsetTimeFabricator(private val random: Random = Random) : Fabricator<OffsetTime> {
-    override fun invoke(): OffsetTime = OffsetTime.ofInstant(InstantFabricator(random)(), UTC)
+class YearMonthFabricator : Fabricator<YearMonth> {
+    override fun invoke(fabrikate: Fabrikate): YearMonth =
+        YearMonth.of(YearFabricator()(fabrikate).value, MonthFabricator()(fabrikate))
 }
 
-class ZonedDateTimeFabricator(private val random: Random = Random) : Fabricator<ZonedDateTime> {
-    override fun invoke(): ZonedDateTime = ZonedDateTime.ofInstant(InstantFabricator(random)(), UTC)
+class OffsetDateTimeFabricator : Fabricator<OffsetDateTime> {
+    override fun invoke(fabrikate: Fabrikate): OffsetDateTime =
+        LocalDateTimeFabricator()(fabrikate).atOffset(UTC)
 }
 
-class DateFabricator(private val random: Random = Random) : Fabricator<Date> {
-    override fun invoke(): Date = Date.from(InstantFabricator(random)())
+class OffsetTimeFabricator : Fabricator<OffsetTime> {
+    override fun invoke(fabrikate: Fabrikate): OffsetTime =
+        LocalTimeFabricator()(fabrikate).atOffset(UTC)
 }
 
-class DurationFabricator(private val random: Random = Random) : Fabricator<Duration> {
-    override fun invoke(): Duration = Duration.ofDays(random.nextLong(1, 10))
+class ZonedDateTimeFabricator : Fabricator<ZonedDateTime> {
+    override fun invoke(fabrikate: Fabrikate): ZonedDateTime =
+        LocalDateTimeFabricator()(fabrikate).atZone(UTC)
 }
 
-class UUIDFabricator(private val random: Random = Random) : Fabricator<UUID> {
-    override fun invoke(): UUID = UUID(random.nextLong(), random.nextLong())
+class DateFabricator : Fabricator<Date> {
+    override fun invoke(fabrikate: Fabrikate): Date = Date.from(InstantFabricator()(fabrikate))
 }
 
-class UriFabricator(private val random: Random = Random) : Fabricator<URI> {
-    override fun invoke(): URI = URI.create("https://${StringFabricator(random = random)()}.com")
+class DurationFabricator : Fabricator<Duration> {
+    override fun invoke(fabrikate: Fabrikate): Duration = Duration.ofDays(fabrikate.config.random.nextLong(1, 10))
 }
 
-class UrlFabricator(private val random: Random = Random) : Fabricator<URL> {
-    override fun invoke(): URL = URL("https://${StringFabricator(random = random)().filter { it.isLetterOrDigit() }}.com")
+class UUIDFabricator : Fabricator<UUID> {
+    override fun invoke(fabrikate: Fabrikate): UUID =
+        UUID(fabrikate.config.random.nextLong(), fabrikate.config.random.nextLong())
+}
+
+class UriFabricator : Fabricator<URI> {
+    override fun invoke(fabrikate: Fabrikate): URI =
+        URI.create("https://${StringFabricator()(fabrikate)}.com")
+}
+
+class UrlFabricator : Fabricator<URL> {
+    override fun invoke(fabrikate: Fabrikate): URL =
+        URL("https://${StringFabricator()(fabrikate).filter { it.isLetterOrDigit() }}.com")
 }
 
 class FileFabricator : Fabricator<File> {
-    override fun invoke(): File = File.createTempFile("fabrikate", null).apply { deleteOnExit() }
+    override fun invoke(fabrikate: Fabrikate): File = File.createTempFile("fabrikate", null).apply { deleteOnExit() }
 }
 
 class AnyFabricator(private val any: Any = "anything") : Fabricator<Any> {
-    override fun invoke(): Any = any
+    override fun invoke(fabrikate: Fabrikate): Any = any
 }

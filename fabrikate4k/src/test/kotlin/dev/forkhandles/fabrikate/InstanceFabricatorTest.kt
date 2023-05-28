@@ -407,7 +407,7 @@ class InstanceFabricatorTest {
     }
 
     class TestListFabricator: Fabricator<List<String>>{
-        override fun invoke(): List<String> {
+        override fun invoke(fabrikate: Fabrikate): List<String> {
             return testList
         }
 
