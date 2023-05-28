@@ -34,11 +34,11 @@ class MatchersTest {
         val actualValue = "Test successful"
         val actualResult = Success(actualValue)
 
-        throwsAssertionError("expected: a value that is Failure\nbut was: Success(value=Test successful)") {
+        throwsAssertionError("expected: a value that is a Failure\nbut was: Success(value=Test successful)") {
             assertThat(actualResult, isFailure())
         }
 
-        throwsAssertionError("expected: a value that is Failure(reason=Test successful)\nbut was: Success(value=Test successful)") {
+        throwsAssertionError("expected: a value that is a Failure and has reason that is equal to \"Test successful\"\nbut was: Success(value=Test successful)") {
             assertThat(actualResult, isFailure(actualValue))
         }
     }
@@ -48,12 +48,32 @@ class MatchersTest {
         val actualValue = "Test failed"
         val actualResult = Failure(actualValue)
 
-        throwsAssertionError("expected: a value that is Success\nbut was: Failure(reason=Test failed)") {
+        throwsAssertionError("expected: a value that is a Success\nbut was: Failure(reason=Test failed)") {
             assertThat(actualResult, isSuccess())
         }
 
-        throwsAssertionError("expected: a value that is Success(value=Test failed)\nbut was: Failure(reason=Test failed)") {
+        throwsAssertionError("expected: a value that is a Success and has value that is equal to \"Test failed\"\nbut was: Failure(reason=Test failed)") {
             assertThat(actualResult, isSuccess(actualValue))
+        }
+    }
+
+    @Test
+    fun `should correctly assert when Success and expecting Success with inner matcher`() {
+        val actualValue = "Test success"
+        val actualResult = Success(actualValue)
+
+        throwsAssertionError("expected: a value that is a Success and has value that is equal to \"Test Success\"\nbut had value that was: \"Test success\"") {
+            assertThat(actualResult, isSuccess(equalTo("Test Success")))
+        }
+    }
+
+    @Test
+    fun `should correctly assert when Failure and expecting Failure with inner matcher`() {
+        val actualValue = "Test failure"
+        val actualResult = Failure(actualValue)
+
+        throwsAssertionError("expected: a value that is a Failure and has reason that is equal to \"Test Failure\"\nbut had reason that was: \"Test failure\"") {
+            assertThat(actualResult, isFailure(equalTo("Test Failure")))
         }
     }
 
