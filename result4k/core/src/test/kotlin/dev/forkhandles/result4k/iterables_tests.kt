@@ -28,18 +28,12 @@ class AnyValuesTests {
 class PartitionTests {
     @Test
     fun `returns values and failures in separate lists`() {
-        assertEquals(
-            Pair(listOf(1, 3), listOf("bad", "also bad")),
-            listOf(Success(1), Failure("bad"), Success(3), Failure("also bad")).partition()
-        )
-        assertEquals(
-            Pair(listOf(1, 2, 3), emptyList()),
-            listOf(Success(1), Success(2), Success(3)).partition()
-        )
-        assertEquals(
-            Pair(emptyList(), listOf("bad", "also bad")),
-            listOf(Failure("bad"), Failure("also bad")).partition()
-        )
+        assertEquals(Pair(listOf(1, 3), listOf("bad", "also bad")),
+            listOf(Success(1), Failure("bad"), Success(3), Failure("also bad")).partition())
+        assertEquals(Pair(listOf(1, 2, 3), emptyList()),
+            listOf(Success(1), Success(2), Success(3)).partition())
+        assertEquals(Pair(emptyList(), listOf("bad", "also bad")),
+            listOf(Failure("bad"), Failure("also bad")).partition())
     }
 }
 
@@ -54,29 +48,25 @@ private fun generateRandomList(): List<Int> =
         randomPositiveInt()
     )
 class TraverseIterableTests {
-
     @Test
     fun `test foldResult for Iterable`() {
         val list = generateRandomList()
-        val result = list.foldResult(Success(0)) { acc: Int, i: Int -> Success(acc + i) }
-        val expected = Success(list.sum())
-        assertEquals(expected, result)
+        assertEquals(Success(list.sum()),
+            list.foldResult(Success(0)) { acc: Int, i: Int -> Success(acc + i) })
     }
 
     @Test
     fun `test traverse for Iterable`() {
         val list = generateRandomList()
-        val result = list.traverse { i -> Success(i * 2) }
-        val expected = Success(list.map { it * 2 })
-        assertEquals(expected, result)
+        assertEquals(Success(list.map { it * 2 }),
+            list.traverse { i -> Success(i * 2) })
     }
 
     @Test
     fun `test extractList for Iterable`() {
         val list = generateRandomList().map { Success(it) }
-        val result = list.extractList()
-        val expected = Success(list.map { it.value })
-        assertEquals(expected, result)
+        assertEquals(Success(list.map { it.value }),
+            list.extractList())
     }
 
     @Test
@@ -84,30 +74,22 @@ class TraverseIterableTests {
         val list = generateRandomList()
         fun failingOperation(a: Int, b: Int) = Failure("Test error")
 
-        val result = list.foldResult(Success(100), ::failingOperation)
-        val expected = Failure("Test error")
-        assertEquals(expected, result)
+        assertEquals(Failure("Test error"),
+            list.foldResult(Success(100), ::failingOperation))
     }
-
-
 
     @Test
     fun `test traverse with failure for Iterable`() {
         val list = generateRandomList()
         val failingFunction: (Int) -> Result<Int, String> = { _ -> Failure("Test error") }
-        val result = list.traverse(failingFunction)
-        val expected = Failure("Test error")
-        assertEquals(expected, result)
+        assertEquals(Failure("Test error"), list.traverse(failingFunction))
     }
 
     @Test
     fun `test extractList with failure for Iterable`() {
         val list = listOf(Success(randomPositiveInt()), Failure("Test error"))
-        val result = list.extractList()
-        val expected = Failure("Test error")
-        assertEquals(expected, result)
+        assertEquals(Failure("Test error"), list.extractList())
     }
-
 }
 
 class TraverseSequenceTests {
@@ -116,54 +98,44 @@ class TraverseSequenceTests {
     fun `test foldResult for Sequence`() {
         val list = generateRandomList()
         val sequence = list.asSequence()
-        val result = sequence.foldResult(Success(0)) { acc, i -> Success(acc + i) }
-        val expected = Success(list.sum())
-        assertEquals(expected, result)
+        assertEquals(Success(list.sum()),
+            sequence.foldResult(Success(0)) { acc, i -> Success(acc + i) })
     }
 
     @Test
     fun `test traverse for Sequence`() {
         val list = generateRandomList()
         val sequence = list.asSequence()
-        val result = sequence.traverse { i -> Success(i * 2) }
-        val expected = Success(list.map { it * 2 })
-        assertEquals(expected, result)
+        assertEquals(Success(list.map { it * 2 }),
+            sequence.traverse { i -> Success(i * 2) })
     }
 
     @Test
     fun `test extractList for Sequence`() {
-
         val list = generateRandomList()
         val sequence = list.map { Success(it) }.asSequence()
-
-        val result = sequence.extractList()
-        val expected = Success(list)
-        assertEquals(expected, result)
+        assertEquals(Success(list), sequence.extractList())
     }
 
     @Test
     fun `test foldResult with failure for Sequence`() {
         val sequence = generateSequence { randomPositiveInt() }.take(5)
         val failingOperation: (Int, Int) -> Result<Int, String> = { _, _ -> Failure("Test error") }
-        val result = sequence.foldResult(Success(0), failingOperation)
-        val expected = Failure("Test error")
-        assertEquals(expected, result)
+        assertEquals(Failure("Test error"),
+            sequence.foldResult(Success(0), failingOperation))
     }
 
     @Test
     fun `test traverse with failure for Sequence`() {
         val sequence = generateSequence { randomPositiveInt() }.take(5)
         val failingFunction: (Int) -> Result<Int, String> = { _ -> Failure("Test error") }
-        val result = sequence.traverse(failingFunction)
-        val expected = Failure("Test error")
-        assertEquals(expected, result)
+        assertEquals(Failure("Test error"),
+            sequence.traverse(failingFunction))
     }
 
     @Test
     fun `test extractList with failure for Sequence`() {
         val sequence = generateSequence { Success(randomPositiveInt()) }.take(5) + sequenceOf(Failure("Test error"))
-        val result = sequence.extractList()
-        val expected = Failure("Test error")
-        assertEquals(expected, result)
+        assertEquals(Failure("Test error"), sequence.extractList())
     }
 }
