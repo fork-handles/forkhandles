@@ -49,28 +49,28 @@ private fun generateRandomList(): List<Int> =
     )
 class TraverseIterableTests {
     @Test
-    fun `test foldResult for Iterable`() {
+    fun `returns the first failure or the folded iterable as success`() {
         val list = generateRandomList()
         assertEquals(Success(list.sum()),
             list.foldResult(Success(0)) { acc: Int, i: Int -> Success(acc + i) })
     }
 
     @Test
-    fun `test traverse for Iterable`() {
+    fun `returns the first failure or the mapping of iterable as success`() {
         val list = generateRandomList()
         assertEquals(Success(list.map { it * 2 }),
             list.traverse { i -> Success(i * 2) })
     }
 
     @Test
-    fun `test extractList for Iterable`() {
+    fun `returns the first failure or the iterable as success`() {
         val list = generateRandomList().map { Success(it) }
         assertEquals(Success(list.map { it.value }),
             list.extractList())
     }
 
     @Test
-    fun `test foldResult with failure for Iterable`() {
+    fun `failure is returned if the folding operation fails`() {
         val list = generateRandomList()
         fun failingOperation(a: Int, b: Int) = Failure("Test error")
 
@@ -79,23 +79,25 @@ class TraverseIterableTests {
     }
 
     @Test
-    fun `test traverse with failure for Iterable`() {
+    fun `failure is returned if the mapping operation fails`() {
         val list = generateRandomList()
         val failingFunction: (Int) -> Result<Int, String> = { _ -> Failure("Test error") }
-        assertEquals(Failure("Test error"), list.traverse(failingFunction))
+        assertEquals(Failure("Test error"),
+            list.traverse(failingFunction))
     }
 
     @Test
-    fun `test extractList with failure for Iterable`() {
+    fun `failure is returned if the iterable contained a failure`() {
         val list = listOf(Success(randomPositiveInt()), Failure("Test error"))
-        assertEquals(Failure("Test error"), list.extractList())
+        assertEquals(Failure("Test error"),
+            list.extractList())
     }
 }
 
 class TraverseSequenceTests {
 
     @Test
-    fun `test foldResult for Sequence`() {
+    fun `returns the first failure or the folded sequence as success`() {
         val list = generateRandomList()
         val sequence = list.asSequence()
         assertEquals(Success(list.sum()),
@@ -103,7 +105,7 @@ class TraverseSequenceTests {
     }
 
     @Test
-    fun `test traverse for Sequence`() {
+    fun `returns the first failure or the mapping of sequence as success`() {
         val list = generateRandomList()
         val sequence = list.asSequence()
         assertEquals(Success(list.map { it * 2 }),
@@ -111,14 +113,15 @@ class TraverseSequenceTests {
     }
 
     @Test
-    fun `test extractList for Sequence`() {
+    fun `returns the first failure or the mapped sequence as success`() {
         val list = generateRandomList()
         val sequence = list.map { Success(it) }.asSequence()
-        assertEquals(Success(list), sequence.extractList())
+        assertEquals(Success(list),
+            sequence.extractList())
     }
 
     @Test
-    fun `test foldResult with failure for Sequence`() {
+    fun `failure is returned if the folding operation fails`() {
         val sequence = generateSequence { randomPositiveInt() }.take(5)
         val failingOperation: (Int, Int) -> Result<Int, String> = { _, _ -> Failure("Test error") }
         assertEquals(Failure("Test error"),
@@ -126,7 +129,7 @@ class TraverseSequenceTests {
     }
 
     @Test
-    fun `test traverse with failure for Sequence`() {
+    fun `failure is returned if the mapping operation fails`() {
         val sequence = generateSequence { randomPositiveInt() }.take(5)
         val failingFunction: (Int) -> Result<Int, String> = { _ -> Failure("Test error") }
         assertEquals(Failure("Test error"),
@@ -134,8 +137,9 @@ class TraverseSequenceTests {
     }
 
     @Test
-    fun `test extractList with failure for Sequence`() {
+    fun `failure is returned if the sequence contained a failure`() {
         val sequence = generateSequence { Success(randomPositiveInt()) }.take(5) + sequenceOf(Failure("Test error"))
-        assertEquals(Failure("Test error"), sequence.extractList())
+        assertEquals(Failure("Test error"),
+            sequence.extractList())
     }
 }
