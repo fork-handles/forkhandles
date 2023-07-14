@@ -59,14 +59,14 @@ class TraverseIterableTests {
     fun `returns the first failure or the mapping of iterable as success`() {
         val list = generateRandomList()
         assertEquals(Success(list.map { it * 2 }),
-            list.traverse { i -> Success(i * 2) })
+            list.mapAllValues { i -> Success(i * 2) })
     }
 
     @Test
     fun `returns the first failure or the iterable as success`() {
         val list = generateRandomList().map { Success(it) }
         assertEquals(Success(list.map { it.value }),
-            list.extractList())
+            list.allValues())
     }
 
     @Test
@@ -83,14 +83,14 @@ class TraverseIterableTests {
         val list = generateRandomList()
         val failingFunction: (Int) -> Result<Int, String> = { _ -> Failure("Test error") }
         assertEquals(Failure("Test error"),
-            list.traverse(failingFunction))
+            list.mapAllValues(failingFunction))
     }
 
     @Test
     fun `failure is returned if the iterable contained a failure`() {
         val list = listOf(Success(randomPositiveInt()), Failure("Test error"))
         assertEquals(Failure("Test error"),
-            list.extractList())
+            list.allValues())
     }
 }
 
@@ -109,7 +109,7 @@ class TraverseSequenceTests {
         val list = generateRandomList()
         val sequence = list.asSequence()
         assertEquals(Success(list.map { it * 2 }),
-            sequence.traverse { i -> Success(i * 2) })
+            sequence.mapAllValues { i -> Success(i * 2) })
     }
 
     @Test
@@ -117,7 +117,7 @@ class TraverseSequenceTests {
         val list = generateRandomList()
         val sequence = list.map { Success(it) }.asSequence()
         assertEquals(Success(list),
-            sequence.extractList())
+            sequence.allValues())
     }
 
     @Test
@@ -133,13 +133,13 @@ class TraverseSequenceTests {
         val sequence = generateSequence { randomPositiveInt() }.take(5)
         val failingFunction: (Int) -> Result<Int, String> = { _ -> Failure("Test error") }
         assertEquals(Failure("Test error"),
-            sequence.traverse(failingFunction))
+            sequence.mapAllValues(failingFunction))
     }
 
     @Test
     fun `failure is returned if the sequence contained a failure`() {
         val sequence = generateSequence { Success(randomPositiveInt()) }.take(5) + sequenceOf(Failure("Test error"))
         assertEquals(Failure("Test error"),
-            sequence.extractList())
+            sequence.allValues())
     }
 }
