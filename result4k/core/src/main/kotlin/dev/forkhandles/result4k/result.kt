@@ -36,6 +36,12 @@ inline fun <T, Tʹ, E> Result<T, E>.flatMap(f: (T) -> Result<Tʹ, E>): Result<T�
     }
 
 /**
+ * Map a function over the `reason` of an unsuccessful `Result`.
+ */
+inline fun <T, E, Eʹ> Result<T, E>.mapFailure(f: (E) -> Eʹ): Result<T, Eʹ> =
+    flatMapFailure { reason -> Failure(f(reason)) }
+
+/**
  * Flat-map a function over the `reason` of an unsuccessful `Result`.
  */
 inline fun <T, E, Eʹ> Result<T, E>.flatMapFailure(f: (E) -> Result<T, Eʹ>): Result<T, Eʹ> = when (this) {
@@ -44,10 +50,16 @@ inline fun <T, E, Eʹ> Result<T, E>.flatMapFailure(f: (E) -> Result<T, Eʹ>): Re
 }
 
 /**
- * Map a function over the `reason` of an unsuccessful `Result`.
+ * Perform a side effect with the success value.
  */
-inline fun <T, E, Eʹ> Result<T, E>.mapFailure(f: (E) -> Eʹ): Result<T, Eʹ> =
-    flatMapFailure { reason -> Failure(f(reason)) }
+inline fun <T, E> Result<T, E>.peek(f: (T) -> Unit): Result<T, E> =
+    apply { if (this is Success<T>) f(value) }
+
+/**
+ * Perform a side effect with the failure reason.
+ */
+inline fun <T, E> Result<T, E>.peekFailure(f: (E) -> Unit): Result<T, E> =
+    apply { if (this is Failure<E>) f(reason) }
 
 /**
  * Unwrap a `Result` in which both the success and failure values have the same type, returning a plain value.
@@ -78,16 +90,3 @@ inline fun <T, E> Result<T, E>.onFailure(block: (Failure<E>) -> Nothing): T = wh
  */
 inline fun <S, T : S, U : S, E> Result<T, E>.recover(errorToValue: (E) -> U): S =
     mapFailure(errorToValue).get()
-
-/**
- * Perform a side effect with the success value.
- */
-inline fun <T, E> Result<T, E>.peek(f: (T) -> Unit): Result<T, E> =
-    apply { if (this is Success<T>) f(value) }
-
-/**
- * Perform a side effect with the failure reason.
- */
-inline fun <T, E> Result<T, E>.peekFailure(f: (E) -> Unit): Result<T, E> =
-    apply { if (this is Failure<E>) f(reason) }
-
