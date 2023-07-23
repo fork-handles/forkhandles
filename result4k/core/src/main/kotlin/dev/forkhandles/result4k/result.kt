@@ -52,7 +52,7 @@ inline fun <T, E, Eʹ> Result<T, E>.mapFailure(f: (E) -> Eʹ): Result<T, Eʹ> =
 /**
  * Unwrap a `Result` in which both the success and failure values have the same type, returning a plain value.
  */
-fun <T> Result<T, T>.get() = when (this) {
+fun <T> Result<T, T>.get(): T = when (this) {
     is Success<T> -> value
     is Failure<T> -> reason
 }
@@ -60,7 +60,7 @@ fun <T> Result<T, T>.get() = when (this) {
 /**
  * Unwrap a successful result or throw an exception
  */
-fun <T, X : Throwable> Result<T, X>.orThrow() = when (this) {
+fun <T, X : Throwable> Result<T, X>.orThrow(): T = when (this) {
     is Success<T> -> value
     is Failure<X> -> throw reason
 }
@@ -82,12 +82,12 @@ inline fun <S, T : S, U : S, E> Result<T, E>.recover(errorToValue: (E) -> U): S 
 /**
  * Perform a side effect with the success value.
  */
-inline fun <T, E> Result<T, E>.peek(f: (T) -> Unit) =
+inline fun <T, E> Result<T, E>.peek(f: (T) -> Unit): Result<T, E> =
     apply { if (this is Success<T>) f(value) }
 
 /**
  * Perform a side effect with the failure reason.
  */
-inline fun <T, E> Result<T, E>.peekFailure(f: (E) -> Unit) =
+inline fun <T, E> Result<T, E>.peekFailure(f: (E) -> Unit): Result<T, E> =
     apply { if (this is Failure<E>) f(reason) }
 
