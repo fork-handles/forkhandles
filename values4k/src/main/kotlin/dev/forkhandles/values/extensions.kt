@@ -1,5 +1,6 @@
 package dev.forkhandles.values
 
+import java.io.File
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.Clock
@@ -12,7 +13,6 @@ import java.time.LocalTime.MIDNIGHT
 import java.time.OffsetDateTime
 import java.time.OffsetTime
 import java.time.ZoneId
-import java.time.ZoneOffset
 import java.time.ZoneOffset.UTC
 import java.time.ZonedDateTime
 import java.util.UUID
@@ -50,3 +50,7 @@ fun <DOMAIN : Value<OffsetTime>> OffsetTimeValueFactory<DOMAIN>.now(clock: Clock
 
 val <DOMAIN : Value<LocalTime>> LocalTimeValueFactory<DOMAIN>.MIDNGIHT get() = of(MIDNIGHT)
 val <DOMAIN : Value<OffsetTime>> OffsetTimeValueFactory<DOMAIN>.MIDNGIHT get() = of(OffsetTime.ofInstant(EPOCH, ZoneId.of("UTC")))
+
+val <DOMAIN : Value<File>> FileValueFactory<DOMAIN>.USER_HOME get() = of(File(System.getProperty("user.home")))
+val <DOMAIN : Value<File>> FileValueFactory<DOMAIN>.ROOT get() = of(File("/"))
+val <DOMAIN : Value<File>> FileValueFactory<DOMAIN>.WORKING_DIR get() = of(File("."))

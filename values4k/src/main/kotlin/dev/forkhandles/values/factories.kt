@@ -1,5 +1,6 @@
 package dev.forkhandles.values
 
+import java.io.File
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.net.URL
@@ -166,3 +167,7 @@ open class ZonedDateTimeValueFactory<DOMAIN : Value<ZonedDateTime>>(
     validation: Validation<ZonedDateTime>? = null,
     fmt: DateTimeFormatter = ISO_ZONED_DATE_TIME
 ) : ValueFactory<DOMAIN, ZonedDateTime>(fn, validation, { ZonedDateTime.parse(it, fmt) }, fmt::format)
+
+open class FileValueFactory<DOMAIN : Value<File>>(
+    fn: (File) -> DOMAIN, validation: Validation<File>? = null
+) : ValueFactory<DOMAIN, File>(fn, validation, { File(it) })
