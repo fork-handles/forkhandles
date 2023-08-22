@@ -11,8 +11,8 @@ Super-simple and super-fast Mocking library. Use when you really don't want to i
 ### Core features:
 -  ✅ Simple
 -  ✅ Fast
+-  ✅ Relaxed/Strict modes
 - ❌ Verification
-- ❌ Relaxed-mode
 - ❌ Argument capture
 - ❌ Partials
 - ❌ Spies
@@ -39,7 +39,7 @@ Import from `dev.forkhandles.mock4k`, then apply the unique **delegate'n'stub** 
 
 ```kotlin
 interface Wallet {
-    fun pay(item: String, coins: Int): Int
+    fun pay(item: String, coins: Int): Int?
 }
 
 class AppleStore(private val wallet: Wallet) {
@@ -49,16 +49,23 @@ class AppleStore(private val wallet: Wallet) {
 
 class AppleStoreTest {
     @Test
-    fun `buy macbook`() {
+    fun `buy macbook in strict mode`() {
         // when there are calls expected you can delegate'n'stub
         val appleStore = AppleStore(object : Wallet by mock() {
-            override fun pay(item: String, coins: Int): Int {
+            override fun pay(item: String, coins: Int): Int? {
                 assertThat(item, equalTo("MacBook"))
                 assertThat(coins, equalTo(9999))
                 return -9999
             }
         })
         assertThat(appleStore.buyMacBook(), equalTo(-9999))
+    }
+
+    @Test
+    fun `buy macbook in relaxed mode`() {
+        // relaxed mode returns null by default
+        val appleStore = AppleStore(object : Wallet by mock(MockMode.Relaxed) {})
+        assertThat(appleStore.buyMacBook(), equalTo(null))
     }
 
     @Test
