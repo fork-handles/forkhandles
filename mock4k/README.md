@@ -35,10 +35,13 @@ implementation("dev.forkhandles:mock4k")
 ```
 
 ## Usage
-Import from `dev.forkhandles.mock4k`:
+Import from `dev.forkhandles.mock4k`, then apply the unique **delegate'n'stub** technique. (patent pending).
 
 ```kotlin
-interface Wallet {
+
+import README.AppleStoreinterface
+
+Wallet {
     fun pay(item: String, coins: Int): Int
 }
 
@@ -49,7 +52,8 @@ class AppleStore(private val wallet: Wallet) {
 
 class AppleStoreTest {
     @Test
-    fun `mock call`() {
+    fun `buy macbook`() {
+        // when there are calls expected you can delegate'n'stub
         val appleStore = AppleStore(object : Wallet by mock() {
             override fun pay(item: String, coins: Int): Int {
                 assertThat(item, equalTo("MacBook"))
@@ -61,14 +65,10 @@ class AppleStoreTest {
     }
 
     @Test
-    fun `fails on unexpected call`() {
-        try {
-            val appleStore = AppleStore(mock())
-            appleStore.buyMacBook()
-            fail("didn't throw")
-        } catch (e: UnstubbedCall) {
-            assertThat(e.message, equalTo("Unstubbed call: Wallet.pay(MacBook, 9999)"))
-        }
+    fun `see genius`() {
+        // when there are no calls expected
+        val appleStore = AppleStore(mock()).seeGenius()
+        assertThat(appleStore.buyMacBook(), equalTo(Unit))
     }
 }
 ```
