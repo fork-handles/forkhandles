@@ -6,7 +6,7 @@
 <a href="http//www.apache.org/licenses/LICENSE-2.0"><img alt="GitHub license" src="https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat"></a>
 <a href="https://codebeat.co/projects/github-com-fork-handles-forkhandles-trunk"><img alt="codebeat badge" src="https://codebeat.co/badges/5b369ed4-af27-46f4-ad9c-a307d900617e"></a>
 
-Super-simple and super-fast Mocking library. Use when you really don't want to import an entire mocking library or want some simple replacement of an interface.
+Super-simple and super-fast Mocking library. Use when you really don't want to import an entire mocking library to slow down your build, or just want some simple replacement of an interface.
 
 ### Core features:
 -  ✅ Simple
