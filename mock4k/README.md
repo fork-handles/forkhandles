@@ -38,10 +38,7 @@ implementation("dev.forkhandles:mock4k")
 Import from `dev.forkhandles.mock4k`, then apply the unique **delegate'n'stub** technique. (patent pending).
 
 ```kotlin
-
-import README.AppleStoreinterface
-
-Wallet {
+interface Wallet {
     fun pay(item: String, coins: Int): Int
 }
 
