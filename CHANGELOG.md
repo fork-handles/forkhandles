@@ -8,7 +8,7 @@ when appropriate:
 
 ### v2.7.0.0
 - **all** : Upgrade of dependencies
-- **mock4k** : [New module] mock4k: The very cheapest mocking framework platform.
+- **mock4k** : [New module] [mock4k](https://github.com/fork-handles/forkhandles/blob/trunk/mock4k/README.md): The very cheapest mocking framework platform.
 
 ### v2.6.0.0
 - **all** : Upgrade of dependencies
