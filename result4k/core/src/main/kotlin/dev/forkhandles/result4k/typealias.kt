@@ -1,6 +1,6 @@
 package dev.forkhandles.result4k
 
 /**
- * Convenience typealias to avoid default clashes with the Kotlin StdLib version.
+ * Convenience typealias to avoid clashes with `kotlin.Result` in Kotlin StdLib.
  */
 typealias Result4k<T, E> = Result<T, E>
