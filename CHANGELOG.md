@@ -3,6 +3,10 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.7.0.0
+- **all** : Upgrade of dependencies
+- **mock4k** : [New module] mock4k: The very cheapest mocking framework platform.
+
 ### v2.6.0.0
 - **all** : Upgrade of dependencies
 - **fabrikate4k** : [Breaking] Changes to API to allow for recursive scenarios. See readme for details.
