@@ -64,7 +64,7 @@ class AppleStoreTest {
     @Test
     fun `buy macbook in relaxed mode`() {
         // relaxed mode returns null by default
-        val appleStore = AppleStore(object : Wallet by mock(MockMode.Relaxed) {})
+        val appleStore = AppleStore(mock(MockMode.Relaxed))
         assertThat(appleStore.buyMacBook(), equalTo(null))
     }
 

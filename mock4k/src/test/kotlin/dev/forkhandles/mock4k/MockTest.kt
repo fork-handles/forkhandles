@@ -44,7 +44,7 @@ class MockTest {
 
     @Test
     fun `relaxed mock call returns null`() {
-        val appleStore = AppleStore(object : Wallet by mock(Relaxed) {})
+        val appleStore = AppleStore(mock(Relaxed))
         assertThat(appleStore.buyMacBook(), absent())
     }
 
