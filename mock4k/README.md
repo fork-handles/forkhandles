@@ -55,10 +55,10 @@ class AppleStoreTest {
             override fun pay(item: String, coins: Int): Int {
                 assertThat(item, equalTo("MacBook"))
                 assertThat(coins, equalTo(9999))
-                return 3
+                return -9999
             }
         })
-        assertThat(appleStore.buyMacBook(), equalTo(3))
+        assertThat(appleStore.buyMacBook(), equalTo(-9999))
     }
 
     @Test
