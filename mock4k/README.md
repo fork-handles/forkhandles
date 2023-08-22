@@ -69,3 +69,7 @@ class AppleStoreTest {
     }
 }
 ```
+
+### Thanks to:
+- All contributors
+- Inspired by [left-pad](https://npmjs.com/package/left-pad)
