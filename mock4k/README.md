@@ -7,7 +7,7 @@
 <a href="http://kotlinlang.org"><img alt="kotlin" src="https://img.shields.io/badge/kotlin-1.8-blue.svg"></a>
 <a href="https://codebeat.co/projects/github-com-fork-handles-forkhandles-trunk"><img alt="codebeat badge" src="https://codebeat.co/badges/5b369ed4-af27-46f4-ad9c-a307d900617e"></a>
 
-Super-basic, super-simple and super-fast Mocking library. Use when you really don't want to import an entire mocking library or want some simple replacement of an interface.
+Super-simple and super-fast Mocking library. Use when you really don't want to import an entire mocking library or want some simple replacement of an interface.
 
 ### Core features:
 -  ✅ Simple
