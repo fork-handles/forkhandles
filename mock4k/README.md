@@ -18,7 +18,7 @@ Super-simple and super-fast Mocking library. Use when you really don't want to i
 - ❌ Spies
 - ❌ Any evil Powermock nonsense
 
-### Other core features!
+### Supplementary features:
 - ❌ Wannabe-functional
 - ❌ Multiplatform
 - ❌ Spring-support
