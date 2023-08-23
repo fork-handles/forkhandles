@@ -1,11 +1,11 @@
 plugins {
-    id "me.champeau.gradle.jmh" version "0.5.3"
+    id "me.champeau.gradle.jmh"
 }
 
 description = 'A friendly Kotlin Result type'
 
 dependencies {
-    testApi "org.jetbrains.kotlin:kotlin-test:_"
+    testApi Kotlin.test
 }
 
 compileJmhKotlin.kotlinOptions.jvmTarget = "1.8"

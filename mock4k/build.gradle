@@ -1,5 +1,5 @@
 description = 'ForkHandles: The very cheapest mocking framework platform.'
 
 dependencies {
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    testImplementation(KotlinX.coroutines.core)
 }

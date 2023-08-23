@@ -4,6 +4,6 @@ apply plugin: 'kotlinx-serialization'
 
 dependencies {
     api "org.jetbrains.kotlin:kotlin-reflect:_"
-    testApi "org.jetbrains.kotlin:kotlin-test:_"
-    testApi "org.jetbrains.kotlinx:kotlinx-serialization-json:_"
+    testApi Kotlin.test
+    testApi KotlinX.serialization.json
 }

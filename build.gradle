@@ -10,9 +10,9 @@ buildscript {
 }
 
 plugins {
-    id 'com.github.kt3k.coveralls' version "2.12.0"
-    id "io.codearte.nexus-staging" version '0.30.0'
-    id 'org.jetbrains.kotlin.plugin.serialization' version "1.8.10"
+    id 'com.github.kt3k.coveralls'
+    id "io.codearte.nexus-staging"
+    id 'org.jetbrains.kotlin.plugin.serialization'
 }
 
 apply plugin: 'io.codearte.nexus-staging'
@@ -93,9 +93,9 @@ subprojects {
     }
 
     dependencies {
-        api "org.jetbrains.kotlin:kotlin-stdlib:_"
-        testApi "org.junit.jupiter:junit-jupiter-api:_"
-        testApi "org.junit.jupiter:junit-jupiter-engine:_"
+        api Kotlin.stdlib
+        testApi Testing.junit.jupiter.api
+        testApi Testing.junit.jupiter.engine
         testApi "com.natpryce:hamkrest:_"
     }
 
