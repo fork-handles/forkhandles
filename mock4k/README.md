@@ -73,7 +73,7 @@ class AppleStoreTest {
    
     @Test
     fun `see genius`() {
-        val appleStore = AppleStore(mock(Relaxed))
+        val appleStore = AppleStore(mock())
 
         runBlocking {
             // suspend calls
