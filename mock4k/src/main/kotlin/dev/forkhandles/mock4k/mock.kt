@@ -6,11 +6,11 @@ import java.lang.reflect.Proxy
 import java.lang.reflect.UndeclaredThrowableException
 import kotlin.reflect.KClass
 
-inline fun <reified T> mock(relaxed: MockMode = Strict): T = Proxy.newProxyInstance(
+inline fun <reified T> mock(mode: MockMode = Strict): T = Proxy.newProxyInstance(
     T::class.java.classLoader,
     arrayOf(T::class.java)
 ) { _, method, args ->
-    when (relaxed) {
+    when (mode) {
         Strict -> throw UnstubbedCall(T::class, method.name, args.toList())
         Relaxed -> null
     }
