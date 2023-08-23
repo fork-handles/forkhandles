@@ -5,6 +5,7 @@ import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import dev.forkhandles.mock4k.MockMode.Relaxed
 import dev.forkhandles.mock4k.MockMode.Strict
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
 
@@ -14,8 +15,11 @@ interface Wallet {
 
 class AppleStore(private val wallet: Wallet) {
     fun buyMacBook() = wallet.pay("MacBook", 9999)
-    fun seeGenius(): String? = if (true) "sorted" else null
+    suspend fun seeGenius(): String = "sorted"
+    fun buyMacbookUsing(fn: (String, Int) -> Int?) = fn("MacBook", 9999)
+    suspend fun buyMacbookLater() = wallet.pay("MacBook", 9999)
 }
+
 
 class MockTest {
     @Test
@@ -49,13 +53,44 @@ class MockTest {
     }
 
     @Test
+    fun `suspend mock call supported`() {
+        val appleStore = AppleStore(mock())
+
+        runBlocking {
+            assertThat(appleStore.seeGenius(), equalTo("sorted"))
+        }
+    }
+
+    @Test
+    fun `function mock supported`() {
+        try {
+            AppleStore(mock()).buyMacbookUsing(mock())
+            fail("didn't throw")
+        } catch (e: UnstubbedCall) {
+            assertThat(e.message, equalTo("Unstubbed call: Function2.invoke(MacBook, 9999)"))
+        }
+    }
+
+    @Test
     fun `fails on unexpected call`() {
         try {
-            val appleStore = AppleStore(mock())
-            appleStore.buyMacBook()
+            AppleStore(mock<Wallet>()).buyMacBook()
             fail("didn't throw")
         } catch (e: UnstubbedCall) {
             assertThat(e.message, equalTo("Unstubbed call: Wallet.pay(MacBook, 9999)"))
+        }
+    }
+
+    @Test
+    fun `suspend mock call failure`() {
+
+        runBlocking {
+            try {
+                AppleStore(mock<Wallet>()).buyMacbookLater()
+                fail("didn't throw")
+            } catch (e: UnstubbedCall) {
+                assertThat(e.message, equalTo("Unstubbed call: Wallet.pay(MacBook, 9999)"))
+            }
         }
     }
 }

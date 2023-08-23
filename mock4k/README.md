@@ -12,18 +12,20 @@ Super-simple and super-fast Mocking library. Use when you really don't want to i
 -  ✅ Simple
 -  ✅ Fast
 -  ✅ Relaxed/Strict modes
+-  ✅ Coroutines
+-  ✅ Functions
 - ❌ Verification
 - ❌ Argument capture
-- ❌ Partials
+- ❌ Partial mocking
 - ❌ Spies
 - ❌ Any evil Powermock nonsense
 
 ### Supplementary features:
-- ❌ Wannabe-functional
-- ❌ Multiplatform
 - ❌ Spring-support
-- ❌ Coroutines
+- ❌ Multiplatform
 - ❌ Annotations
+- ❌ Blockchain
+- ❌ AI-powered
 
 ## Installation
 
@@ -44,7 +46,8 @@ interface Wallet {
 
 class AppleStore(private val wallet: Wallet) {
     fun buyMacBook() = wallet.pay("MacBook", 9999)
-    fun seeGenius() {}
+    suspend fun seeGenius() = "hello!"
+    fun buyMacbookUsing(pay: (String, Int) -> Int?) = pay("MacBook", 9999)
 }
 
 class AppleStoreTest {
@@ -67,12 +70,21 @@ class AppleStoreTest {
         val appleStore = AppleStore(mock(MockMode.Relaxed))
         assertThat(appleStore.buyMacBook(), equalTo(null))
     }
-
+   
     @Test
     fun `see genius`() {
-        // when there are no calls expected
-        val appleStore = AppleStore(mock()).seeGenius()
-        assertThat(appleStore.buyMacBook(), equalTo(Unit))
+        val appleStore = AppleStore(mock(Relaxed))
+
+        runBlocking {
+            // suspend calls
+            assertThat(appleStore.seeGenius(), equalTo("hello!"))
+        }
+    }
+
+    @Test
+    fun `bus using someone else's money`() {
+        val appleStore = AppleStore(mock())
+        appleStore.buyMacbookUsing(mock())
     }
 }
 ```
