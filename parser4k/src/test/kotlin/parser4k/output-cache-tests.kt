@@ -22,7 +22,7 @@ class `Parsing log example for cached plus-minus-int grammar` {
     }
 
     @Test
-    fun `"123" parsing log`() {
+    fun `log when parsing '123'`() {
         "123".parseWith(plusMinusGrammar.expr) shouldEqual IntLiteral(123)
 
         logEvents.toDebugString() shouldEqual """
@@ -60,7 +60,7 @@ class `Cached parsers are called at most one time at each offset` {
     }
 
     @Test
-    fun `"123" parsing log`() {
+    fun `log when parsing '123'`() {
         "123".parseWith(plusMinusGrammar.expr)
         logEvents.toDebugString() shouldEqual """
             "123" plus:0

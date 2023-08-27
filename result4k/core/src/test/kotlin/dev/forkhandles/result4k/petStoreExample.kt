@@ -28,12 +28,12 @@ class PetStoreExample(
         // perform some pre-validation; explicitly return failure if they fail
         if (humanId in blacklist) return Failure(PetError.OwnerBlacklisted)
         if (adoptions.any { it.pet.id == petId }) return Failure(PetError.PetNotForAdoption)
+        val pet = pets.find { it.id == petId } ?: return Failure(PetError.PetNotFound)
 
-        return pets
-            .find { it.id == petId }
-            .asResultOr { PetError.PetNotFound }  // convert to failure if pet not found
-            .map { pet -> Adoption(humanId, pet) } // if pet found, convert to Adoption and return
-            .peek { adoption -> adoptions += adoption } // Perform a side-effect with the success value
+        val adoption = Adoption(humanId, pet)
+        adoptions += adoption
+
+        return Success(adoption)
     }
 
     fun brag(adoption: Adoption) {

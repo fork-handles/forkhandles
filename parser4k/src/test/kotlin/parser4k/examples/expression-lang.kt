@@ -48,7 +48,6 @@ import parser4k.shouldEqual
 import parser4k.skipWrapper
 import parser4k.str
 import parser4k.with
-import java.util.Locale
 
 private object ExpressionLang {
     private val cache = OutputCache<Expr>()
@@ -121,8 +120,8 @@ private object ExpressionLang {
     fun evaluate(s: String): Any = s.parseWith(expr).eval()
 
     sealed class Expr {
-        object True : Expr()
-        object False : Expr()
+        data object True : Expr()
+        data object False : Expr()
         data class IntLiteral(val value: Int) : Expr()
         data class StringLiteral(val value: String) : Expr()
         data class ArrayLiteral(val value: List<Expr>) : Expr()

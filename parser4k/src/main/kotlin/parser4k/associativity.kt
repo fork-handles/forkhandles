@@ -31,6 +31,4 @@ fun <T> InOrder<T>.mapLeftAssoc(transform: (List<T>) -> T) = object : Parser<T> 
     }
 }
 
-private object RightRecursionMarker {
-    override fun toString() = "RightRecursionMarker"
-}
+private data object RightRecursionMarker
