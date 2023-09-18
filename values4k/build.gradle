@@ -2,6 +2,8 @@ description = 'ForkHandles Value-types library'
 
 dependencies {
     implementation(project(":result4k"))
+    compileOnly("com.github.ksuid:ksuid:_")
+    testImplementation("com.github.ksuid:ksuid:_")
 }
 
 compileTestKotlin {
