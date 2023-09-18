@@ -6,7 +6,9 @@ import java.time.Clock
 import java.time.Instant
 import java.util.Random
 
-typealias KsuidValue = AbstractValue<Ksuid>
+abstract class KsuidValue(value: Ksuid): AbstractValue<Ksuid>(value), Comparable<KsuidValue> {
+    override fun compareTo(other: KsuidValue) = value.compareTo(other.value)
+}
 
 open class KsuidValueFactory<DOMAIN : Value<Ksuid>>(
     fn: (Ksuid) -> DOMAIN,
