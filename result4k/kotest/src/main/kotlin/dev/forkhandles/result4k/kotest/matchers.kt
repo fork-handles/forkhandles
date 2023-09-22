@@ -19,16 +19,16 @@ fun beSuccess(): Matcher<Result<*, *>> = object : Matcher<Result<*, *>> {
 }
 
 @OptIn(ExperimentalContracts::class)
-fun <T> Result<T, *>.shouldBeSuccess() {
+fun <T> Result<T, *>.shouldBeSuccess(): T {
     contract {
-        returns() implies (this@shouldBeSuccess is Success<*>)
+        returns() implies (this@shouldBeSuccess is Success<T>)
     }
     this should beSuccess()
+    return (this as Success).value
 }
 
 infix fun <T> Result<T, *>.shouldBeSuccess(block: (T) -> Unit) {
-    this.shouldBeSuccess()
-    block((this as Success<T>).value)
+    block(this.shouldBeSuccess())
 }
 
 infix fun <T> Result<T, *>.shouldBeSuccess(value: T) = this should beSuccess(value)
