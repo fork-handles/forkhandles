@@ -42,11 +42,12 @@ fun beFailure(): Matcher<Result<*, *>> = object : Matcher<Result<*, *>> {
 }
 
 @OptIn(ExperimentalContracts::class)
-fun <E> Result<*, E>.shouldBeFailure() {
+fun <E> Result<*, E>.shouldBeFailure(): E {
     contract {
         returns() implies (this@shouldBeFailure is Failure<*>)
     }
     this should beFailure()
+    return (this as Failure).reason
 }
 
 infix fun <E> Result<*, E>.shouldBeFailure(block: (E) -> Unit) {

@@ -10,24 +10,46 @@ import java.math.BigDecimal
 
 class WeatherExampleKotest {
     @Test
-    fun `assert any success`() = getWeather(30).shouldBeSuccess()
-
-    @Test
-    fun `assert exact success`() = getWeather(20) shouldBeSuccess Weather(BigDecimal("295.15"), 101_390)
-
-    @Test
-    fun `assert success block`() = getWeather(10) shouldBeSuccess { weather ->
-        weather.pascals shouldBeGreaterThan 100_000
+    fun `assert any success`() {
+        getWeather(30).shouldBeSuccess()
     }
 
     @Test
-    fun `assert any failure`() = getWeather(9001).shouldBeFailure()
+    fun `assert exact success`() {
+        getWeather(20) shouldBeSuccess Weather(BigDecimal("295.15"), 101_390)
+    }
 
     @Test
-    fun `assert exact failure`() = getWeather(9001) shouldBeFailure WeatherError(404, "unsupported location")
+    fun `assert success value`() {
+        getWeather(10).shouldBeSuccess().pascals shouldBeGreaterThan 100_000
+    }
 
     @Test
-    fun `assert failure block`() = getWeather(9001) shouldBeFailure { error ->
-        error.code shouldBeInRange 400..499
+    fun `assert success block`() {
+        getWeather(10) shouldBeSuccess { weather ->
+            weather.pascals shouldBeGreaterThan 100_000
+        }
+    }
+
+    @Test
+    fun `assert any failure`() {
+        getWeather(9001).shouldBeFailure()
+    }
+
+    @Test
+    fun `assert exact failure`() {
+        getWeather(9001) shouldBeFailure WeatherError(404, "unsupported location")
+    }
+
+    @Test
+    fun `assert failure value`() {
+        getWeather(9001).shouldBeFailure().code shouldBeInRange 400..499
+    }
+
+    @Test
+    fun `assert failure block`() {
+        getWeather(9001) shouldBeFailure { error ->
+            error.code shouldBeInRange 400..499
+        }
     }
 }

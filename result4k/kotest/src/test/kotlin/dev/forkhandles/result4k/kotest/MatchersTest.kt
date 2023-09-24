@@ -5,6 +5,7 @@ import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.present
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -18,6 +19,7 @@ class MatchersTest {
         val actualResult = Success(actualValue)
 
         assertDoesNotThrow { actualResult.shouldBeSuccess() }
+        assertDoesNotThrow { actualResult.shouldBeSuccess() shouldBe actualValue }
         assertDoesNotThrow { actualResult.shouldBeSuccess { assertEquals(actualValue, it) } }
         assertDoesNotThrow { actualResult.shouldBeSuccess(actualValue) }
     }
@@ -28,6 +30,7 @@ class MatchersTest {
         val actualResult = Failure(actualValue)
 
         assertDoesNotThrow { actualResult.shouldBeFailure() }
+        assertDoesNotThrow { actualResult.shouldBeFailure() shouldBe actualValue }
         assertDoesNotThrow { actualResult.shouldBeFailure { assertEquals(actualValue, it) } }
         assertDoesNotThrow { actualResult.shouldBeFailure(actualValue) }
     }
