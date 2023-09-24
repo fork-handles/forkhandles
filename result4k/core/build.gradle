@@ -1,5 +1,5 @@
 plugins {
-    id "me.champeau.gradle.jmh"
+    id "me.champeau.jmh"
 }
 
 description = 'A friendly Kotlin Result type'
