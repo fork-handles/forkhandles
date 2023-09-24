@@ -3,6 +3,10 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.8.0.0
+- **mock4k** : Rename mode argument.
+- **result4k-kotest** : Made `shouldBeSuccess()` return value and `shouldBeFailure()` return reason.
+
 ### v2.7.1.0
 - **mock4k** : mock4k: Added relaxed and strict modes (pass these to `mock(MockMode.Relaxed)`)
 
