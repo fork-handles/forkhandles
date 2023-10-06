@@ -60,14 +60,14 @@ infix fun <E> Result<*, E>.shouldBeFailure(expected: E) =
 
 private fun <T, E> Result<T, E>.matchesValue(value: Result<T, E>): MatcherResult =
     MatcherResult(
-        value == this,
-        { "$value should be $this" },
-        { "$value should not be $this" },
+        passed = value == this,
+        failureMessageFn = { "$value should be $this" },
+        negatedFailureMessageFn = { "$value should not be $this" },
     )
 
 private fun <T, E, C : Result<T, E>> Result<T, E>.matchesType(resultClass: KClass<C>): MatcherResult =
     MatcherResult(
-        resultClass.isInstance(this),
-        { "$this should be ${resultClass.simpleName}" },
-        { "$this should not be ${resultClass.simpleName}" },
+        passed = resultClass.isInstance(this),
+        failureMessageFn = { "$this should be ${resultClass.simpleName}" },
+        negatedFailureMessageFn = { "$this should not be ${resultClass.simpleName}" },
     )
