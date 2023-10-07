@@ -39,13 +39,13 @@ class MatchersTest {
         val value = "Test successful"
         val success = Success(value)
 
-        throwsAssertionError("Success(value=Test successful) should be Failure") {
+        throwsAssertionError("expected:<Failure> but was:<Success(value=Test successful)>") {
             success.shouldBeFailure()
         }
-        throwsAssertionError("Success(value=Test successful) should be Failure") {
+        throwsAssertionError("expected:<Failure> but was:<Success(value=Test successful)>") {
             success.shouldBeFailure { }
         }
-        throwsAssertionError("Success(value=Test successful) should be Failure(reason=Test successful)") {
+        throwsAssertionError("expected:<Success(value=Test successful)> but was:<Failure(reason=Test successful)>") {
             success.shouldBeFailure(value)
         }
     }
@@ -55,23 +55,23 @@ class MatchersTest {
         val reason = "Test failed"
         val failure = Failure(reason)
 
-        throwsAssertionError("Failure(reason=Test failed) should be Success") {
+        throwsAssertionError("expected:<Success> but was:<Failure(reason=Test failed)>") {
             failure.shouldBeSuccess()
         }
-        throwsAssertionError("Failure(reason=Test failed) should be Success") {
+        throwsAssertionError("expected:<Success> but was:<Failure(reason=Test failed)>") {
             failure.shouldBeSuccess { }
         }
-        throwsAssertionError("Failure(reason=Test failed) should be Success(value=Test failed)") {
+        throwsAssertionError("expected:<Failure(reason=Test failed)> but was:<Success(value=Test failed)>") {
             failure.shouldBeSuccess(reason)
         }
     }
 
     @Test
     fun `should correctly assert value`() {
-        throwsAssertionError("Failure(reason=Actual value) should be Failure(reason=Expected value)") {
+        throwsAssertionError("expected:<Failure(reason=Actual value)> but was:<Failure(reason=Expected value)>") {
             Failure("Actual value").shouldBeFailure("Expected value")
         }
-        throwsAssertionError("Success(value=Actual value) should be Success(value=Expected value)") {
+        throwsAssertionError("expected:<Success(value=Actual value)> but was:<Success(value=Expected value)>") {
             Success("Actual value").shouldBeSuccess("Expected value")
         }
     }
