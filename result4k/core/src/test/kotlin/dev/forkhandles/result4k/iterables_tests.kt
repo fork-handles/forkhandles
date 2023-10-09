@@ -1,6 +1,7 @@
 package dev.forkhandles.result4k
 
 import org.junit.jupiter.api.Test
+import kotlin.random.Random
 import kotlin.test.assertEquals
 
 class AllValuesTests {
@@ -33,5 +34,112 @@ class PartitionTests {
             listOf(Success(1), Success(2), Success(3)).partition())
         assertEquals(Pair(emptyList(), listOf("bad", "also bad")),
             listOf(Failure("bad"), Failure("also bad")).partition())
+    }
+}
+
+private fun randomPositiveInt() = Random.nextInt(1, 100)
+
+private fun generateRandomList(): List<Int> =
+    listOf(
+        randomPositiveInt(),
+        randomPositiveInt(),
+        randomPositiveInt(),
+        randomPositiveInt(),
+        randomPositiveInt()
+    )
+class TraverseIterableTests {
+    @Test
+    fun `returns the first failure or the folded iterable as success`() {
+        val list = generateRandomList()
+        assertEquals(Success(list.sum()),
+            list.foldResult(Success(0)) { acc: Int, i: Int -> Success(acc + i) })
+    }
+
+    @Test
+    fun `returns the first failure or the mapping of iterable as success`() {
+        val list = generateRandomList()
+        assertEquals(Success(list.map { it * 2 }),
+            list.mapAllValues { i -> Success(i * 2) })
+    }
+
+    @Test
+    fun `returns the first failure or the iterable as success`() {
+        val list = generateRandomList().map { Success(it) }
+        assertEquals(Success(list.map { it.value }),
+            list.allValues())
+    }
+
+    @Test
+    fun `failure is returned if the folding operation fails`() {
+        val list = generateRandomList()
+        fun failingOperation(a: Int, b: Int) = Failure("Test error")
+
+        assertEquals(Failure("Test error"),
+            list.foldResult(Success(100), ::failingOperation))
+    }
+
+    @Test
+    fun `failure is returned if the mapping operation fails`() {
+        val list = generateRandomList()
+        val failingFunction: (Int) -> Result<Int, String> = { _ -> Failure("Test error") }
+        assertEquals(Failure("Test error"),
+            list.mapAllValues(failingFunction))
+    }
+
+    @Test
+    fun `failure is returned if the iterable contained a failure`() {
+        val list = listOf(Success(randomPositiveInt()), Failure("Test error"))
+        assertEquals(Failure("Test error"),
+            list.allValues())
+    }
+}
+
+class TraverseSequenceTests {
+
+    @Test
+    fun `returns the first failure or the folded sequence as success`() {
+        val list = generateRandomList()
+        val sequence = list.asSequence()
+        assertEquals(Success(list.sum()),
+            sequence.foldResult(Success(0)) { acc, i -> Success(acc + i) })
+    }
+
+    @Test
+    fun `returns the first failure or the mapping of sequence as success`() {
+        val list = generateRandomList()
+        val sequence = list.asSequence()
+        assertEquals(Success(list.map { it * 2 }),
+            sequence.mapAllValues { i -> Success(i * 2) })
+    }
+
+    @Test
+    fun `returns the first failure or the mapped sequence as success`() {
+        val list = generateRandomList()
+        val sequence = list.map { Success(it) }.asSequence()
+        assertEquals(Success(list),
+            sequence.allValues())
+    }
+
+    @Test
+    fun `failure is returned if the folding operation fails`() {
+        val sequence = generateSequence { randomPositiveInt() }.take(5)
+        val failingOperation: (Int, Int) -> Result<Int, String> = { _, _ -> Failure("Test error") }
+        assertEquals(Failure("Test error"),
+            sequence.foldResult(Success(0), failingOperation))
+    }
+
+    @Test
+    fun `failure is returned if the mapping operation fails`() {
+        val sequence = generateSequence { randomPositiveInt() }.take(5)
+        val failingFunction: (Int) -> Result<Int, String> = { _ -> Failure("Test error") }
+        assertEquals(Failure("Test error"),
+            sequence.mapAllValues(failingFunction))
+    }
+
+    @Test
+    fun `failure is returned if the sequence contained a failure`() {
+        val sequence = generateSequence { Success(randomPositiveInt()) }.take(5) + sequenceOf(Failure("Test error"))
+        assertEquals(Failure("Test error"),
+            sequence.allValues())
     }
 }
