@@ -12,72 +12,66 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 
 class MatchersTest {
-
     @Test
     fun `should correctly assert when Success`() {
-        val actualValue = "Successful"
-        val actualResult = Success(actualValue)
+        val value = "Successful"
+        val success = Success(value)
 
-        assertDoesNotThrow { actualResult.shouldBeSuccess() }
-        assertDoesNotThrow { actualResult.shouldBeSuccess() shouldBe actualValue }
-        assertDoesNotThrow { actualResult.shouldBeSuccess { assertEquals(actualValue, it) } }
-        assertDoesNotThrow { actualResult.shouldBeSuccess(actualValue) }
+        assertDoesNotThrow { success.shouldBeSuccess() }
+        assertDoesNotThrow { success.shouldBeSuccess() shouldBe value }
+        assertDoesNotThrow { success.shouldBeSuccess { assertEquals(value, it) } }
+        assertDoesNotThrow { success.shouldBeSuccess(value) }
     }
 
     @Test
     fun `should correctly assert when Failure`() {
-        val actualValue = "Failed"
-        val actualResult = Failure(actualValue)
+        val reason = "Failed"
+        val failure = Failure(reason)
 
-        assertDoesNotThrow { actualResult.shouldBeFailure() }
-        assertDoesNotThrow { actualResult.shouldBeFailure() shouldBe actualValue }
-        assertDoesNotThrow { actualResult.shouldBeFailure { assertEquals(actualValue, it) } }
-        assertDoesNotThrow { actualResult.shouldBeFailure(actualValue) }
+        assertDoesNotThrow { failure.shouldBeFailure() }
+        assertDoesNotThrow { failure.shouldBeFailure() shouldBe reason }
+        assertDoesNotThrow { failure.shouldBeFailure { assertEquals(reason, it) } }
+        assertDoesNotThrow { failure.shouldBeFailure(reason) }
     }
 
     @Test
     fun `should correctly assert when Success but expecting Failure`() {
-        val actualValue = "Test successful"
-        val actualResult = Success(actualValue)
+        val value = "Test successful"
+        val success = Success(value)
 
-        throwsAssertionError("Success(value=Test successful) should be Failure") {
-            actualResult.shouldBeFailure()
+        throwsAssertionError("expected:<Failure> but was:<Success(value=Test successful)>") {
+            success.shouldBeFailure()
         }
-
-        throwsAssertionError("Success(value=Test successful) should be Failure") {
-            actualResult.shouldBeFailure { }
+        throwsAssertionError("expected:<Failure> but was:<Success(value=Test successful)>") {
+            success.shouldBeFailure { }
         }
-
-        throwsAssertionError("Success(value=Test successful) should be Failure(reason=Test successful)") {
-            actualResult.shouldBeFailure(actualValue)
+        throwsAssertionError("expected:<Success(value=Test successful)> but was:<Failure(reason=Test successful)>") {
+            success.shouldBeFailure(value)
         }
     }
 
     @Test
     fun `should correctly assert when Failure but expecting Success`() {
-        val actualValue = "Test failed"
-        val actualResult = Failure(actualValue)
+        val reason = "Test failed"
+        val failure = Failure(reason)
 
-        throwsAssertionError("Failure(reason=Test failed) should be Success") {
-            actualResult.shouldBeSuccess()
+        throwsAssertionError("expected:<Success> but was:<Failure(reason=Test failed)>") {
+            failure.shouldBeSuccess()
         }
-
-        throwsAssertionError("Failure(reason=Test failed) should be Success") {
-            actualResult.shouldBeSuccess { }
+        throwsAssertionError("expected:<Success> but was:<Failure(reason=Test failed)>") {
+            failure.shouldBeSuccess { }
         }
-
-        throwsAssertionError("Failure(reason=Test failed) should be Success(value=Test failed)") {
-            actualResult.shouldBeSuccess(actualValue)
+        throwsAssertionError("expected:<Failure(reason=Test failed)> but was:<Success(value=Test failed)>") {
+            failure.shouldBeSuccess(reason)
         }
     }
 
     @Test
     fun `should correctly assert value`() {
-        throwsAssertionError("Failure(reason=Actual value) should be Failure(reason=Expected value)") {
+        throwsAssertionError("expected:<Failure(reason=Actual value)> but was:<Failure(reason=Expected value)>") {
             Failure("Actual value").shouldBeFailure("Expected value")
         }
-
-        throwsAssertionError("Success(value=Actual value) should be Success(value=Expected value)") {
+        throwsAssertionError("expected:<Success(value=Actual value)> but was:<Success(value=Expected value)>") {
             Success("Actual value").shouldBeSuccess("Expected value")
         }
     }
@@ -86,5 +80,4 @@ class MatchersTest {
         assertThrows<AssertionError> { block() }.also {
             assertThat(it.message, present(equalTo(message)))
         }
-
 }
