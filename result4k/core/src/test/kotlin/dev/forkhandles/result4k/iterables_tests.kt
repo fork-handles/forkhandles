@@ -43,9 +43,36 @@ class AllValuesSequenceTests {
 class AnyValuesTests {
     @Test
     fun `returns any values of an iterable of results, dropping failures`() {
-        assertEquals(listOf(1, 2, 3), listOf(Success(1), Success(2), Success(3)).anyValues())
-        assertEquals(listOf(1, 3), listOf(Success(1), Failure("bad"), Success(3)).anyValues())
-        assertEquals(emptyList(), listOf(Failure("bad")).anyValues())
+        assertEquals(
+            listOf(1, 2, 3),
+            listOf(Success(1), Success(2), Success(3)).anyValues()
+        )
+        assertEquals(
+            listOf(1, 3),
+            listOf(Success(1), Failure("bad"), Success(3)).anyValues()
+        )
+        assertEquals(
+            emptyList(),
+            listOf(Failure("bad")).anyValues()
+        )
+    }
+}
+
+class AnyValuesSequenceTests {
+    @Test
+    fun `returns any values of an iterable of results, dropping failures`() {
+        assertEquals(
+            listOf(1, 2, 3),
+            sequenceOf(Success(1), Success(2), Success(3)).anyValues().toList()
+        )
+        assertEquals(
+            listOf(1, 3),
+            sequenceOf(Success(1), Failure("bad"), Success(3)).anyValues().toList()
+        )
+        assertEquals(
+            emptyList(),
+            sequenceOf(Failure("bad")).anyValues().toList()
+        )
     }
 }
 

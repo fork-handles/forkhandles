@@ -9,6 +9,9 @@ fun <T, E> Sequence<Result<T, E>>.allValues(): Result<List<T>, E> =
 fun <T, E> Iterable<Result<T, E>>.anyValues(): List<T> =
     filterIsInstance<Success<T>>().map { it.value }
 
+fun <T, E> Sequence<Result<T, E>>.anyValues(): Sequence<T> =
+    filterIsInstance<Success<T>>().map { it.value }
+
 fun <T, E> Iterable<Result<T, E>>.partition(): Pair<List<T>, List<E>> {
     val oks = mutableListOf<T>()
     val errs = mutableListOf<E>()
