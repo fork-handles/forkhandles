@@ -6,13 +6,37 @@ import kotlin.test.assertEquals
 
 class AllValuesTests {
     @Test
-    fun `returns values of an iterable of results, if all are success`() {
-        assertEquals(Success(listOf(1, 2, 3)), listOf(Success(1), Success(2), Success(3)).allValues())
+    fun `returns values of results, if all are success`() {
+        assertEquals(
+            Success(listOf(1, 2, 3)),
+            listOf(Success(1), Success(2), Success(3)).allValues()
+        )
     }
 
     @Test
     fun `returns first failure encountered, if not all are success`() {
-        assertEquals(Failure("bad"), listOf(Success(1), Failure("bad"), Success(3)).allValues())
+        assertEquals(
+            Failure("bad"),
+            listOf(Success(1), Failure("bad"), Success(3)).allValues()
+        )
+    }
+}
+
+class AllValuesSequenceTests {
+    @Test
+    fun `returns values of results, if all are success`() {
+        assertEquals(
+            Success(listOf(1, 2, 3)),
+            sequenceOf(Success(1), Success(2), Success(3)).allValues()
+        )
+    }
+
+    @Test
+    fun `returns first failure encountered, if not all are success`() {
+        assertEquals(
+            Failure("bad"),
+            sequenceOf(Success(1), Failure("bad"), Success(3)).allValues()
+        )
     }
 }
 
@@ -47,6 +71,7 @@ private fun generateRandomList(): List<Int> =
         randomPositiveInt(),
         randomPositiveInt()
     )
+
 class TraverseIterableTests {
     @Test
     fun `returns the first failure or the folded iterable as success`() {
@@ -60,13 +85,6 @@ class TraverseIterableTests {
         val list = generateRandomList()
         assertEquals(Success(list.map { it * 2 }),
             list.mapAllValues { i -> Success(i * 2) })
-    }
-
-    @Test
-    fun `returns the first failure or the iterable as success`() {
-        val list = generateRandomList().map { Success(it) }
-        assertEquals(Success(list.map { it.value }),
-            list.allValues())
     }
 
     @Test
@@ -84,13 +102,6 @@ class TraverseIterableTests {
         val failingFunction: (Int) -> Result<Int, String> = { _ -> Failure("Test error") }
         assertEquals(Failure("Test error"),
             list.mapAllValues(failingFunction))
-    }
-
-    @Test
-    fun `failure is returned if the iterable contained a failure`() {
-        val list = listOf(Success(randomPositiveInt()), Failure("Test error"))
-        assertEquals(Failure("Test error"),
-            list.allValues())
     }
 }
 
@@ -113,14 +124,6 @@ class TraverseSequenceTests {
     }
 
     @Test
-    fun `returns the first failure or the mapped sequence as success`() {
-        val list = generateRandomList()
-        val sequence = list.map { Success(it) }.asSequence()
-        assertEquals(Success(list),
-            sequence.allValues())
-    }
-
-    @Test
     fun `failure is returned if the folding operation fails`() {
         val sequence = generateSequence { randomPositiveInt() }.take(5)
         val failingOperation: (Int, Int) -> Result<Int, String> = { _, _ -> Failure("Test error") }
@@ -134,12 +137,5 @@ class TraverseSequenceTests {
         val failingFunction: (Int) -> Result<Int, String> = { _ -> Failure("Test error") }
         assertEquals(Failure("Test error"),
             sequence.mapAllValues(failingFunction))
-    }
-
-    @Test
-    fun `failure is returned if the sequence contained a failure`() {
-        val sequence = generateSequence { Success(randomPositiveInt()) }.take(5) + sequenceOf(Failure("Test error"))
-        assertEquals(Failure("Test error"),
-            sequence.allValues())
     }
 }
