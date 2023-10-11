@@ -24,6 +24,9 @@ fun <T, E> Iterable<Result<T, E>>.partition(): Pair<List<T>, List<E>> {
     return Pair(oks, errs)
 }
 
+fun <T, E> Sequence<Result<T, E>>.partition(): Pair<List<T>, List<E>> =
+    asIterable().partition()
+
 fun <T, Tʹ, E> Iterable<T>.foldResult(
     initial: Result<Tʹ, E>,
     operation: (acc: Tʹ, T) -> Result<Tʹ, E>

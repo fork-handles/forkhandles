@@ -61,30 +61,45 @@ class AnyValuesTests {
 class AnyValuesSequenceTests {
     @Test
     fun `returns any values of an iterable of results, dropping failures`() {
-        assertEquals(
-            listOf(1, 2, 3),
-            sequenceOf(Success(1), Success(2), Success(3)).anyValues().toList()
-        )
-        assertEquals(
-            listOf(1, 3),
-            sequenceOf(Success(1), Failure("bad"), Success(3)).anyValues().toList()
-        )
-        assertEquals(
-            emptyList(),
-            sequenceOf(Failure("bad")).anyValues().toList()
-        )
+        assertEquals(listOf(1, 2, 3), sequenceOf(Success(1), Success(2), Success(3)).anyValues().toList())
+        assertEquals(listOf(1, 3), sequenceOf(Success(1), Failure("bad"), Success(3)).anyValues().toList())
+        assertEquals(emptyList(), sequenceOf(Failure("bad")).anyValues().toList())
     }
 }
 
 class PartitionTests {
     @Test
     fun `returns values and failures in separate lists`() {
-        assertEquals(Pair(listOf(1, 3), listOf("bad", "also bad")),
-            listOf(Success(1), Failure("bad"), Success(3), Failure("also bad")).partition())
-        assertEquals(Pair(listOf(1, 2, 3), emptyList()),
-            listOf(Success(1), Success(2), Success(3)).partition())
-        assertEquals(Pair(emptyList(), listOf("bad", "also bad")),
-            listOf(Failure("bad"), Failure("also bad")).partition())
+        assertEquals(
+            Pair(listOf(1, 3), listOf("bad", "also bad")),
+            listOf(Success(1), Failure("bad"), Success(3), Failure("also bad")).partition()
+        )
+        assertEquals(
+            Pair(listOf(1, 2, 3), emptyList()),
+            listOf(Success(1), Success(2), Success(3)).partition()
+        )
+        assertEquals(
+            Pair(emptyList(), listOf("bad", "also bad")),
+            listOf(Failure("bad"), Failure("also bad")).partition()
+        )
+    }
+}
+
+class PartitionSequenceTests {
+    @Test
+    fun `returns values and failures in separate lists`() {
+        assertEquals(
+            Pair(listOf(1, 3), listOf("bad", "also bad")),
+            sequenceOf(Success(1), Failure("bad"), Success(3), Failure("also bad")).partition()
+        )
+        assertEquals(
+            Pair(listOf(1, 2, 3), emptyList()),
+            sequenceOf(Success(1), Success(2), Success(3)).partition()
+        )
+        assertEquals(
+            Pair(emptyList(), listOf("bad", "also bad")),
+            sequenceOf(Failure("bad"), Failure("also bad")).partition()
+        )
     }
 }
 
