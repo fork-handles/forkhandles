@@ -1,7 +1,6 @@
 package dev.forkhandles.result4k
 
 import org.junit.jupiter.api.Test
-import kotlin.random.Random
 import kotlin.test.assertEquals
 
 abstract class AllValuesTests(
@@ -82,81 +81,51 @@ abstract class PartitionTests(
     }
 }
 
-class PartitionIterableTests: PartitionTests({ partition() })
-class PartitionSequenceTests: PartitionTests({ asSequence().partition() })
+class PartitionIterableTests : PartitionTests({ partition() })
+class PartitionSequenceTests : PartitionTests({ asSequence().partition() })
 
-
-class TraverseIterableTests {
+abstract class FoldResultTests(
+    private val foldResult: List<Int>.(Result<Int, *>, (Int, Int) -> Result<Int, *>) -> Result<*, *>
+) {
     @Test
-    fun `returns the first failure or the folded iterable as success`() {
-        val list = randomList()
-        assertEquals(Success(list.sum()),
-            list.foldResult(Success(0)) { acc: Int, i: Int -> Success(acc + i) })
-    }
-
-    @Test
-    fun `returns the first failure or the mapping of iterable as success`() {
-        val list = randomList()
-        assertEquals(Success(list.map { it * 2 }),
-            list.mapAllValues { i -> Success(i * 2) })
-    }
-
-    @Test
-    fun `failure is returned if the folding operation fails`() {
-        assertEquals(Failure("Test error"),
-            randomList().foldResult(Success(100)) { _, _ -> Failure("Test error") })
-    }
-
-    @Test
-    fun `failure is returned if the mapping operation fails`() {
-        val list = randomList()
-        val failingFunction: (Int) -> Result<Int, String> = { _ -> Failure("Test error") }
-        assertEquals(Failure("Test error"),
-            list.mapAllValues(failingFunction))
+    fun `returns the first failure or the folded values as success`() {
+        assertEquals(
+            Success(0),
+            emptyList<Int>().foldResult(Success(0)) { _, _ -> Failure("bad") }
+        )
+        assertEquals(
+            Success(listOf(1, 2, 3).sum()),
+            listOf(1, 2, 3).foldResult(Success(0)) { acc, i -> Success(acc + i) }
+        )
+        assertEquals(
+            Failure("bad"),
+            listOf(1, 2, 3).foldResult(Success(0)) { _, _ -> Failure("bad") }
+        )
     }
 }
 
-class TraverseSequenceTests {
+class FoldResultIterableTests : FoldResultTests({ initial, operation -> foldResult(initial, operation) })
+class FoldResultSequenceTests : FoldResultTests({ initial, operation -> asSequence().foldResult(initial, operation) })
 
+abstract class MapAllValuesTests(
+    private val mapAllValues: List<Int>.((Int) -> Result<*, *>) -> Result<*, *>
+) {
     @Test
-    fun `returns the first failure or the folded sequence as success`() {
-        val list = randomList()
-        val sequence = list.asSequence()
-        assertEquals(Success(list.sum()),
-            sequence.foldResult(Success(0)) { acc, i -> Success(acc + i) })
-    }
-
-    @Test
-    fun `returns the first failure or the mapping of sequence as success`() {
-        val list = randomList()
-        val sequence = list.asSequence()
-        assertEquals(Success(list.map { it * 2 }),
-            sequence.mapAllValues { i -> Success(i * 2) })
-    }
-
-    @Test
-    fun `failure is returned if the folding operation fails`() {
-        val sequence = generateSequence { randomPositiveInt() }.take(5)
-        val failingOperation: (Int, Int) -> Result<Int, String> = { _, _ -> Failure("Test error") }
-        assertEquals(Failure("Test error"),
-            sequence.foldResult(Success(0), failingOperation))
-    }
-
-    @Test
-    fun `failure is returned if the mapping operation fails`() {
-        val sequence = generateSequence { randomPositiveInt() }.take(5)
-        assertEquals(Failure("Test error"),
-            sequence.mapAllValues { _ -> Failure("Test error") })
+    fun `returns the first failure or the mapping of values as success`() {
+        assertEquals(
+            Success(emptyList<Int>()),
+            emptyList<Int>().mapAllValues { Failure("bad") }
+        )
+        assertEquals(
+            Success(listOf(1, 2, 3).map { it * 2 }),
+            listOf(1, 2, 3).mapAllValues { Success(it * 2) }
+        )
+        assertEquals(
+            Failure("bad"),
+            listOf(1, 2, 3).mapAllValues { Failure("bad") }
+        )
     }
 }
 
-private fun randomPositiveInt() = Random.nextInt(1, 100)
-
-private fun randomList(): List<Int> =
-    listOf(
-        randomPositiveInt(),
-        randomPositiveInt(),
-        randomPositiveInt(),
-        randomPositiveInt(),
-        randomPositiveInt()
-    )
+class MapAllValuesIterableTests : MapAllValuesTests({ mapAllValues(it) })
+class MapAllValuesSequenceTests : MapAllValuesTests({ asSequence().mapAllValues(it) })
