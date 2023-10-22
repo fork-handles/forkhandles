@@ -9,19 +9,19 @@ data class WeatherError(val code: Int, val message: String)
 private val cold = 283.15.toBigDecimal()
 private val hot = 298.15.toBigDecimal()
 
-fun getWeather(location: Int): Result<Weather, WeatherError> = when(location) {
-    in 1..100 -> Success(Weather(kelvin = BigDecimal("295.15"), pascals = 101_390))
-    else -> Failure(WeatherError(code = 404, message = "unsupported location"))
-}
+fun getWeather(location: Int): Result<Weather, WeatherError> =
+    when (location) {
+        in 1..100 -> Success(Weather(kelvin = BigDecimal("295.15"), pascals = 101_390))
+        else -> Failure(WeatherError(code = 404, message = "unsupported location"))
+    }
 
-fun Weather.toConditions(): Result<Conditions, WeatherError> {
-     return when {
-         kelvin < BigDecimal.ZERO -> Failure(WeatherError(400, "impossible!"))
-         kelvin < cold -> Success(Conditions("cold :("))
-         kelvin > hot -> Success(Conditions("HOT! X("))
-         else -> Success(Conditions("Nice :)"))
-     }
-}
+fun Weather.toConditions(): Result<Conditions, WeatherError> =
+    when {
+        kelvin < BigDecimal.ZERO -> Failure(WeatherError(400, "impossible!"))
+        kelvin < cold -> Success(Conditions("cold :("))
+        kelvin > hot -> Success(Conditions("HOT! X("))
+        else -> Success(Conditions("Nice :)"))
+    }
 
 /**
  * Get the current weather, interpret the conditions, and print them
