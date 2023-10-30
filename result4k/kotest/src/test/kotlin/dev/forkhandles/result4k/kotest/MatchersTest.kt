@@ -12,6 +12,7 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 
 class MatchersTest {
+
     @Test
     fun `should correctly assert when Success`() {
         val value = "Successful"

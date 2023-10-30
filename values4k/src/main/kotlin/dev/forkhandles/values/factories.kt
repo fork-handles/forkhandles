@@ -117,7 +117,7 @@ open class DurationValueFactory<DOMAIN : Value<Duration>>(
 open class InstantValueFactory<DOMAIN : Value<Instant>>(
     fn: (Instant) -> DOMAIN, validation: Validation<Instant>? = null,
     fmt: DateTimeFormatter = ISO_INSTANT
-) : ValueFactory<DOMAIN, Instant>(fn, validation, { fmt.parse(it, Instant::from) })
+) : ValueFactory<DOMAIN, Instant>(fn, validation, { fmt.parse(it, Instant::from) }, fmt::format)
 
 open class LocalDateValueFactory<DOMAIN : Value<LocalDate>>(
     fn: (LocalDate) -> DOMAIN, validation: Validation<LocalDate>? = null,
