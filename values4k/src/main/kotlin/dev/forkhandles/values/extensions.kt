@@ -40,6 +40,12 @@ val <DOMAIN : Value<ZonedDateTime>> ZonedDateTimeValueFactory<DOMAIN>.EPOCH get(
 val <DOMAIN : Value<OffsetDateTime>> OffsetDateTimeValueFactory<DOMAIN>.EPOCH get() = of(OffsetDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")))
 val <DOMAIN : Value<Instant>> InstantValueFactory<DOMAIN>.EPOCH get() = of(Instant.EPOCH)
 
+val <DOMAIN : Value<LocalDate>> LocalDateValueFactory<DOMAIN>.MAX get() = of(LocalDate.MAX)
+val <DOMAIN : Value<LocalDateTime>> LocalDateTimeValueFactory<DOMAIN>.MAX get() = of(LocalDateTime.ofEpochSecond(0, 0, UTC))
+val <DOMAIN : Value<ZonedDateTime>> ZonedDateTimeValueFactory<DOMAIN>.MAX get() = of(ZonedDateTime.ofInstant(Instant.MAX, ZoneId.of("UTC")))
+val <DOMAIN : Value<OffsetDateTime>> OffsetDateTimeValueFactory<DOMAIN>.MAX get() = of(OffsetDateTime.ofInstant(Instant.MAX, ZoneId.of("UTC")))
+val <DOMAIN : Value<Instant>> InstantValueFactory<DOMAIN>.MAX get() = of(Instant.MAX)
+
 fun <DOMAIN : Value<LocalDate>> LocalDateValueFactory<DOMAIN>.now(clock: Clock = Clock.systemUTC()) = of(LocalDate.now(clock))
 fun <DOMAIN : Value<LocalDateTime>> LocalDateTimeValueFactory<DOMAIN>.now(clock: Clock = Clock.systemUTC()) = of(LocalDateTime.now(clock))
 fun <DOMAIN : Value<ZonedDateTime>> ZonedDateTimeValueFactory<DOMAIN>.now(clock: Clock = Clock.systemUTC()) = of(ZonedDateTime.now(clock))

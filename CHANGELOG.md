@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.9.0.0 (uncut)
+- **values4k** : Instant value can now take a format
+
 ### v2.8.0.0
 - **mock4k** : Rename mode argument.
 - **result4k-kotest** : Made `shouldBeSuccess()` return value and `shouldBeFailure()` return reason.

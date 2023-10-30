@@ -16,12 +16,14 @@ import java.time.Year
 import java.time.YearMonth
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatter.ISO_INSTANT
 import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
 import java.time.format.DateTimeFormatter.ISO_LOCAL_TIME
 import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 import java.time.format.DateTimeFormatter.ISO_OFFSET_TIME
 import java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME
+import java.time.format.DateTimeFormatter.ofPattern
 import java.util.UUID
 
 private val rfcBase64Alphabet get() = "^[0-9A-Za-z+/]+$".toRegex() // https://www.rfc-editor.org/rfc/rfc4648.html#section-4
@@ -113,8 +115,9 @@ open class DurationValueFactory<DOMAIN : Value<Duration>>(
 ) : ValueFactory<DOMAIN, Duration>(fn, validation, { Duration.parse(it) })
 
 open class InstantValueFactory<DOMAIN : Value<Instant>>(
-    fn: (Instant) -> DOMAIN, validation: Validation<Instant>? = null
-) : ValueFactory<DOMAIN, Instant>(fn, validation, Instant::parse)
+    fn: (Instant) -> DOMAIN, validation: Validation<Instant>? = null,
+    fmt: DateTimeFormatter = ISO_INSTANT
+) : ValueFactory<DOMAIN, Instant>(fn, validation, { fmt.parse(it, Instant::from) })
 
 open class LocalDateValueFactory<DOMAIN : Value<LocalDate>>(
     fn: (LocalDate) -> DOMAIN, validation: Validation<LocalDate>? = null,
@@ -153,13 +156,13 @@ open class PeriodValueFactory<DOMAIN : Value<Period>>(
 open class YearMonthValueFactory<DOMAIN : Value<YearMonth>>(
     fn: (YearMonth) -> DOMAIN,
     validation: Validation<YearMonth>? = null,
-    fmt: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM")
+    fmt: DateTimeFormatter = ofPattern("yyyy-MM")
 ) : ValueFactory<DOMAIN, YearMonth>(fn, validation, { YearMonth.parse(it, fmt) }, fmt::format)
 
 open class YearValueFactory<DOMAIN : Value<Year>>(
     fn: (Year) -> DOMAIN,
     validation: Validation<Year>? = null,
-    fmt: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy")
+    fmt: DateTimeFormatter = ofPattern("yyyy")
 ) : ValueFactory<DOMAIN, Year>(fn, validation, { Year.parse(it, fmt) }, fmt::format)
 
 open class ZonedDateTimeValueFactory<DOMAIN : Value<ZonedDateTime>>(
