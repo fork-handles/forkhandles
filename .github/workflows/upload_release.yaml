@@ -16,7 +16,8 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3.13.0
         with:
-          java-version: 11
+          distribution: temurin
+          java-version: 21
       - name: Upload to Sonatype
         run: |
           ./gradlew publishMavenJavaPublicationToSonatypeStagingRepository \
@@ -35,7 +36,8 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3.13.0
         with:
-          java-version: 11
+          distribution: temurin
+          java-version: 21
       - name: Release to Maven Central
         run: |
           ./gradlew closeAndReleaseRepository \
