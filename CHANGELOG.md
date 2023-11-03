@@ -3,9 +3,12 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.10.1.0
+- **values4k** : Added extension functions
+
 ### v2.10.0.0
 - **all** : Upgrade of dependencies, including Kotlin to 1.9.20
-- **values4k** :[Fix] InstantValue now uses format
+- **values4k** : [Fix] InstantValue now uses format
 
 ### v2.9.0.0
 - **values4k** : InstantValue value can now take a format
