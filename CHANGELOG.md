@@ -4,6 +4,7 @@ This list is not intended to be all-encompassing - it will document major and br
 when appropriate:
 
 ### v2.10.1.0
+- **all** : Upgrade of dependencies
 - **values4k** : Added extension functions
 
 ### v2.10.0.0
