@@ -5,81 +5,75 @@ import kotlin.test.assertEquals
 import kotlin.test.fail
 
 class ZipTests {
-    private val r: Result<String, ExampleException> = Success("x")
-
-    private data class ExampleException(val msg: String) : Exception(msg)
+    private data class SomeError(val message: String)
 
     @Test
     fun `success zip returns value`() {
-        val z = zip(r) { 2 }
-
-        assertEquals(Success(2), z)
+        val result = zip(Success(123)) { it + 1 }
+        assertEquals(Success(124), result)
     }
 
     @Test
-    fun `success flatzip returns value`() {
-        val z = flatZip(r) { Success(2) }
-
-        assertEquals(Success(2), z)
+    fun `success flatZip returns value`() {
+        val result = flatZip(Success(123)) { Success(it + 1) }
+        assertEquals(Success(124), result)
     }
 
     @Test
-    fun `failure flatzip returns value`() {
-        val z = flatZip(r) { Failure(ExampleException("flatzip failure")) }
-
-        assertEquals(Failure(ExampleException("flatzip failure")), z)
+    fun `failure flatZip returns value`() {
+        val result = flatZip(Success(123)) { Failure(SomeError("flatZip failure")) }
+        assertEquals(Failure(SomeError("flatZip failure")), result)
     }
 
     @Test
-    fun `success double flatzip returns value`() {
-        val r1: Result<String, ExampleException> = Success("x")
-        val r2: Result<Int, ExampleException> = Success(3)
+    fun `success double flatZip returns value`() {
+        val r1: Result<String, SomeError> = Success("x")
+        val r2: Result<Int, SomeError> = Success(123)
 
-        val z: Result<Boolean, ExampleException> = flatZip(r1, r2) { a: String, b: Int ->
-            assertEquals("x", a)
-            assertEquals(3, b)
+        val result: Result<Boolean, SomeError> = flatZip(r1, r2) { s: String, i: Int ->
+            assertEquals("x", s)
+            assertEquals(123, i)
             Success(false)
         }
 
-        assertEquals(Success(false), z)
+        assertEquals(Success(false), result)
     }
 
     @Test
-    fun `failure on first result of a double flatzip returns value`() {
-        val r1: Result<String, ExampleException> = Failure(ExampleException("fail r1"))
-        val r2: Result<Int, ExampleException> = Success(3)
+    fun `failure on first result of a double flatZip returns value`() {
+        val r1: Result<String, SomeError> = Failure(SomeError("r1"))
+        val r2: Result<Int, SomeError> = Success(123)
 
-        val z: Result<Boolean, ExampleException> = flatZip(r1, r2) { _: String, _: Int ->
+        val result: Result<Boolean, SomeError> = flatZip(r1, r2) { _: String, _: Int ->
             fail("shouldn't be called")
         }
 
-        assertEquals(Failure(ExampleException("fail r1")), z)
+        assertEquals(Failure(SomeError("r1")), result)
     }
 
     @Test
-    fun `failure on second result of a double flatzip returns value`() {
-        val r1: Result<String, ExampleException> = Success("x")
-        val r2: Result<Int, ExampleException> = Failure(ExampleException("fail r2"))
+    fun `failure on second result of a double flatZip returns value`() {
+        val r1: Result<String, SomeError> = Success("x")
+        val r2: Result<Int, SomeError> = Failure(SomeError("r2"))
 
-        val z: Result<Boolean, ExampleException> = flatZip(r1, r2) { _: String, _: Int ->
+        val result: Result<Boolean, SomeError> = flatZip(r1, r2) { _: String, _: Int ->
             fail("shouldn't be called")
         }
 
-        assertEquals(Failure(ExampleException("fail r2")), z)
+        assertEquals(Failure(SomeError("r2")), result)
     }
 
-
     @Test
-    fun `failure on transfromation of a double flatzip returns value`() {
-        val r1: Result<String, ExampleException> = Success("x")
-        val r2: Result<Int, ExampleException> = Success(3)
+    fun `failure on transformation of a double flatZip returns value`() {
+        val r1: Result<String, SomeError> = Success("x")
+        val r2: Result<Int, SomeError> = Success(123)
 
-        val z: Result<Boolean, ExampleException> = flatZip(r1, r2) { a: String, b: Int ->
-            assertEquals("x", a)
-            assertEquals(3, b)
-            Failure(ExampleException("fail on transformation"))
+        val result: Result<Boolean, SomeError> = flatZip(r1, r2) { s: String, i: Int ->
+            assertEquals("x", s)
+            assertEquals(123, i)
+            Failure(SomeError("fail on transformation"))
         }
 
-        assertEquals(Failure(ExampleException("fail on transformation")), z)
+        assertEquals(Failure(SomeError("fail on transformation")), result)
     }
 }
