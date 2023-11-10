@@ -6,13 +6,13 @@ import kotlin.test.fail
 
 class ZipTests {
     @Test
-    fun `success zip returns value`() {
+    fun `zip success`() {
         val result = zip(Success(123)) { it + 1 }
         assertEquals(Success(124), result)
     }
 
     @Test
-    fun `success double zip returns value`() {
+    fun `zip double success`() {
         val r1: Result<String, SomeError> = Success("x")
         val r2: Result<Int, SomeError> = Success(123)
 
@@ -26,7 +26,7 @@ class ZipTests {
     }
 
     @Test
-    fun `failure on first result of a double zip returns value`() {
+    fun `failure on first result of a double zip`() {
         val r1 = Failure(SomeError("r1"))
         val r2 = Success(123)
 
@@ -36,7 +36,7 @@ class ZipTests {
     }
 
     @Test
-    fun `failure on second result of a double zip returns value`() {
+    fun `failure on second result of a double zip`() {
         val r1 = Success("x")
         val r2 = Failure(SomeError("r2"))
 
@@ -48,19 +48,19 @@ class ZipTests {
 
 class FlatZipTests {
     @Test
-    fun `flatZip of Success returns value`() {
+    fun `flatZip success`() {
         val result = flatZip(Success(123)) { Success(it + 1) }
         assertEquals(Success(124), result)
     }
 
     @Test
-    fun `failure flatZip returns value`() {
+    fun `flatZip failure`() {
         val result = flatZip(Success(123)) { Failure(SomeError("flatZip failure")) }
         assertEquals(Failure(SomeError("flatZip failure")), result)
     }
 
     @Test
-    fun `success double flatZip returns value`() {
+    fun `flatZip double success`() {
         val r1: Result<String, SomeError> = Success("x")
         val r2: Result<Int, SomeError> = Success(123)
 
@@ -74,7 +74,7 @@ class FlatZipTests {
     }
 
     @Test
-    fun `failure on first result of a double flatZip returns value`() {
+    fun `failure on first result of a double flatZip`() {
         val r1 = Failure(SomeError("r1"))
         val r2 = Success(123)
 
@@ -86,7 +86,7 @@ class FlatZipTests {
     }
 
     @Test
-    fun `failure on second result of a double flatZip returns value`() {
+    fun `failure on second result of a double flatZip`() {
         val r1 = Success("x")
         val r2 = Failure(SomeError("r2"))
 
@@ -98,7 +98,7 @@ class FlatZipTests {
     }
 
     @Test
-    fun `failure on transformation of a double flatZip returns value`() {
+    fun `failure on transformation of a double flatZip`() {
         val r1: Result<String, SomeError> = Success("x")
         val r2: Result<Int, SomeError> = Success(123)
 
