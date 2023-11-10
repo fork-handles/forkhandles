@@ -4,7 +4,7 @@ fun <T, E> Iterable<Result<T, E>>.allValues(): Result<List<T>, E> =
     mapAllValues { it }
 
 fun <T, E> Sequence<Result<T, E>>.allValues(): Result<List<T>, E> =
-    mapAllValues { it }
+    asIterable().allValues()
 
 fun <T, E> Iterable<Result<T, E>>.anyValues(): List<T> =
     filterIsInstance<Success<T>>().map { it.value }
@@ -37,12 +37,11 @@ fun <T, Tʹ, E> Sequence<T>.foldResult(
     initial: Result<Tʹ, E>,
     operation: (acc: Tʹ, T) -> Result<Tʹ, E>
 ): Result<Tʹ, E> =
-    fold(initial) { acc, el -> acc.flatMap { accVal -> operation(accVal, el) } }
+    asIterable().foldResult(initial, operation)
 
 fun <T, Tʹ, E> Iterable<T>.mapAllValues(f: (T) -> Result<Tʹ, E>): Result<List<Tʹ>, E> =
     map { e -> f(e).onFailure { return it } }
         .let(::Success)
 
 fun <T, Tʹ, E> Sequence<T>.mapAllValues(f: (T) -> Result<Tʹ, E>): Result<List<Tʹ>, E> =
-    mapTo(mutableListOf()) { e -> f(e).onFailure { return it } }
-        .let(::Success)
+    asIterable().mapAllValues(f)
