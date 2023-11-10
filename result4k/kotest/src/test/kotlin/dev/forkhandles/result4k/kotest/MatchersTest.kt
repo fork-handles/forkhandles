@@ -7,6 +7,7 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -75,6 +76,12 @@ class MatchersTest {
         throwsAssertionError("expected:<Success(value=Actual value)> but was:<Success(value=Expected value)>") {
             Success("Actual value").shouldBeSuccess("Expected value")
         }
+    }
+
+    @Test
+    @Disabled // Comment out to check it manually
+    fun `check IntelliJ is showing diff window`() {
+        Success("Actual value").shouldBeSuccess("Expected value")
     }
 
     private fun throwsAssertionError(message: String, block: () -> Unit) =
