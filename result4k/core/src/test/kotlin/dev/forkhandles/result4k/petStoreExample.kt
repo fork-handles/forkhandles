@@ -1,34 +1,37 @@
 package dev.forkhandles.result4k
 
-// define some models
+import dev.forkhandles.result4k.PetError.OwnerIsBanned
+import dev.forkhandles.result4k.PetError.PetNotForAdoption
+import dev.forkhandles.result4k.PetError.PetNotFound
+
+// Define some models
 typealias HumanId = Int
 typealias PetId = Int
+
 data class Pet(val id: PetId, val name: String)
 data class Adoption(val humanId: HumanId, val pet: Pet)
 
-// define some potential errors (a sealed interface works well too!)
-enum class PetError { PetNotFound, PetNotForAdoption, OwnerBlacklisted }
+// Define some potential errors (a sealed interface works well too!)
+enum class PetError { PetNotFound, PetNotForAdoption, OwnerIsBanned }
 
 class PetStoreExample(
     val pets: Set<Pet>,
-    val blacklist: Set<HumanId>,
+    val banned: Set<HumanId>,
     val adoptions: MutableSet<Adoption>
 ) {
     /**
-     * Return Success<Pet> if found. Otherwise, return Failure<PetError>
+     * @return `Success<Pet>` if found. Otherwise, return `Failure<PetError>`.
      */
-    fun findPet(name: String): Result<Pet, PetError> = pets
-        .find { it.name == name }
-        .asResultOr { PetError.PetNotFound } // if find returns null, convert to a Failure
+    fun findPet(name: String): Result<Pet, PetError> =
+        pets.find { it.name == name }.asResultOr { PetNotFound }
 
     /**
-     * Return Success<Adoption> if adoption is successful.  Otherwise, return Failure<PetError>
+     * @return `Success<Adoption>` if adoption is successful. Otherwise, return `Failure<PetError>`.
      */
     fun adopt(humanId: HumanId, petId: PetId): Result<Adoption, PetError> {
-        // perform some pre-validation; explicitly return failure if they fail
-        if (humanId in blacklist) return Failure(PetError.OwnerBlacklisted)
-        if (adoptions.any { it.pet.id == petId }) return Failure(PetError.PetNotForAdoption)
-        val pet = pets.find { it.id == petId } ?: return Failure(PetError.PetNotFound)
+        if (humanId in banned) return Failure(OwnerIsBanned)
+        if (adoptions.any { it.pet.id == petId }) return Failure(PetNotForAdoption)
+        val pet = pets.find { it.id == petId } ?: return Failure(PetNotFound)
 
         val adoption = Adoption(humanId, pet)
         adoptions += adoption
@@ -47,11 +50,12 @@ class PetStoreExample(
  * 2. If successful, try to adopt the pet
  * 3. If successful, brag about it
  *
- * If any of the functions fails, the subsequent ones will not execute, and the failure will be returned instead
+ * If any of the functions fails, the subsequent ones will not execute, and the failure will be returned instead.
  */
-fun PetStoreExample.adoptByNameAndBrag(humanId: HumanId, name: String): Result<Adoption, PetError> = findPet(name)
-    .flatMap { pet -> adopt(humanId, pet.id) }
-    .peek { adoption -> brag(adoption) } // bragging returns Unit, so we use "peek" to ignore the Success value
+fun PetStoreExample.adoptByNameAndBrag(humanId: HumanId, name: String): Result<Adoption, PetError> =
+    findPet(name)
+        .flatMap { pet -> adopt(humanId, pet.id) }
+        .peek { adoption -> brag(adoption) } // Bragging returns Unit, so we use "peek" to ignore the Success value
 
 fun main() {
     val human1 = 9
@@ -63,16 +67,16 @@ fun main() {
 
     val service = PetStoreExample(
         pets = setOf(pet1, pet2, pet3),
-        blacklist = setOf(human1),
+        banned = setOf(human1),
         adoptions = mutableSetOf(Adoption(human2, pet1))
     )
 
     // Try out findPet
-    println(service.findPet("Athena")) // Failure(reason=PetError.NotFound)
+    println(service.findPet("Athena")) // Failure(reason=PetNotFound)
     println(service.findPet("Kratos")) // Success(value=Pet(id = 1, name = Kratos))
 
     // Try out adopt
-    println(service.adopt(human1, pet1.id)) // Failure(reason=OwnerBlacklisted)
+    println(service.adopt(human1, pet1.id)) // Failure(reason=OwnerIsBanned)
     println(service.adopt(human2, pet1.id)) // Failure(reason=PetNotForAdoption)
     println(service.adopt(human2, pet2.id)) // Success(value=Adoption(humanId=8, pet=Pet(id=2, name=Freya)))
 
