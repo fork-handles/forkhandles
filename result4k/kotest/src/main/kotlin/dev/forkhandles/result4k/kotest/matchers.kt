@@ -59,18 +59,18 @@ infix fun <E> Result<*, E>.shouldBeFailure(block: (E) -> Unit) {
 infix fun <E> Result<*, E>.shouldBeFailure(expected: E) =
     this should beFailure(expected)
 
-private fun <T, E> Result<T, E>.matchesValue(value: Result<T, E>): MatcherResult =
+private fun <T, E> Result<T, E>.matchesValue(actual: Result<T, E>): MatcherResult =
     matcherResultWithIntelliJDiff(
-        passed = value == this,
-        actual = toString(),
-        expected = value.toString()
+        passed = this == actual,
+        actual = this.toString(),
+        expected = actual.toString()
     )
 
-private fun <T, E, C : Result<T, E>> Result<T, E>.matchesType(resultClass: KClass<C>): MatcherResult =
+private fun <T, E, C : Result<T, E>> Result<T, E>.matchesType(expected: KClass<C>): MatcherResult =
     matcherResultWithIntelliJDiff(
-        passed = resultClass.isInstance(this),
+        passed = expected.isInstance(this),
         actual = this.toString(),
-        expected = resultClass.simpleName!!
+        expected = expected.simpleName!!
     )
 
 /**
