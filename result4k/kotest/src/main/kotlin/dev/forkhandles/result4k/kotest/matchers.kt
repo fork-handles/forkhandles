@@ -62,8 +62,8 @@ infix fun <E> Result<*, E>.shouldBeFailure(expected: E) =
 private fun <T, E> Result<T, E>.matchesValue(actual: Result<T, E>): MatcherResult =
     matcherResultWithIntelliJDiff(
         passed = this == actual,
-        actual = this.toString(),
-        expected = actual.toString()
+        actual = actual.toString(),
+        expected = this.toString()
     )
 
 private fun <T, E, C : Result<T, E>> Result<T, E>.matchesType(expected: KClass<C>): MatcherResult =

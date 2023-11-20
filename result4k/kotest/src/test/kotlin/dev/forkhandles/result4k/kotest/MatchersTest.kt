@@ -22,7 +22,7 @@ class MatchersTest {
         assertDoesNotThrow { success.shouldBeSuccess() }
         assertDoesNotThrow { success.shouldBeSuccess() shouldBe value }
         assertDoesNotThrow { success.shouldBeSuccess { assertEquals(value, it) } }
-        assertDoesNotThrow { success.shouldBeSuccess(value) }
+        assertDoesNotThrow { success shouldBeSuccess value }
     }
 
     @Test
@@ -33,7 +33,7 @@ class MatchersTest {
         assertDoesNotThrow { failure.shouldBeFailure() }
         assertDoesNotThrow { failure.shouldBeFailure() shouldBe reason }
         assertDoesNotThrow { failure.shouldBeFailure { assertEquals(reason, it) } }
-        assertDoesNotThrow { failure.shouldBeFailure(reason) }
+        assertDoesNotThrow { failure shouldBeFailure reason }
     }
 
     @Test
@@ -47,8 +47,8 @@ class MatchersTest {
         throwsAssertionError("expected:<Failure> but was:<Success(value=Test successful)>") {
             success.shouldBeFailure { }
         }
-        throwsAssertionError("expected:<Success(value=Test successful)> but was:<Failure(reason=Test successful)>") {
-            success.shouldBeFailure(value)
+        throwsAssertionError("expected:<Failure(reason=Test successful)> but was:<Success(value=Test successful)>") {
+            success shouldBeFailure value
         }
     }
 
@@ -63,25 +63,25 @@ class MatchersTest {
         throwsAssertionError("expected:<Success> but was:<Failure(reason=Test failed)>") {
             failure.shouldBeSuccess { }
         }
-        throwsAssertionError("expected:<Failure(reason=Test failed)> but was:<Success(value=Test failed)>") {
-            failure.shouldBeSuccess(reason)
+        throwsAssertionError("expected:<Success(value=Test failed)> but was:<Failure(reason=Test failed)>") {
+            failure shouldBeSuccess reason
         }
     }
 
     @Test
     fun `should correctly assert value`() {
-        throwsAssertionError("expected:<Failure(reason=Actual value)> but was:<Failure(reason=Expected value)>") {
-            Failure("Actual value").shouldBeFailure("Expected value")
+        throwsAssertionError("expected:<Failure(reason=Expected value)> but was:<Failure(reason=Actual value)>") {
+            Failure("Actual value") shouldBeFailure "Expected value"
         }
-        throwsAssertionError("expected:<Success(value=Actual value)> but was:<Success(value=Expected value)>") {
-            Success("Actual value").shouldBeSuccess("Expected value")
+        throwsAssertionError("expected:<Success(value=Expected value)> but was:<Success(value=Actual value)>") {
+            Success("Actual value") shouldBeSuccess "Expected value"
         }
     }
 
     @Test
     @Disabled // Comment out to check it manually
     fun `check IntelliJ is showing diff window`() {
-        Success("Actual value").shouldBeSuccess("Expected value")
+        Success("Actual value") shouldBeSuccess "Expected value"
     }
 
     private fun throwsAssertionError(message: String, block: () -> Unit) =
