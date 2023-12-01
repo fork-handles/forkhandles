@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.10.2.0
+- **result4k-kotest** : [Fix] Expected and actual the right way round
+
 ### v2.10.1.0
 - **all** : Upgrade of dependencies
 - **values4k** : Added extension functions
