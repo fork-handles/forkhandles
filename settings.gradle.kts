@@ -19,6 +19,7 @@ include("forkhandles-bom")
 
 include("bunting4k")
 include("fabrikate4k")
+include("lens4k")
 include("mock4k")
 include("parser4k")
 include("partial4k")

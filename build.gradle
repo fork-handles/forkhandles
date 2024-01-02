@@ -29,7 +29,7 @@ allprojects {
     apply plugin: 'maven-publish'
 
     jacoco {
-        toolVersion = '0.8.8'
+        toolVersion = '0.8.9'
     }
 
     compileKotlin.kotlinOptions.jvmTarget = "1.8"
