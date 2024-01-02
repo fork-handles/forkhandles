@@ -10,6 +10,7 @@ class MapWrapperTest {
 
     class SubMap(propertySet: Map<String, Any?>) : MapWrapper(propertySet) {
         val stringField by Field<String>()
+        val noSuchField by Field<String>()
     }
 
     class MapBacked(propertySet: Map<String, Any?>) : MapWrapper(propertySet) {
@@ -56,5 +57,6 @@ class MapWrapperTest {
         expectThat(mapBacked.objectField.stringField).isEqualTo("string")
         expectThrows<NoSuchElementException> { mapBacked.notAStringField }.message.isEqualTo("Value for field <notAStringField> is not a class kotlin.String but class kotlin.Int")
         expectThrows<NoSuchElementException> { mapBacked.noSuchField }.message.isEqualTo("Field <noSuchField> is missing")
+        expectThrows<NoSuchElementException> { mapBacked.objectField.noSuchField }.message.isEqualTo("Field <noSuchField> is missing")
     }
 }

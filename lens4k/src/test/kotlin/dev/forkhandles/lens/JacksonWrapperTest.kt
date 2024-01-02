@@ -10,8 +10,9 @@ import strikt.assertions.message
 
 class JacksonWrapperTest {
 
-    class SubMap(node: JsonNode) : JacksonWrapper(node) {
+    class SubNodeBacked(node: JsonNode) : JacksonWrapper(node) {
         val stringField by Field<String>()
+        val noSuchField by Field<String>()
     }
 
     class NodeBacked(node: JsonNode) : JacksonWrapper(node) {
@@ -22,9 +23,9 @@ class JacksonWrapperTest {
         val decimalField by Field<Double>()
         val notAStringField by Field<String>()
         val noSuchField by Field<String>()
-        val listField by ListField(::SubMap)
+        val listField by ListField(::SubNodeBacked)
         val listField2 by ListField(Any::toString)
-        val objectField by ObjectField(::SubMap)
+        val objectField by ObjectField(::SubNodeBacked)
     }
 
     @Test
@@ -62,5 +63,6 @@ class JacksonWrapperTest {
         expectThat(mapBacked.objectField.stringField).isEqualTo("string")
         expectThrows<NoSuchElementException> { mapBacked.notAStringField }.message.isEqualTo("Value for field <notAStringField> is not a class kotlin.String but class kotlin.Int")
         expectThrows<NoSuchElementException> { mapBacked.noSuchField }.message.isEqualTo("Field <noSuchField> is missing")
+        expectThrows<NoSuchElementException> { mapBacked.objectField.noSuchField }.message.isEqualTo("Field <noSuchField> is missing")
     }
 }
