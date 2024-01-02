@@ -29,24 +29,26 @@ class JacksonWrapperTest {
 
     @Test
     fun `can get values from properties`() {
+        val map = mapOf(
+            "stringField" to "string",
+            "booleanField" to true,
+            "intField" to 123,
+            "longField" to Long.MAX_VALUE,
+            "decimalField" to 1.1234,
+            "notAStringField" to 123,
+            "listField" to listOf(
+                mapOf("stringField" to "string1"),
+                mapOf("stringField" to "string2"),
+            ),
+            "listField2" to listOf("string1", "string2"),
+            "objectField" to mapOf(
+                "stringField" to "string"
+            )
+        )
+
         val mapBacked = NodeBacked(
             ObjectMapper().valueToTree(
-                mapOf(
-                    "stringField" to "string",
-                    "booleanField" to true,
-                    "intField" to 123,
-                    "longField" to Long.MAX_VALUE,
-                    "decimalField" to 1.1234,
-                    "notAStringField" to 123,
-                    "listField" to listOf(
-                        mapOf("stringField" to "string1"),
-                        mapOf("stringField" to "string2"),
-                    ),
-                    "listField2" to listOf("string1", "string2"),
-                    "objectField" to mapOf(
-                        "stringField" to "string"
-                    )
-                )
+                map
             )
         )
 
