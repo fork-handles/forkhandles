@@ -32,5 +32,5 @@ object PropertySets {
 }
 
 abstract class MapWrapper(private val map: Map<String, Any?>) {
-    class LensProp<OUT> : AbstractLensProp<MapWrapper, OUT>({ map.containsKey(it) }, { map[it] })
+    class Primitive<OUT> : AbstractLensProp<MapWrapper, OUT>({ map.containsKey(it) }, { map[it] })
 }

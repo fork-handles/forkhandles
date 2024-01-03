@@ -9,14 +9,13 @@ import strikt.assertions.message
 class MapWrapperTest {
 
     class MapBacked(propertySet: Map<String, Any?>) : MapWrapper(propertySet) {
-        val stringField by LensProp<String>()
-        val booleanField by LensProp<Boolean>()
-        val intField by LensProp<Int>()
-        val longField by LensProp<Long>()
-        val decimalField by LensProp<Double>()
-        val notAStringField by LensProp<String>()
-        val noSuchField by LensProp<String>()
-        val objectField by LensProp<String>()
+        val stringField by Primitive<String>()
+        val booleanField by Primitive<Boolean>()
+        val intField by Primitive<Int>()
+        val longField by Primitive<Long>()
+        val decimalField by Primitive<Double>()
+        val notAStringField by Primitive<String>()
+        val noSuchField by Primitive<String>()
     }
 
     @Test
