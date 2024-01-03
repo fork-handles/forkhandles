@@ -30,7 +30,3 @@ object PropertySets {
             injector = { subject, value -> subject.toMutableMap().apply { this[propertyName] = value } }
         )
 }
-
-abstract class MapWrapper(private val map: Map<String, Any?>) {
-    class Primitive<OUT> : AbstractLensProp<MapWrapper, OUT>({ map.containsKey(it) }, { map[it] })
-}

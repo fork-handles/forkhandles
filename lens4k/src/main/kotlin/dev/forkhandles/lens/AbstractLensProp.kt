@@ -16,9 +16,10 @@ abstract class AbstractLensProp<IN, OUT>(
                 thisRef.existsFn(property.name) -> throw NoSuchElementException("Value for field <${property.name}> is null")
                 else -> throw NoSuchElementException("Field <${property.name}> is missing")
             }
-            (property.returnType.jvmErasure == result.javaClass.kotlin) -> result as OUT
+            property.returnType.jvmErasure.isInstance(result) -> result as OUT
 
-            else -> throw NoSuchElementException("Value for field <${property.name}> is not a ${property.returnType.jvmErasure}")
+            else -> throw NoSuchElementException("Value for field <${property.name}> is not a ${property.returnType.jvmErasure} but ${result.javaClass.kotlin}")
         }
     }
 }
+
