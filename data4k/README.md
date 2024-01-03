@@ -20,9 +20,14 @@ implementation("dev.forkhandles:data4k")
 ## Usage 
 
 The library defines a `DataContainer` class and implementations for:
-
 - Map<String, Any?>
 - Jackson JSON Node
+
+Support for extracting:
+- primitive values
+- subobjects
+- lists
+- values4k value types
 
 To extract data from the underlying data, define wrappers which provides access via delegated-properties:
 
