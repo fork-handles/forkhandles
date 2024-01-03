@@ -75,6 +75,7 @@ abstract class DataContainerContract {
         expectThat(input.decimalField).isEqualTo(1.1234)
 
         expectThat(input.mappedField).isEqualTo(123)
+        expectThrows<ClassCastException> { container(mapOf("mappedField" to 123)).mappedField }
         expectThat(input.valueField).isEqualTo(MyType.of(123))
 
         expectThat(input.optionalField).isEqualTo("optional")

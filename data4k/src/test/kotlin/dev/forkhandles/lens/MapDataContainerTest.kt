@@ -30,7 +30,7 @@ class MapDataContainerTest : DataContainerContract() {
 
         override val optionalField by field<String?>()
         override val optionalListField: List<String>? by list()
-        override val optionalObjectField: SubClassFields? by obj(::SubMap)
+        override val optionalObjectField: SubMap? by obj(::SubMap)
         override val optionalValueField: MyType? by field(MyType)
     }
 

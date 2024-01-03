@@ -22,7 +22,7 @@ abstract class DataContainer<CONTENT>(
         (get(it) as OUT)?.let(mapFn)
     }
 
-    fun <IN : Any, OUT : Value<IN>> field(factory: ValueFactory<OUT, IN>) = field(factory::of)
+    fun <IN : Any, OUT : Value<IN>, OUT2 : OUT?> field(factory: ValueFactory<OUT, IN>) = field(factory::of)
 
     fun <IN, OUT> list(mapFn: (IN) -> OUT) =
         DataProperty<DataContainer<CONTENT>, List<OUT>>(exists) { get(it)?.let { (it as List<IN>).map(mapFn) } }
@@ -31,7 +31,7 @@ abstract class DataContainer<CONTENT>(
 
     fun <OUT> list() = list<OUT, OUT> { it }
 
-    fun <OUT : DataContainer<CONTENT>> obj(mapFn: (CONTENT) -> OUT) =
+    fun <OUT : DataContainer<CONTENT>?> obj(mapFn: (CONTENT) -> OUT) =
         DataProperty<DataContainer<CONTENT>, OUT>(exists) { (get(it) as CONTENT)?.let(mapFn) }
 
     fun obj() = DataProperty<DataContainer<CONTENT>, CONTENT>(exists) { get(it) as CONTENT? }
