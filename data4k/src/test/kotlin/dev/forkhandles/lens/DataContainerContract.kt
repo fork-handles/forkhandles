@@ -1,5 +1,7 @@
 package dev.forkhandles.lens
 
+import dev.forkhandles.values.IntValue
+import dev.forkhandles.values.IntValueFactory
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.api.expectThrows
@@ -15,15 +17,23 @@ interface MainClassFields {
     val notAStringField: String
     val optionalField: String?
     val noSuchField: String
+    val listField: List<String>
     val listSubClassField: List<SubClassFields>
     val listIntsField: List<Int>
+    val listValueField: List<MyType>
     val listStringsField: List<String>
     val objectField: SubClassFields
+    val valueField: MyType
+    val mappedField: Int
 }
 
 interface SubClassFields {
     val stringField: String
     val noSuchField: String
+}
+
+class MyType private constructor(value: Int) : IntValue(value) {
+    companion object : IntValueFactory<MyType>(::MyType)
 }
 
 abstract class DataContainerContract {
@@ -41,6 +51,11 @@ abstract class DataContainerContract {
                 "longField" to Long.MAX_VALUE,
                 "decimalField" to 1.1234,
                 "notAStringField" to 123,
+                "valueField" to 123,
+                "mappedField" to "123",
+                "listField" to listOf("hello"),
+                "listField" to listOf("hello"),
+                "listValueField" to listOf(1, 2, 3),
                 "listIntsField" to listOf(1, 2, 3),
                 "listSubClassField" to listOf(
                     mapOf("stringField" to "string1"),
@@ -59,7 +74,11 @@ abstract class DataContainerContract {
         expectThat(input.intField).isEqualTo(123)
         expectThat(input.longField).isEqualTo(Long.MAX_VALUE)
         expectThat(input.decimalField).isEqualTo(1.1234)
+        expectThat(input.valueField).isEqualTo(MyType.of(123))
+        expectThat(input.mappedField).isEqualTo(123)
+        expectThat(input.listField).isEqualTo(listOf("hello"))
         expectThat(input.listIntsField).isEqualTo(listOf(1, 2, 3))
+        expectThat(input.listValueField).isEqualTo(listOf(1, 2, 3).map(MyType::of))
         expectThat(input.listSubClassField.map { it.stringField }).isEqualTo(listOf("string1", "string2"))
         expectThat(input.listStringsField).isEqualTo(listOf("string1", "string2"))
         expectThat(input.objectField.stringField).isEqualTo("string")

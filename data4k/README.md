@@ -6,7 +6,7 @@
 <a href="http//www.apache.org/licenses/LICENSE-2.0"><img alt="GitHub license" src="https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat"></a>
 <a href="https://codebeat.co/projects/github-com-fork-handles-forkhandles-trunk"><img alt="codebeat badge" src="https://codebeat.co/badges/5b369ed4-af27-46f4-ad9c-a307d900617e"></a>
 
-Library to make working with Data-Oriented programming in Kotlin easier, to extract values from dynamic data structures such as Maps.
+Library to make working with Data-Oriented programming in Kotlin easier, to extract typed values from dynamic data structures such as Maps.
 
 ## Installation
 
@@ -19,7 +19,7 @@ implementation("dev.forkhandles:data4k")
 
 ## Usage 
 
-The library defines a DataContainer class and implementations for:
+The library defines a `DataContainer` class and implementations for:
 
 - Map<String, Any?>
 - Jackson JSON Node

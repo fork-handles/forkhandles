@@ -18,10 +18,14 @@ class MapDataContainerTest : DataContainerContract() {
         override val decimalField by field<Double>()
         override val notAStringField by field<String>()
         override val noSuchField by field<String>()
+        override val listField by list<String>()
+        override val listValueField by list(MyType)
         override val listSubClassField by list(::SubMap)
         override val listStringsField by list(Any::toString)
-        override val listIntsField by list<Any, Int> { it as Int }
+        override val listIntsField by list<Int>()
         override val objectField by obj(::SubMap)
+        override val valueField by field(MyType)
+        override val mappedField by field(String::toInt)
     }
 
     override fun container(input: Map<String, Any?>): MainClassFields = MapBacked(input)

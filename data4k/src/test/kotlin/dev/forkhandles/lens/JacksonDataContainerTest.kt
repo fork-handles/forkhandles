@@ -22,8 +22,12 @@ class JacksonDataContainerTest : DataContainerContract() {
         override val noSuchField by field<String>()
         override val listSubClassField by list(::SubNodeBacked)
         override val listStringsField by list(Any::toString)
-        override val listIntsField by list<Any, Int> { it as Int }
+        override val listField by list<String>()
+        override val listIntsField by list<Int>()
+        override val listValueField by list(MyType)
         override val objectField by obj(::SubNodeBacked)
+        override val valueField by field(MyType)
+        override val mappedField by field(String::toInt)
     }
 
     override fun container(input: Map<String, Any?>) = NodeBacked(ObjectMapper().valueToTree(input))

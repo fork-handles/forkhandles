@@ -4,7 +4,7 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.jvmErasure
 
-abstract class DataProperty<IN, OUT>(
+open class DataProperty<IN, OUT>(
     private val existsFn: IN.(String) -> Boolean,
     private val getFn: IN.(String) -> Any?
 ) : ReadOnlyProperty<IN, OUT> {
