@@ -21,6 +21,8 @@ class MapWrapperTest {
         val notAStringField by Field<String>()
         val noSuchField by Field<String>()
         val listField by ListField(::SubMap)
+        val listField2 by ListField(Any::toString)
+        val objectField by ObjectField(::SubMap)
     }
 
     @Test
@@ -36,6 +38,10 @@ class MapWrapperTest {
                 "listField" to listOf(
                     mapOf("stringField" to "string1"),
                     mapOf("stringField" to "string2"),
+                ),
+                "listField2" to listOf("string1", "string2"),
+                "objectField" to mapOf(
+                    "stringField" to "string"
                 )
             )
         )
@@ -46,6 +52,8 @@ class MapWrapperTest {
         expectThat(mapBacked.longField).isEqualTo(Long.MAX_VALUE)
         expectThat(mapBacked.decimalField).isEqualTo(1.1234)
         expectThat(mapBacked.listField.map { it.stringField }).isEqualTo(listOf("string1", "string2"))
+        expectThat(mapBacked.listField2).isEqualTo(listOf("string1", "string2"))
+        expectThat(mapBacked.objectField.stringField).isEqualTo("string")
         expectThrows<NoSuchElementException> { mapBacked.notAStringField }.message.isEqualTo("Value for field <notAStringField> is not a class kotlin.String but class kotlin.Int")
         expectThrows<NoSuchElementException> { mapBacked.noSuchField }.message.isEqualTo("Field <noSuchField> is missing")
     }
