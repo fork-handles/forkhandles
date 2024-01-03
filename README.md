@@ -9,6 +9,7 @@
 
 Forkhandles (4k) contains foundational libraries for Kotlin
 - [Bunting4k](bunting4k) - Command line argument parser
+- [Data4k](data4k) - Typesafe data-oriented programming
 - [Fabrikate4k](fabrikate4k) - Test utility to instantiate objects with fake data
 - [Mock4k](mock4k) - The very cheapest mocking framework platform
 - [Parser4k](parser4k) - Recursive descent parser combinator library
