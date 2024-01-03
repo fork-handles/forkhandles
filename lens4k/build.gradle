@@ -1,0 +1,6 @@
+description = 'ForkHandles simple lens library'
+
+dependencies {
+    api("org.jetbrains.kotlin:kotlin-reflect:_")
+        testImplementation("io.strikt:strikt-jvm:0.34.1")
+}
