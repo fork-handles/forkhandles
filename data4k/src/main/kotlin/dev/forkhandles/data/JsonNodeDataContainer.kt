@@ -19,7 +19,7 @@ import java.math.BigDecimal
 /**
  * Jackson JsonNode-based implementation of the DataContainer
  */
-abstract class JsonNodeDataContainer(input: JsonNode) :
+open class JsonNodeDataContainer(input: JsonNode) :
     DataContainer<JsonNode>(
         input,
         { content, it -> content.has(it) },
