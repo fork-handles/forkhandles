@@ -23,9 +23,9 @@ abstract class JsonNodeDataContainer(input: JsonNode) :
     DataContainer<JsonNode>(
         input,
         { content, it -> content.has(it) },
-        { content, it -> content[it]?.let(Companion::nodeToValue) },
+        { content, it -> content[it]?.let(::nodeToValue) },
         { node: JsonNode, name, value ->
-            (node as? ObjectNode)?.also { node.set<JsonNode>(name, value.toNode()) }
+            (node as? ObjectNode)?.also { node.replace(name, value.toNode()) }
                 ?: error("Invalid node type ${input::class.java}")
         }
     ) {
@@ -58,8 +58,9 @@ abstract class JsonNodeDataContainer(input: JsonNode) :
                 is Double -> DoubleNode(this)
                 is String -> TextNode(this)
                 is Iterable<*> -> ArrayNode(instance)
-                    .also { map { if (it is JsonNode) it else it.toNode() }.forEach(it::add)
-                }
+                    .also {
+                        map { if (it is JsonNode) it else it.toNode() }.forEach(it::add)
+                    }
 
                 else -> error("Cannot set value of type ${this::class.java}")
             }

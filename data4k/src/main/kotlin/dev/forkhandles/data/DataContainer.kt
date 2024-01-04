@@ -98,5 +98,5 @@ abstract class DataContainer<CONTENT>(
         DataProperty<DataContainer<CONTENT>, IN>(
             { existsFn(content, it) },
             { getFn(content, it)?.let { value -> value as OUT }?.let(mapInFn) },
-            { name, value -> setFn(content, name, (value as IN?)?.let(mapOutFn)) })
+            { name, value -> setFn(content, name, value?.let(mapOutFn)) })
 }
