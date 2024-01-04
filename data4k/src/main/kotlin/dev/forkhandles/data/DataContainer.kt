@@ -23,8 +23,7 @@ abstract class DataContainer<CONTENT>(
 
     fun <OUT, NEXT> required(mapInFn: (OUT) -> NEXT) = required(mapInFn) { error("no outbound mapping defined") }
 
-    fun <IN : Any, OUT : Value<IN>> required(factory: ValueFactory<OUT, IN>) =
-        required(factory::of) { it.value }
+    fun <IN : Any, OUT : Value<IN>> required(factory: ValueFactory<OUT, IN>) = required(factory::of) { it.value }
 
     /** Optional **/
 
@@ -36,8 +35,7 @@ abstract class DataContainer<CONTENT>(
 
     fun <OUT> optional() = required<OUT, OUT?>({ it }, { it })
 
-    fun <IN : Any, OUT : Value<IN>> optional(factory: ValueFactory<OUT, IN>): DataProperty<DataContainer<CONTENT>, OUT?> =
-        required(factory::of) { it?.value }
+    fun <IN : Any, OUT : Value<IN>> optional(factory: ValueFactory<OUT, IN>) = required(factory::of) { it.value }
 
     /** Object **/
 
@@ -47,7 +45,7 @@ abstract class DataContainer<CONTENT>(
     fun <OUT : DataContainer<CONTENT>> obj(mapInFn: (CONTENT) -> OUT) =
         obj(mapInFn) { it.data }
 
-    fun <OUT : DataContainer<CONTENT>> optionalObj(mapInFn: (CONTENT) -> OUT): DataProperty<DataContainer<CONTENT>, OUT?> =
+    fun <OUT : DataContainer<CONTENT>> optionalObj(mapInFn: (CONTENT) -> OUT) =
         property<OUT?, CONTENT, CONTENT>(mapInFn) { it?.data }
 
     /** List **/
@@ -67,8 +65,7 @@ abstract class DataContainer<CONTENT>(
     fun <OUT, IN> optionalList(mapInFn: (IN) -> OUT, mapOutFn: (OUT) -> IN?) =
         property<List<OUT>?, List<IN>, List<IN>>({ it.map(mapInFn) }, { it?.mapNotNull(mapOutFn) })
 
-    fun <OUT, IN> optionalList(mapInFn: (IN) -> OUT) =
-        optionalList(mapInFn) { error("no outbound mapping defined") }
+    fun <OUT, IN> optionalList(mapInFn: (IN) -> OUT) = optionalList(mapInFn) { error("no outbound mapping defined") }
 
     fun <OUT> optionalList() = optionalList<OUT, OUT & Any>({ it }, { it })
 
