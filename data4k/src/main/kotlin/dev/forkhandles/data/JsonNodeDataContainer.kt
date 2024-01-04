@@ -19,15 +19,14 @@ import java.math.BigDecimal
 /**
  * Jackson JsonNode-based implementation of the DataContainer
  */
-abstract class JacksonDataContainer(input: JsonNode) :
+abstract class JsonNodeDataContainer(input: JsonNode) :
     DataContainer<JsonNode>(
         input,
         { content, it -> content.has(it) },
         { content, it -> content[it]?.let(Companion::nodeToValue) },
         { node: JsonNode, name, value ->
-            (node as? ObjectNode)?.also {
-                node.set<JsonNode>(name, value.toNode())
-            } ?: error("Invalid node type ${input::class.java}")
+            (node as? ObjectNode)?.also { node.set<JsonNode>(name, value.toNode()) }
+                ?: error("Invalid node type ${input::class.java}")
         }
     ) {
 
@@ -58,9 +57,10 @@ abstract class JacksonDataContainer(input: JsonNode) :
                 is BigDecimal -> DecimalNode(this)
                 is Double -> DoubleNode(this)
                 is String -> TextNode(this)
-                is Iterable<*> -> ArrayNode(instance).also {
-                    map { if (it is JsonNode) it else it.toNode() }.forEach(it::add)
+                is Iterable<*> -> ArrayNode(instance)
+                    .also { map { if (it is JsonNode) it else it.toNode() }.forEach(it::add)
                 }
+
                 else -> error("Cannot set value of type ${this::class.java}")
             }
     }

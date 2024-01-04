@@ -2,17 +2,17 @@ package dev.forkhandles.lens
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import dev.forkhandles.data.JacksonDataContainer
+import dev.forkhandles.data.JsonNodeDataContainer
 import java.math.BigDecimal
 
-class JacksonDataContainerTest : DataContainerContract<JacksonDataContainerTest.SubNodeBacked>() {
+class JsonNodeDataContainerTest : DataContainerContract<JsonNodeDataContainerTest.SubNodeBacked>() {
 
-    class SubNodeBacked(node: JsonNode) : JacksonDataContainer(node), SubClassFields {
+    class SubNodeBacked(node: JsonNode) : JsonNodeDataContainer(node), SubClassFields {
         override var string by required<String>()
         override var noSuch by required<String>()
     }
 
-    class NodeBacked(node: JsonNode) : JacksonDataContainer(node), MainClassFields<SubNodeBacked> {
+    class NodeBacked(node: JsonNode) : JsonNodeDataContainer(node), MainClassFields<SubNodeBacked> {
         override var string by required<String>()
         override var boolean by required<Boolean>()
         override var int by required<Int>()
