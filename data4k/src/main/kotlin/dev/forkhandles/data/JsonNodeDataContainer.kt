@@ -49,7 +49,7 @@ abstract class JsonNodeDataContainer(input: JsonNode) :
             when (this) {
                 null -> NullNode.instance
                 is JsonNode -> this
-                is DataContainer<*> -> data.toNode()
+                is DataContainer<*> -> content().toNode()
                 is Boolean -> if (this) TRUE else FALSE
                 is Int -> IntNode(this)
                 is Long -> LongNode(this)

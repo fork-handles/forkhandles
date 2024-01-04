@@ -9,11 +9,16 @@ import dev.forkhandles.values.ValueFactory
  */
 @Suppress("UNCHECKED_CAST")
 abstract class DataContainer<CONTENT>(
-    val data: CONTENT,
+    private val content: CONTENT,
     private val existsFn: (CONTENT, String) -> Boolean,
     private val getFn: (CONTENT, String) -> Any?,
     private val setFn: (CONTENT, String, Any?) -> Unit
 ) {
+    /**
+     * Expose the underlying data structure
+     */
+    fun content() = content
+
     /** Required **/
 
     fun <OUT : Any?, NEXT> required(mapInFn: (OUT) -> NEXT, mapOutFn: (NEXT) -> OUT?) =
@@ -43,10 +48,10 @@ abstract class DataContainer<CONTENT>(
         property<OUT, CONTENT, CONTENT>(mapInFn, mapOutFn)
 
     fun <OUT : DataContainer<CONTENT>> obj(mapInFn: (CONTENT) -> OUT) =
-        obj(mapInFn) { it.data }
+        obj(mapInFn) { it.content }
 
     fun <OUT : DataContainer<CONTENT>> optionalObj(mapInFn: (CONTENT) -> OUT) =
-        property<OUT?, CONTENT, CONTENT>(mapInFn) { it?.data }
+        property<OUT?, CONTENT, CONTENT>(mapInFn) { it?.content }
 
     /** List **/
 
@@ -60,7 +65,7 @@ abstract class DataContainer<CONTENT>(
     fun <IN : Any, OUT : Value<IN>> list(factory: ValueFactory<OUT, IN>) = list(factory::of) { it.value }
 
     @JvmName("listDataContainer")
-    fun <OUT : DataContainer<CONTENT>?> list(mapInFn: (CONTENT) -> OUT) = list(mapInFn) { it?.data }
+    fun <OUT : DataContainer<CONTENT>?> list(mapInFn: (CONTENT) -> OUT) = list(mapInFn) { it?.content }
 
     fun <OUT, IN> optionalList(mapInFn: (IN) -> OUT, mapOutFn: (OUT) -> IN?) =
         property<List<OUT>?, List<IN>, List<IN>>({ it.map(mapInFn) }, { it?.mapNotNull(mapOutFn) })
@@ -72,7 +77,7 @@ abstract class DataContainer<CONTENT>(
     fun <IN : Any, OUT : Value<IN>> optionalList(factory: ValueFactory<OUT, IN>) = optionalList(factory::of) { it.value }
 
     @JvmName("optionalListDataContainer")
-    fun <OUT : DataContainer<CONTENT>?> optionalList(mapInFn: (CONTENT) -> OUT) = optionalList(mapInFn) { it?.data }
+    fun <OUT : DataContainer<CONTENT>?> optionalList(mapInFn: (CONTENT) -> OUT) = optionalList(mapInFn) { it?.content }
 
     /** Utility **/
 
@@ -82,16 +87,16 @@ abstract class DataContainer<CONTENT>(
 
         other as DataContainer<*>
 
-        return data == other.data
+        return content == other.content
     }
 
-    override fun hashCode() = data?.hashCode() ?: 0
+    override fun hashCode() = content?.hashCode() ?: 0
 
-    override fun toString() = data.toString()
+    override fun toString() = content.toString()
 
     private fun <IN, OUT : Any?, OUT2> property(mapInFn: (OUT) -> IN, mapOutFn: (IN) -> OUT2?) =
         DataProperty<DataContainer<CONTENT>, IN>(
-            { existsFn(data, it) },
-            { getFn(data, it)?.let { value -> value as OUT }?.let(mapInFn) },
-            { name, value -> setFn(data, name, (value as IN?)?.let(mapOutFn)) })
+            { existsFn(content, it) },
+            { getFn(content, it)?.let { value -> value as OUT }?.let(mapInFn) },
+            { name, value -> setFn(content, name, (value as IN?)?.let(mapOutFn)) })
 }
