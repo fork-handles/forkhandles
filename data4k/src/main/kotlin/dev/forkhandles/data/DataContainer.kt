@@ -24,24 +24,22 @@ abstract class DataContainer<CONTENT>(
     fun <OUT : Any?, NEXT> required(mapInFn: (OUT) -> NEXT, mapOutFn: (NEXT) -> OUT?) =
         property<NEXT, OUT, OUT>(mapInFn, mapOutFn)
 
-    fun <OUT : Any> required() = required<OUT, OUT>({ it }, { it })
-
     fun <OUT, NEXT> required(mapInFn: (OUT) -> NEXT) = required(mapInFn) { error("no outbound mapping defined") }
+
+    fun <OUT : Any> required() = required<OUT, OUT>({ it }, { it })
 
     fun <IN : Any, OUT : Value<IN>> required(factory: ValueFactory<OUT, IN>) = required(factory::of) { it.value }
 
     /** Optional **/
 
-    fun <OUT, NEXT : Any> optional(mapInFn: (OUT) -> NEXT) =
-        property<NEXT, OUT, OUT>(mapInFn) { error("no outbound mapping defined") }
-
     fun <OUT, NEXT : Any> optional(mapInFn: (OUT) -> NEXT, mapOutFn: (NEXT) -> OUT?) =
         property<NEXT?, OUT, OUT>(mapInFn) { it?.let(mapOutFn) }
 
+    fun <OUT, NEXT : Any> optional(mapInFn: (OUT) -> NEXT) = optional(mapInFn) { error("no outbound mapping defined") }
+
     fun <OUT> optional() = property<OUT?, OUT, OUT>({ it }, { it })
 
-    fun <IN : Any, OUT : Value<IN>> optional(factory: ValueFactory<OUT, IN>): DataProperty<DataContainer<CONTENT>, OUT?> =
-        property(factory::of) { it?.value }
+    fun <IN : Any, OUT : Value<IN>> optional(factory: ValueFactory<OUT, IN>) = optional(factory::of) { it.value }
 
     /** Object **/
 
