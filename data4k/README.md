@@ -25,7 +25,7 @@ The library defines a `DataContainer` class and implementations for:
 
 Support for extracting:
 - primitive values
-- subobjects
+- sub-objects
 - lists
 - values4k value types
 
@@ -33,13 +33,15 @@ To extract data from the underlying data, define wrappers which provides access 
 
 ```kotlin
 class MapBacked(propertySet: Map<String, Any?>) : MapDataContainer(propertySet) {
-    val stringField by field<String>()
+    val stringField by required<String>()
+    val optionalStringField by optional<String>()
     val listSubClassField by list(::SubMap)
     val objectField by obj(::SubMap)
 }
 
 class SubMap(propertySet: Map<String, Any?>) : MapDataContainer(propertySet) {
-     val stringField by field<String>()
+     val stringField by required<String>()
+     var optionalStringField by optional<String>()
 }
 
 val input = MapBacked(
@@ -58,4 +60,7 @@ val input = MapBacked(
 
 // then just get the values from the underlying data using the type system. Errors will be thrown for missing/invalid properties
 val data: String = input.objectField.stringField
+
+// to write into the structure, just assign to a var
+input.objectField.optionalStringField = "hello"
 ```

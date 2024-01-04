@@ -3,34 +3,43 @@ package dev.forkhandles.lens
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.forkhandles.data.JacksonDataContainer
+import java.math.BigDecimal
 
-class JacksonDataContainerTest : DataContainerContract() {
+class JacksonDataContainerTest : DataContainerContract<JacksonDataContainerTest.SubNodeBacked>() {
 
     class SubNodeBacked(node: JsonNode) : JacksonDataContainer(node), SubClassFields {
-        override val stringField by field<String>()
-        override val noSuchField by field<String>()
+        override var string by required<String>()
+        override var noSuch by required<String>()
     }
 
-    class NodeBacked(node: JsonNode) : JacksonDataContainer(node), MainClassFields {
-        override val stringField by field<String>()
-        override val optionalField by field<String?>()
-        override val booleanField by field<Boolean>()
-        override val intField by field<Int>()
-        override val longField by field<Long>()
-        override val decimalField by field<Double>()
-        override val notAStringField by field<String>()
-        override val listSubClassField by list(::SubNodeBacked)
-        override val listField by list<String>()
-        override val listIntsField by list<Int>()
-        override val listValueField by list(MyType)
-        override val objectField by obj(::SubNodeBacked)
-        override val valueField by field(MyType)
-        override val mappedField by field(String::toInt)
+    class NodeBacked(node: JsonNode) : JacksonDataContainer(node), MainClassFields<SubNodeBacked> {
+        override var string by required<String>()
+        override var boolean by required<Boolean>()
+        override var int by required<Int>()
+        override var long by required<Long>()
+        override var double by required<Double>()
+        override var decimal by required<BigDecimal>()
+        override var notAString by required<String>()
+        override var listSubClass by list(::SubNodeBacked)
+        override var list by list<String>()
+        override var listInts by list<Int>()
+        override var listValue by list(MyType)
+        override val listMapped by list(Int::toString)
+        override var subClass by obj(::SubNodeBacked)
+        override var value by required(MyType)
+        override var mapped by required(String::toInt, Int::toString)
 
-        override val optionalListField: List<String>? by list()
-        override val optionalObjectField: SubClassFields? by obj(::SubNodeBacked)
-        override val optionalValueField: MyType? by field(MyType)
+        override var optional by optional<String>()
+        override var optionalMapped by optional(String::toInt, Int::toString)
+        override var optionalList by optionalList<String>()
+        override var optionalValueList by optionalList(MyType)
+        override var optionalMappedList by optionalList(String::toInt, Int::toString)
+        override var optionalSubClass by optionalObj(::SubNodeBacked)
+        override var optionalSubClassList by optionalList(::SubNodeBacked)
+        override var optionalValue by optional(MyType)
     }
 
     override fun container(input: Map<String, Any?>) = NodeBacked(ObjectMapper().valueToTree(input))
+    override fun subContainer(input: Map<String, Any?>) =
+        SubNodeBacked(ObjectMapper().valueToTree(input))
 }
