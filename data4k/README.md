@@ -23,11 +23,11 @@ The library defines a `DataContainer` class and implementations for:
 - Map<String, Any?>
 - Jackson JSON Node
 
-Support for extracting:
+Support for extracting and writing both required and optional fields of types:
 - primitive values
 - sub-objects
 - lists
-- values4k value types
+- [values4k](https://github.com/fork-handles/forkhandles/tree/trunk/data4k) value types
 
 To extract data from the underlying data, define wrappers which provides access via delegated-properties:
 
