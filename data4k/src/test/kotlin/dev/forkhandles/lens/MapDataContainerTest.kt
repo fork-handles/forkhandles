@@ -1,38 +1,47 @@
 package dev.forkhandles.lens
 
 import dev.forkhandles.data.MapDataContainer
+import java.math.BigDecimal
 
-class MapDataContainerTest : DataContainerContract() {
+class MapDataContainerTest : DataContainerContract<MapDataContainerTest.SubMap>() {
 
     class SubMap(propertySet: Map<String, Any?>) : MapDataContainer(propertySet), SubClassFields {
-        override val stringField by field<String>()
-        override val noSuchField by field<String>()
+        override var string by required<String>()
+        override var noSuch by required<String>()
     }
 
-    class MapBacked(propertySet: Map<String, Any?>) : MapDataContainer(propertySet), MainClassFields {
-        override val stringField by field<String>()
-        override val booleanField by field<Boolean>()
-        override val intField by field<Int>()
-        override val longField by field<Long>()
-        override val decimalField by field<Double>()
-        override val notAStringField by field<String>()
+    class MapBacked(map: Map<String, Any?>) : MapDataContainer(map), MainClassFields<SubMap> {
+        override var string by required<String>()
+        override var boolean by required<Boolean>()
+        override var int by required<Int>()
+        override var long by required<Long>()
+        override var double by required<Double>()
+        override var decimal by required<BigDecimal>()
+        override var notAString by required<String>()
 
-        override val mappedField by field(String::toInt)
+        override var mapped by required(String::toInt, Int::toString)
 
-        override val listField by list<String>()
-        override val listValueField by list(MyType)
-        override val listSubClassField by list(::SubMap)
-        override val listIntsField by list<Int>()
+        override var list by list<String>()
+        override var listValue by list(MyType)
+        override var listSubClass by list(::SubMap)
+        override var listInts by list<Int>()
+        override val listMapped by list(Int::toString)
 
-        override val objectField by obj(::SubMap)
+        override var subClass by obj(::SubMap)
 
-        override val valueField by field(MyType)
+        override var value by required(MyType)
 
-        override val optionalField by field<String?>()
-        override val optionalListField: List<String>? by list()
-        override val optionalObjectField: SubMap? by obj(::SubMap)
-        override val optionalValueField: MyType? by field(MyType)
+        override var optional by optional<String>()
+        override var optionalList by optionalList<String>()
+        override var optionalValueList by optionalList(MyType)
+        override var optionalSubClassList by optionalList(::SubMap)
+        override var optionalSubClass by optionalObj(::SubMap)
+        override var optionalValue by optional(MyType)
+        override var optionalMapped by optional(String::toInt, Int::toString)
+        override var optionalMappedList by optionalList(String::toInt, Int::toString)
     }
 
-    override fun container(input: Map<String, Any?>): MainClassFields = MapBacked(input)
+    override fun container(input: Map<String, Any?>) = MapBacked(input)
+
+    override fun subContainer(input: Map<String, Any?>) = SubMap(input)
 }

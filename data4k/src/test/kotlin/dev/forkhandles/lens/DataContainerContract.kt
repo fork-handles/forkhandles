@@ -8,123 +8,215 @@ import strikt.api.expectThrows
 import strikt.assertions.isEqualTo
 import strikt.assertions.isNull
 import strikt.assertions.message
+import java.math.BigDecimal
+import kotlin.reflect.KMutableProperty0
 
-interface MainClassFields {
-    val stringField: String
-    val booleanField: Boolean
-    val intField: Int
-    val longField: Long
-    val decimalField: Double
-    val notAStringField: String
+interface MainClassFields<T : SubClassFields> {
+    var string: String
+    var boolean: Boolean
+    var int: Int
+    var long: Long
+    var double: Double
+    var decimal: BigDecimal
+    var notAString: String
 
-    val mappedField: Int
+    var mapped: Int
 
-    val listField: List<String>
-    val listSubClassField: List<SubClassFields>
-    val listIntsField: List<Int>
-    val listValueField: List<MyType>
+    var list: List<String>
+    var listSubClass: List<T>
+    var listInts: List<Int>
+    var listValue: List<MyType>
+    val listMapped: List<String>
 
-    val objectField: SubClassFields
+    var subClass: T
 
-    val valueField: MyType
+    var value: MyType
 
-    val optionalField: String?
-    val optionalValueField: MyType?
-    val optionalObjectField: SubClassFields?
-    val optionalListField: List<String>?
+    var optional: String?
+    var optionalMapped: Int?
+    val optionalValue: MyType?
+    var optionalSubClass: T?
+    var optionalSubClassList: List<T>?
+    var optionalList: List<String>?
+    var optionalValueList: List<MyType>?
+    var optionalMappedList: List<Int>?
 }
 
 interface SubClassFields {
-    val stringField: String
-    val noSuchField: String
+    var string: String
+    var noSuch: String
 }
 
 class MyType private constructor(value: Int) : IntValue(value) {
     companion object : IntValueFactory<MyType>(::MyType)
 }
 
-abstract class DataContainerContract {
+abstract class DataContainerContract<T : SubClassFields> {
 
-    abstract fun container(input: Map<String, Any?>): MainClassFields
+    abstract fun container(input: Map<String, Any?>): MainClassFields<T>
+    abstract fun subContainer(input: Map<String, Any?>): T
 
     @Test
-    fun `can get primitive values from properties`() {
+    fun `can read primitives values`() {
         val input = container(
             mapOf(
-                "stringField" to "string",
-                "booleanField" to true,
-                "intField" to 123,
-                "longField" to Long.MAX_VALUE,
-                "decimalField" to 1.1234,
-                "notAStringField" to 123,
-                "valueField" to 123,
-                "mappedField" to "123",
+                "string" to "string",
+                "boolean" to true,
+                "int" to 123,
+                "long" to Long.MAX_VALUE,
+                "double" to 1.1234,
+                "decimal" to "1.1234",
+                "notAString" to 123,
+                "value" to 123,
+                "mapped" to "123",
 
-                "optionalValueField" to 123,
-                "optionalField" to "optional",
+                "optionalValue" to 123,
+                "optional" to "optional",
             )
         )
 
-        expectThat(input.stringField).isEqualTo("string")
-        expectThrows<NoSuchElementException> { container(mapOf()).stringField }.message.isEqualTo("Field <stringField> is missing")
-        expectThrows<NoSuchElementException> { input.notAStringField }.message.isEqualTo("Value for field <notAStringField> is not a class kotlin.String but class kotlin.Int")
+        expectThat(input.string).isEqualTo("string")
+        expectThrows<NoSuchElementException> { container(mapOf()).string }.message.isEqualTo("Field <string> is missing")
+        expectThrows<NoSuchElementException> { input.notAString }.message.isEqualTo("Value for field <notAString> is not a class kotlin.String but class kotlin.Int")
 
-        expectThat(input.booleanField).isEqualTo(true)
-        expectThat(input.intField).isEqualTo(123)
-        expectThat(input.longField).isEqualTo(Long.MAX_VALUE)
-        expectThat(input.decimalField).isEqualTo(1.1234)
+        expectThat(input.boolean).isEqualTo(true)
+        expectThat(input.int).isEqualTo(123)
+        expectThat(input.long).isEqualTo(Long.MAX_VALUE)
+        expectThat(input.double).isEqualTo(1.1234)
 
-        expectThat(input.mappedField).isEqualTo(123)
-        expectThrows<ClassCastException> { container(mapOf("mappedField" to 123)).mappedField }
-        expectThat(input.valueField).isEqualTo(MyType.of(123))
+        expectThat(input.mapped).isEqualTo(123)
+        expectThrows<ClassCastException> { container(mapOf("mapped" to 123)).mapped }
+        expectThat(input.value).isEqualTo(MyType.of(123))
 
-        expectThat(input.optionalField).isEqualTo("optional")
-        expectThat(container(mapOf()).optionalField).isNull()
+        expectThat(input.optional).isEqualTo("optional")
+        expectThat(container(mapOf()).optional).isNull()
 
-        expectThat(input.optionalValueField).isEqualTo(MyType.of(123))
-        expectThat(container(mapOf()).optionalValueField).isNull()
+        expectThat(input.optionalValue).isEqualTo(MyType.of(123))
+        expectThat(container(mapOf()).optionalValue).isNull()
     }
 
     @Test
-    fun `object inputs`() {
+    fun `can write primitives values`() {
         val input = container(
             mapOf(
-                "objectField" to mapOf(
-                    "stringField" to "string"
+                "string" to "string",
+                "boolean" to true,
+                "int" to 123,
+                "long" to Long.MAX_VALUE,
+                "double" to 1.1234,
+                "value" to 123,
+                "mapped" to "123",
+
+                "optionalValue" to 123,
+                "optional" to "optional",
+            )
+        )
+
+        expectSetWorks(input::string, "123")
+        expectSetWorks(input::boolean, false)
+        expectSetWorks(input::int, 999)
+        expectSetWorks(input::long, 0)
+        expectSetWorks(input::double, 5.4536)
+
+        expectSetWorks(input::optional, "123123")
+        expectSetWorks(input::optional, null)
+        expectSetWorks(input::mapped, 123)
+    }
+
+    @Test
+    fun `read object values`() {
+        val input = container(
+            mapOf(
+                "subClass" to mapOf(
+                    "string" to "string"
                 ),
-                "optionalObjectField" to mapOf(
-                    "stringField" to "string"
+                "optionalSubClass" to mapOf(
+                    "string" to "string"
                 )
             )
         )
 
-        expectThat(input.objectField.stringField).isEqualTo("string")
-        expectThrows<NoSuchElementException> { input.objectField.noSuchField }.message.isEqualTo("Field <noSuchField> is missing")
+        expectThat(input.subClass.string).isEqualTo("string")
+        expectThrows<NoSuchElementException> { input.subClass.noSuch }.message.isEqualTo("Field <noSuch> is missing")
 
-        expectThat(input.optionalObjectField?.stringField).isEqualTo("string")
-        expectThat(container(mapOf()).optionalObjectField).isNull()
+        expectThat(input.optionalSubClass?.string).isEqualTo("string")
+        expectThat(container(mapOf()).optionalSubClass).isNull()
+        expectThat(input.optionalSubClass?.string).isEqualTo("string")
     }
 
     @Test
-    fun `list inputs`() {
-        val listInput = container(
+    fun `write object values`() {
+        val objFieldNext = mapOf(
+            "string" to "string2"
+        )
+        val input = container(
             mapOf(
-                "listField" to listOf("string1", "string2"),
-                "listIntsField" to listOf(1, 2, 3),
-                "listValueField" to listOf(1, 2, 3),
-                "listSubClassField" to listOf(
-                    mapOf("stringField" to "string1"),
-                    mapOf("stringField" to "string2"),
-                ),
-                "optionalListField" to listOf("hello")
+                "object" to objFieldNext,
+                "optionalObject" to mapOf(
+                    "string" to "string"
+                )
             )
         )
-        expectThat(listInput.listField).isEqualTo(listOf("string1", "string2"))
-        expectThat(listInput.listIntsField).isEqualTo(listOf(1, 2, 3))
-        expectThat(listInput.listValueField).isEqualTo(listOf(1, 2, 3).map(MyType::of))
-        expectThat(listInput.listSubClassField.map { it.stringField }).isEqualTo(listOf("string1", "string2"))
 
-        expectThat(listInput.optionalListField).isEqualTo(listOf("hello"))
-        expectThat(container(mapOf()).optionalListField).isNull()
+        val nextObj = subContainer(objFieldNext)
+        expectSetWorks(input::subClass, nextObj)
+        expectThat(input.subClass).isEqualTo(subContainer(objFieldNext))
+
+        expectSetWorks(input::optionalSubClass, nextObj)
+        expectThat(input.optionalSubClass).isEqualTo(nextObj)
+        expectSetWorks(input::optionalSubClass, null)
+        expectThat(input.optionalSubClass).isEqualTo(null)
+    }
+
+    @Test
+    fun `read list values`() {
+        val input = container(
+            mapOf(
+                "list" to listOf("string1", "string2"),
+                "listInts" to listOf(1, 2, 3),
+                "listMapped" to listOf(123, 456),
+                "listValue" to listOf(1, 2, 3),
+                "listSubClass" to listOf(
+                    mapOf("string" to "string1"),
+                    mapOf("string" to "string2"),
+                ),
+                "optionalList" to listOf("hello")
+            )
+        )
+        expectThat(input.list).isEqualTo(listOf("string1", "string2"))
+        expectThat(input.listMapped).isEqualTo(listOf("123", "456"))
+        expectThat(input.listInts).isEqualTo(listOf(1, 2, 3))
+        expectThat(input.listValue).isEqualTo(listOf(1, 2, 3).map(MyType::of))
+        expectThat(input.listSubClass.map { it.string }).isEqualTo(listOf("string1", "string2"))
+
+        expectThat(input.optionalList).isEqualTo(listOf("hello"))
+        expectThat(container(mapOf()).optionalList).isNull()
+    }
+
+    @Test
+    fun `write list values`() {
+        val input = container(
+            mapOf(
+                "list" to listOf("string1", "string2"),
+                "listSubClass" to listOf(
+                    mapOf("string" to "string1"),
+                    mapOf("string" to "string2"),
+                ),
+                "listValue" to listOf(1, 2, 3),
+                "optionalList" to listOf("hello")
+            )
+        )
+
+        expectSetWorks(input::list, listOf("123"))
+        expectSetWorks(input::listSubClass, listOf(subContainer(mapOf("123" to "123"))))
+        expectSetWorks(input::listValue, listOf(MyType.of(123), MyType.of(456)))
+        expectSetWorks(input::optionalSubClassList, listOf(subContainer(mapOf("123" to "123"))))
+        expectSetWorks(input::optionalValueList, listOf(MyType.of(123), MyType.of(456)))
+        expectSetWorks(input::optionalList, listOf("hello"))
+    }
+
+    private fun <T> expectSetWorks(prop: KMutableProperty0<T>, value: T) {
+        prop.set(value)
+        expectThat(prop.get()).isEqualTo(value)
     }
 }
