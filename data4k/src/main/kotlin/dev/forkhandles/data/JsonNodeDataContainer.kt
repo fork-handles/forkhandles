@@ -2,6 +2,8 @@ package dev.forkhandles.data
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.BigIntegerNode
+import com.fasterxml.jackson.databind.node.BinaryNode
 import com.fasterxml.jackson.databind.node.BooleanNode
 import com.fasterxml.jackson.databind.node.BooleanNode.FALSE
 import com.fasterxml.jackson.databind.node.BooleanNode.TRUE
@@ -13,8 +15,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory.instance
 import com.fasterxml.jackson.databind.node.LongNode
 import com.fasterxml.jackson.databind.node.NullNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.ShortNode
 import com.fasterxml.jackson.databind.node.TextNode
 import java.math.BigDecimal
+import java.math.BigInteger
 
 /**
  * Jackson JsonNode-based implementation of the DataContainer
@@ -37,9 +41,12 @@ open class JsonNodeDataContainer(input: JsonNode) :
             is LongNode -> input.longValue()
             is FloatNode -> input.floatValue()
             is DecimalNode -> input.decimalValue()
+            is ShortNode -> input.shortValue()
             is DoubleNode -> input.doubleValue()
+            is BinaryNode -> input.binaryValue()
             is TextNode -> input.textValue()
             is ArrayNode -> input.map(::nodeToValue)
+            is BigIntegerNode -> input.map(::nodeToValue)
             is ObjectNode -> input
             is NullNode -> null
             else -> error("Invalid node type ${input::class.java}")
@@ -54,13 +61,14 @@ open class JsonNodeDataContainer(input: JsonNode) :
                 is Int -> IntNode(this)
                 is Long -> LongNode(this)
                 is Float -> FloatNode(this)
+                is ByteArray -> BinaryNode(this)
+                is Short -> ShortNode(this)
                 is BigDecimal -> DecimalNode(this)
+                is BigInteger -> BigIntegerNode(this)
                 is Double -> DoubleNode(this)
                 is String -> TextNode(this)
                 is Iterable<*> -> ArrayNode(instance)
-                    .also {
-                        map { if (it is JsonNode) it else it.toNode() }.forEach(it::add)
-                    }
+                    .also { map { if (it is JsonNode) it else it.toNode() }.forEach(it::add) }
 
                 else -> error("Cannot set value of type ${this::class.java}")
             }

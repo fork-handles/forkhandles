@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.forkhandles.data.JsonNodeDataContainer
 import java.math.BigDecimal
+import java.math.BigInteger
 
 class JsonNodeDataContainerTest : DataContainerContract<JsonNodeDataContainerTest.SubNodeBacked>() {
 
@@ -19,6 +20,7 @@ class JsonNodeDataContainerTest : DataContainerContract<JsonNodeDataContainerTes
         override var long by required<Long>()
         override var double by required<Double>()
         override var decimal by required<BigDecimal>()
+        override var bigInt by required<BigInteger>()
         override var notAString by required<String>()
         override var listSubClass by list(::SubNodeBacked)
         override var list by list<String>()

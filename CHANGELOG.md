@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.12.2.0
+- **data4k** : Add missing node types
+
 ### v2.12.1.1
 - **data4k** : Fix problem with Jackson not replacing node
 

@@ -2,6 +2,7 @@ package dev.forkhandles.lens
 
 import dev.forkhandles.data.MapDataContainer
 import java.math.BigDecimal
+import java.math.BigInteger
 
 class MapDataContainerTest : DataContainerContract<MapDataContainerTest.SubMap>() {
 
@@ -18,6 +19,7 @@ class MapDataContainerTest : DataContainerContract<MapDataContainerTest.SubMap>(
         override var double by required<Double>()
         override var decimal by required<BigDecimal>()
         override var notAString by required<String>()
+        override var bigInt by required<BigInteger>()
 
         override var mapped by required(String::toInt, Int::toString)
 

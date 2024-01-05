@@ -9,6 +9,7 @@ import strikt.assertions.isEqualTo
 import strikt.assertions.isNull
 import strikt.assertions.message
 import java.math.BigDecimal
+import java.math.BigInteger
 import kotlin.reflect.KMutableProperty0
 
 interface MainClassFields<T : SubClassFields> {
@@ -18,6 +19,7 @@ interface MainClassFields<T : SubClassFields> {
     var long: Long
     var double: Double
     var decimal: BigDecimal
+    var bigInt: BigInteger
     var notAString: String
 
     var mapped: Int
