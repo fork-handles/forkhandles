@@ -39,14 +39,14 @@ class MapBacked(propertySet: Map<String, Any?>) : MapDataContainer(propertySet) 
     val optionalList: List<String>? by optionalList<String>()
     val optionalStringField: String? by optional<String>()
     val listSubClassField: List<SubMap> by list(::SubMap)
-    val objectField by obj(::SubMap) 
+    val objectField: SubMap by obj(::SubMap) 
     val valueField: MyInt by required(MyInt) // values4k Int tiny/micro type
 }
 
 // a sub-object
 class SubMap(propertySet: Map<String, Any?>) : MapDataContainer(propertySet) {
-     val stringField by required<String>()
-     var optionalStringField by optional<String>() // we can write to this field!
+     val stringField: String by required<String>()
+     var optionalStringField: String? by optional<String>() // we can write to this field!
 }
 
 class MyInt private constructor(value: Int) : IntValue(value) {
