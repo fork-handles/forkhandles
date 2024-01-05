@@ -4,7 +4,7 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.jvmErasure
 
-open class DataProperty<IN, OUT : Any?>(
+class DataProperty<IN, OUT : Any?>(
     private val existsFn: IN.(String) -> Boolean,
     private val getFn: IN.(String) -> OUT?,
     private val setFn: IN.(String, OUT?) -> Unit
