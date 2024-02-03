@@ -36,6 +36,10 @@ open class JsonNodeDataContainer(input: JsonNode) :
 
     companion object {
         private fun nodeToValue(input: JsonNode): Any? = when (input) {
+            is NullNode -> null
+            is TextNode -> input.textValue()
+            is ArrayNode -> input.map(::nodeToValue)
+            is ObjectNode -> input
             is BooleanNode -> input.booleanValue()
             is IntNode -> input.intValue()
             is LongNode -> input.longValue()
@@ -43,12 +47,12 @@ open class JsonNodeDataContainer(input: JsonNode) :
             is DecimalNode -> input.decimalValue()
             is ShortNode -> input.shortValue()
             is DoubleNode -> input.doubleValue()
+            is BigIntegerNode -> when {
+                input.canConvertToInt() -> input.intValue()
+                input.canConvertToLong() -> input.longValue()
+                else -> input.bigIntegerValue()
+            }
             is BinaryNode -> input.binaryValue()
-            is TextNode -> input.textValue()
-            is ArrayNode -> input.map(::nodeToValue)
-            is BigIntegerNode -> input.map(::nodeToValue)
-            is ObjectNode -> input
-            is NullNode -> null
             else -> error("Invalid node type ${input::class.java}")
         }
 

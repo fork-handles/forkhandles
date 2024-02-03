@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.12.3.1
+- **data4k** : Fix conversion of BigIntegers to int/long/bigdecimal
+
 ### v2.12.3.0
 - **all** : Upgrade of dependencies
 - **values4k** : Add CharValueFactory
