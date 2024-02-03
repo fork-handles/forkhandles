@@ -19,6 +19,7 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 typealias StringValue = AbstractValue<String>
+typealias CharValue = AbstractValue<Char>
 typealias IntValue = AbstractValue<Int>
 typealias LongValue = AbstractValue<Long>
 typealias DoubleValue = AbstractValue<Double>

@@ -74,6 +74,10 @@ open class Base16StringValueFactory<DOMAIN : Value<String>>(
     showFn: (String) -> String = { it },
 ) : ValueFactory<DOMAIN, String>(fn, rfcBase16Alphabet::matches.and(validation), parseFn, showFn)
 
+open class CharValueFactory<DOMAIN : Value<Char>>(
+    fn: (Char) -> DOMAIN, validation: Validation<Char>? = null
+) : ValueFactory<DOMAIN, Char>(fn, validation, String::first)
+
 open class IntValueFactory<DOMAIN : Value<Int>>(
     fn: (Int) -> DOMAIN, validation: Validation<Int>? = null
 ) : ValueFactory<DOMAIN, Int>(fn, validation, String::toInt)

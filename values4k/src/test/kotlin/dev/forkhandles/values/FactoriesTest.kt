@@ -6,7 +6,7 @@ import com.natpryce.hamkrest.equalTo
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.net.URL
+import java.net.URI
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
@@ -45,8 +45,10 @@ class FactoriesTest {
         "hello".also { assertThat(NonBlankStringValueFactory(::TV).parse(it), equalTo(TV(it))) }
         "   ".also { assertThat(NonBlankStringValueFactory(::TV).parseOrNull(it), absent()) }
 
+        'c'.also { assertThat(CharValueFactory(::TV).parse(it.toString()), equalTo(TV(it))) }
+
         UUID.randomUUID().also { assertThat(UUIDValueFactory(::TV).parse(it.toString()), equalTo(TV(it))) }
-        URL("http://localhost").also { assertThat(URLValueFactory(::TV).parse(it.toString()), equalTo(TV(it))) }
+        URI("http://localhost").toURL().also { assertThat(URLValueFactory(::TV).parse(it.toString()), equalTo(TV(it))) }
 
         Duration.ofHours(1).also { assertThat(DurationValueFactory(::TV).parse(it.toString()), equalTo(TV(it))) }
         Instant.now().also { assertThat(InstantValueFactory(::TV).parse(it.toString()), equalTo(TV(it))) }
