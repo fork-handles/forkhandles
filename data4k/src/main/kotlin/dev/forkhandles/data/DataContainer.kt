@@ -18,14 +18,14 @@ abstract class DataContainer<CONTENT>(
     private val setFn: (CONTENT, String, Any?) -> Unit
 ) {
     /**
-     * Retrieve the attached metaData data about each of the properties
+     * Retrieve the attached metadata data about each of the properties
      */
-    fun propertyMetaData(): List<PropertyMetaData> = kClass().memberProperties
+    fun propertyMetadata(): List<PropertyMetadata> = kClass().memberProperties
         .mapNotNull { prop ->
             prop.isAccessible = true
             val delegate = prop.getDelegate(this)
             when {
-                delegate is DataProperty<*, *> -> PropertyMetaData(prop.name, prop.returnType, delegate.data)
+                delegate is DataProperty<*, *> -> PropertyMetadata(prop.name, prop.returnType, delegate.data)
                 else -> null
             }
         }
@@ -40,15 +40,15 @@ abstract class DataContainer<CONTENT>(
     protected fun <OUT : Any?, NEXT> required(
         mapInFn: (OUT) -> NEXT,
         mapOutFn: (NEXT) -> OUT?,
-        vararg metaData: MetaDatum
+        vararg metaData: Metadatum
     ) = property<NEXT, OUT, OUT>(mapInFn, mapOutFn, *metaData)
 
-    protected fun <OUT, NEXT> required(mapInFn: (OUT) -> NEXT, vararg metaData: MetaDatum) =
+    protected fun <OUT, NEXT> required(mapInFn: (OUT) -> NEXT, vararg metaData: Metadatum) =
         required(mapInFn, { error("no outbound mapping defined") }, *metaData)
 
-    protected fun <OUT : Any> required(vararg metaData: MetaDatum) = required<OUT, OUT>({ it }, { it }, *metaData)
+    protected fun <OUT : Any> required(vararg metaData: Metadatum) = required<OUT, OUT>({ it }, { it }, *metaData)
 
-    protected fun <IN : Any, OUT : Value<IN>> required(factory: ValueFactory<OUT, IN>, vararg metaData: MetaDatum) =
+    protected fun <IN : Any, OUT : Value<IN>> required(factory: ValueFactory<OUT, IN>, vararg metaData: Metadatum) =
         required(factory::of, { it.value }, *metaData)
 
     /** Optional **/
@@ -56,16 +56,16 @@ abstract class DataContainer<CONTENT>(
     protected fun <OUT, NEXT : Any> optional(
         mapInFn: (OUT) -> NEXT,
         mapOutFn: (NEXT) -> OUT?,
-        vararg metaData: MetaDatum
+        vararg metaData: Metadatum
     ) =
         property<NEXT?, OUT, OUT>(mapInFn, { it?.let(mapOutFn) }, *metaData)
 
-    protected fun <OUT, NEXT : Any> optional(mapInFn: (OUT) -> NEXT, vararg metaData: MetaDatum) =
+    protected fun <OUT, NEXT : Any> optional(mapInFn: (OUT) -> NEXT, vararg metaData: Metadatum) =
         optional(mapInFn, { error("no outbound mapping defined") }, *metaData)
 
-    protected fun <OUT> optional(vararg metaData: MetaDatum) = property<OUT?, OUT, OUT>({ it }, { it }, *metaData)
+    protected fun <OUT> optional(vararg metaData: Metadatum) = property<OUT?, OUT, OUT>({ it }, { it }, *metaData)
 
-    protected fun <IN : Any, OUT : Value<IN>> optional(factory: ValueFactory<OUT, IN>, vararg metaData: MetaDatum) =
+    protected fun <IN : Any, OUT : Value<IN>> optional(factory: ValueFactory<OUT, IN>, vararg metaData: Metadatum) =
         optional(factory::of, { it.value }, *metaData)
 
     /** Object **/
@@ -73,50 +73,50 @@ abstract class DataContainer<CONTENT>(
     protected fun <OUT : DataContainer<CONTENT>> obj(
         mapInFn: (CONTENT) -> OUT,
         mapOutFn: (OUT) -> CONTENT?,
-        vararg metaData: MetaDatum
+        vararg metaData: Metadatum
     ) =
         property<OUT, CONTENT, CONTENT>(mapInFn, mapOutFn, *metaData)
 
-    protected fun <OUT : DataContainer<CONTENT>> obj(mapInFn: (CONTENT) -> OUT, vararg metaData: MetaDatum) =
+    protected fun <OUT : DataContainer<CONTENT>> obj(mapInFn: (CONTENT) -> OUT, vararg metaData: Metadatum) =
         obj(mapInFn, { it.content }, *metaData)
 
-    protected fun <OUT : DataContainer<CONTENT>> optionalObj(mapInFn: (CONTENT) -> OUT, vararg metaData: MetaDatum) =
+    protected fun <OUT : DataContainer<CONTENT>> optionalObj(mapInFn: (CONTENT) -> OUT, vararg metaData: Metadatum) =
         property<OUT?, CONTENT, CONTENT>(mapInFn, { it?.content }, *metaData)
 
     /** List **/
 
     protected fun <OUT, IN> list(
         mapInFn: (IN) -> OUT, mapOutFn: (OUT) -> IN?,
-        vararg metaData: MetaDatum
+        vararg metaData: Metadatum
     ) =
         property<List<OUT>, List<IN>, List<IN>>({ it.map(mapInFn) }, { it.mapNotNull(mapOutFn) }, *metaData)
 
-    protected fun <IN, OUT> list(mapInFn: (IN) -> OUT, vararg metaData: MetaDatum) =
+    protected fun <IN, OUT> list(mapInFn: (IN) -> OUT, vararg metaData: Metadatum) =
         list(mapInFn, { error("no outbound mapping defined") }, *metaData)
 
-    protected fun <OUT> list(vararg metaData: MetaDatum) = list<OUT, OUT>({ it }, { it }, *metaData)
+    protected fun <OUT> list(vararg metaData: Metadatum) = list<OUT, OUT>({ it }, { it }, *metaData)
 
-    protected fun <IN : Any, OUT : Value<IN>> list(factory: ValueFactory<OUT, IN>, vararg metaData: MetaDatum) =
+    protected fun <IN : Any, OUT : Value<IN>> list(factory: ValueFactory<OUT, IN>, vararg metaData: Metadatum) =
         list(factory::of, { it.value }, *metaData)
 
     @JvmName("listDataContainer")
-    protected fun <OUT : DataContainer<CONTENT>?> list(mapInFn: (CONTENT) -> OUT, vararg metaData: MetaDatum) =
+    protected fun <OUT : DataContainer<CONTENT>?> list(mapInFn: (CONTENT) -> OUT, vararg metaData: Metadatum) =
         list(mapInFn, { it?.content }, *metaData)
 
-    protected fun <OUT, IN> optionalList(mapInFn: (IN) -> OUT, mapOutFn: (OUT) -> IN?, vararg metaData: MetaDatum) =
+    protected fun <OUT, IN> optionalList(mapInFn: (IN) -> OUT, mapOutFn: (OUT) -> IN?, vararg metaData: Metadatum) =
         property<List<OUT>?, List<IN>, List<IN>>({ it.map(mapInFn) }, { it?.mapNotNull(mapOutFn) }, *metaData)
 
-    protected fun <OUT, IN> optionalList(mapInFn: (IN) -> OUT, vararg metaData: MetaDatum) =
+    protected fun <OUT, IN> optionalList(mapInFn: (IN) -> OUT, vararg metaData: Metadatum) =
         optionalList(mapInFn, { error("no outbound mapping defined") }, *metaData)
 
-    protected fun <OUT> optionalList(vararg metaData: MetaDatum) =
+    protected fun <OUT> optionalList(vararg metaData: Metadatum) =
         optionalList<OUT, OUT & Any>({ it }, { it }, *metaData)
 
-    protected fun <IN : Any, OUT : Value<IN>> optionalList(factory: ValueFactory<OUT, IN>, vararg metaData: MetaDatum) =
+    protected fun <IN : Any, OUT : Value<IN>> optionalList(factory: ValueFactory<OUT, IN>, vararg metaData: Metadatum) =
         optionalList(factory::of, { it.value }, *metaData)
 
     @JvmName("optionalListDataContainer")
-    protected fun <OUT : DataContainer<CONTENT>?> optionalList(mapInFn: (CONTENT) -> OUT, vararg metaData: MetaDatum) =
+    protected fun <OUT : DataContainer<CONTENT>?> optionalList(mapInFn: (CONTENT) -> OUT, vararg metaData: Metadatum) =
         optionalList(mapInFn, { it?.content }, *metaData)
 
     /** Utility **/
@@ -137,7 +137,7 @@ abstract class DataContainer<CONTENT>(
     private fun <IN, OUT : Any?, OUT2> property(
         mapInFn: (OUT) -> IN,
         mapOutFn: (IN) -> OUT2?,
-        vararg metaData: MetaDatum
+        vararg metaData: Metadatum
     ) =
         DataProperty<DataContainer<CONTENT>, IN>(
             { existsFn(content, it) },

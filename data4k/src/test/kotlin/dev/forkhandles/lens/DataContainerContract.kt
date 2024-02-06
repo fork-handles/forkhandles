@@ -1,8 +1,8 @@
 package dev.forkhandles.lens
 
 import dev.forkhandles.data.DataContainer
-import dev.forkhandles.data.MetaDatum
-import dev.forkhandles.data.PropertyMetaData
+import dev.forkhandles.data.Metadatum
+import dev.forkhandles.data.PropertyMetadata
 import dev.forkhandles.lens.ContainerMeta.bar
 import dev.forkhandles.lens.ContainerMeta.foo
 import dev.forkhandles.values.IntValue
@@ -53,7 +53,7 @@ interface MainClassFields<T : SubClassFields> {
     var optionalMappedList: List<Int>?
 }
 
-enum class ContainerMeta : MetaDatum {
+enum class ContainerMeta : Metadatum {
     foo, bar
 }
 
@@ -236,8 +236,8 @@ abstract class DataContainerContract<T : SubClassFields> {
     fun `get meta data from the container`() {
         val input = container(emptyMap()) as DataContainer<*>
 
-        val propertyMetaData = input.propertyMetaData().find { it.name == "string" }
-        expectThat(propertyMetaData).isEqualTo(PropertyMetaData("string", String::class.starProjectedType, listOf(foo, bar)))
+        val propertyMetaData = input.propertyMetadata().find { it.name == "string" }
+        expectThat(propertyMetaData).isEqualTo(PropertyMetadata("string", String::class.starProjectedType, listOf(foo, bar)))
     }
 
     private fun <T> expectSetWorks(prop: KMutableProperty0<T>, value: T) {

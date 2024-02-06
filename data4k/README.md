@@ -73,3 +73,29 @@ val data: String = input.objectField.stringField
 // to write into the structure, just assign to a var
 input.objectField.optionalStringField = "hello"
 ```
+
+
+## Adding metadata to properties
+
+data4k includes the ability to attach metadata to each property, which can be used for later retrieval from the instance of the container. To use:
+
+```kotlin
+// a custom type of metadatum
+data class TagMetadatum(val tag: String, val value: String) : MetaDatum
+
+class MetaDataMapContainer(propertySet: Map<String, Any?>) : MapDataContainer(propertySet) {
+    // create fields as usual, but attach the metadata in the declaration
+    val stringField: String by required<String>(TagMetadatum("tag", "tagValue"))
+}
+
+val container = MetaDataMapContainer(mapOf())
+
+// get all metadata for fields
+val metadata: List<PropertyMetadata> = container.propertyMetadata()
+
+// each field can have multiple pieces of metadata and also contains the name and the KType of the field
+val metadatum: List<Metadatum> = metadata.data
+
+// get some data from the list..
+val tagValue = (metadatum.first() as TagMetadatum).value
+```

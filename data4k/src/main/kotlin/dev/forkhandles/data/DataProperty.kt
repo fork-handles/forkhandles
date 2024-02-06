@@ -8,7 +8,7 @@ class DataProperty<IN, OUT : Any?>(
     private val existsFn: IN.(String) -> Boolean,
     private val getFn: IN.(String) -> OUT?,
     private val setFn: IN.(String, OUT?) -> Unit,
-    val data: List<MetaDatum>
+    val data: List<Metadatum>
 ) : ReadWriteProperty<IN, OUT> {
 
     @Suppress("UNCHECKED_CAST")
