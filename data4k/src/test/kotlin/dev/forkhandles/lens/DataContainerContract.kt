@@ -77,7 +77,6 @@ abstract class DataContainerContract<T : SubClassFields> {
                 "notAString" to 123,
                 "value" to 123,
                 "mapped" to "123",
-
                 "optionalValue" to 123,
                 "optional" to "optional",
             )
