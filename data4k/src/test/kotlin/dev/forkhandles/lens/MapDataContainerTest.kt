@@ -12,6 +12,7 @@ class MapDataContainerTest : DataContainerContract<MapDataContainerTest.SubMap>(
     }
 
     class MapBacked(map: Map<String, Any?>) : MapDataContainer(map), MainClassFields<SubMap> {
+        override var standardField = "foobar"
         override var string by required<String>()
         override var boolean by required<Boolean>()
         override var int by required<Int>()

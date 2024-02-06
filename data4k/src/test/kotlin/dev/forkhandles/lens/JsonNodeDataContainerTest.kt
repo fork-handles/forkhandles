@@ -16,6 +16,7 @@ class JsonNodeDataContainerTest : DataContainerContract<JsonNodeDataContainerTes
     }
 
     class NodeBacked(node: JsonNode) : JsonNodeDataContainer(node), MainClassFields<SubNodeBacked> {
+        override var standardField = "foobar"
         override var string by required<String>(foo, bar)
         override var boolean by required<Boolean>(foo, bar)
         override var int by required<Int>(foo, bar)

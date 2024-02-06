@@ -12,8 +12,12 @@ import strikt.assertions.message
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.reflect.KMutableProperty0
+import kotlin.reflect.full.declaredMemberProperties
 
 interface MainClassFields<T : SubClassFields> {
+
+    var standardField: String
+
     var string: String
     var boolean: Boolean
     var int: Int
@@ -82,6 +86,8 @@ abstract class DataContainerContract<T : SubClassFields> {
             )
         )
 
+        expectThat(input.standardField).isEqualTo("foobar")
+
         expectThat(input.string).isEqualTo("string")
         expectThrows<NoSuchElementException> { container(mapOf()).string }.message.isEqualTo("Field <string> is missing")
         expectThrows<NoSuchElementException> { input.notAString }.message.isEqualTo("Value for field <notAString> is not a class kotlin.String but class kotlin.Int")
@@ -119,6 +125,7 @@ abstract class DataContainerContract<T : SubClassFields> {
             )
         )
 
+        expectSetWorks(input::standardField, "123")
         expectSetWorks(input::string, "123")
         expectSetWorks(input::boolean, false)
         expectSetWorks(input::int, 999)
@@ -213,6 +220,24 @@ abstract class DataContainerContract<T : SubClassFields> {
                 "optionalList" to listOf("hello")
             )
         )
+
+        expectSetWorks(input::list, listOf("123"))
+        expectSetWorks(input::listSubClass, listOf(subContainer(mapOf("123" to "123"))))
+        expectSetWorks(input::listValue, listOf(MyType.of(123), MyType.of(456)))
+        expectSetWorks(input::optionalSubClassList, listOf(subContainer(mapOf("123" to "123"))))
+        expectSetWorks(input::optionalValueList, listOf(MyType.of(123), MyType.of(456)))
+        expectSetWorks(input::optionalList, listOf("hello"))
+    }
+
+    @Test
+    fun `get meta data from the container`() {
+        val input = container(
+            mapOf(
+                "list" to listOf("string1", "string2")
+            )
+        )
+
+        input::class.declaredMemberProperties
 
         expectSetWorks(input::list, listOf("123"))
         expectSetWorks(input::listSubClass, listOf(subContainer(mapOf("123" to "123"))))
