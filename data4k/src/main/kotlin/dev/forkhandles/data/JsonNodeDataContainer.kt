@@ -23,7 +23,7 @@ import java.math.BigInteger
 /**
  * Jackson JsonNode-based implementation of the DataContainer
  */
-open class JsonNodeDataContainer(input: JsonNode) :
+open class JsonNodeDataContainer(input: JsonNode = instance.objectNode()) :
     DataContainer<JsonNode>(
         input,
         { content, it -> content.has(it) },
