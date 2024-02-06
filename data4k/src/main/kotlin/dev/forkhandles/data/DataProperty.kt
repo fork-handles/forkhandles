@@ -7,8 +7,10 @@ import kotlin.reflect.jvm.jvmErasure
 class DataProperty<IN, OUT : Any?>(
     private val existsFn: IN.(String) -> Boolean,
     private val getFn: IN.(String) -> OUT?,
-    private val setFn: IN.(String, OUT?) -> Unit
+    private val setFn: IN.(String, OUT?) -> Unit,
+    val meta: List<MetaProperty>
 ) : ReadWriteProperty<IN, OUT> {
+
     @Suppress("UNCHECKED_CAST")
     override fun getValue(thisRef: IN, property: KProperty<*>): OUT {
         val result = thisRef.getFn(property.name)

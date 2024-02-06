@@ -1,5 +1,6 @@
 package dev.forkhandles.lens
 
+import dev.forkhandles.data.MetaProperty
 import dev.forkhandles.values.IntValue
 import dev.forkhandles.values.IntValueFactory
 import org.junit.jupiter.api.Test
@@ -42,6 +43,11 @@ interface MainClassFields<T : SubClassFields> {
     var optionalList: List<String>?
     var optionalValueList: List<MyType>?
     var optionalMappedList: List<Int>?
+}
+
+
+enum class ContainerMeta : MetaProperty {
+    foo, bar
 }
 
 interface SubClassFields {
