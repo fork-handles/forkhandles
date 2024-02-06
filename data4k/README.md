@@ -81,14 +81,14 @@ data4k includes the ability to attach metadata to each property, which can be us
 
 ```kotlin
 // a custom type of metadatum
-data class TagMetadatum(val tag: String, val value: String) : MetaDatum
+data class TagMetadatum(val tag: String, val value: String) : Metadatum
 
 class MetaDataMapContainer(propertySet: Map<String, Any?>) : MapDataContainer(propertySet) {
     // create fields as usual, but attach the metadata in the declaration
     val stringField: String by required<String>(TagMetadatum("tag", "tagValue"))
 }
 
-val container = MetaDataMapContainer(mapOf())
+val container = MetadataMapContainer(mapOf())
 
 // get all metadata for fields
 val metadata: List<PropertyMetadata> = container.propertyMetadata()
