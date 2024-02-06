@@ -21,63 +21,70 @@ abstract class DataContainer<CONTENT>(
 
     /** Required **/
 
-    fun <OUT : Any?, NEXT> required(mapInFn: (OUT) -> NEXT, mapOutFn: (NEXT) -> OUT?) =
+    protected fun <OUT : Any?, NEXT> required(mapInFn: (OUT) -> NEXT, mapOutFn: (NEXT) -> OUT?) =
         property<NEXT, OUT, OUT>(mapInFn, mapOutFn)
 
-    fun <OUT, NEXT> required(mapInFn: (OUT) -> NEXT) = required(mapInFn) { error("no outbound mapping defined") }
+    protected fun <OUT, NEXT> required(mapInFn: (OUT) -> NEXT) =
+        required(mapInFn) { error("no outbound mapping defined") }
 
-    fun <OUT : Any> required() = required<OUT, OUT>({ it }, { it })
 
-    fun <IN : Any, OUT : Value<IN>> required(factory: ValueFactory<OUT, IN>) = required(factory::of) { it.value }
+    protected fun <OUT : Any> required() = required<OUT, OUT>({ it }, { it })
+
+    protected fun <IN : Any, OUT : Value<IN>> required(factory: ValueFactory<OUT, IN>) =
+        required(factory::of) { it.value }
 
     /** Optional **/
 
-    fun <OUT, NEXT : Any> optional(mapInFn: (OUT) -> NEXT, mapOutFn: (NEXT) -> OUT?) =
+    protected fun <OUT, NEXT : Any> optional(mapInFn: (OUT) -> NEXT, mapOutFn: (NEXT) -> OUT?) =
         property<NEXT?, OUT, OUT>(mapInFn) { it?.let(mapOutFn) }
 
-    fun <OUT, NEXT : Any> optional(mapInFn: (OUT) -> NEXT) = optional(mapInFn) { error("no outbound mapping defined") }
+    protected fun <OUT, NEXT : Any> optional(mapInFn: (OUT) -> NEXT) =
+        optional(mapInFn) { error("no outbound mapping defined") }
 
-    fun <OUT> optional() = property<OUT?, OUT, OUT>({ it }, { it })
+    protected fun <OUT> optional() = property<OUT?, OUT, OUT>({ it }, { it })
 
-    fun <IN : Any, OUT : Value<IN>> optional(factory: ValueFactory<OUT, IN>) = optional(factory::of) { it.value }
+    protected fun <IN : Any, OUT : Value<IN>> optional(factory: ValueFactory<OUT, IN>) =
+        optional(factory::of) { it.value }
 
     /** Object **/
 
-    fun <OUT : DataContainer<CONTENT>> obj(mapInFn: (CONTENT) -> OUT, mapOutFn: (OUT) -> CONTENT?) =
+    protected fun <OUT : DataContainer<CONTENT>> obj(mapInFn: (CONTENT) -> OUT, mapOutFn: (OUT) -> CONTENT?) =
         property<OUT, CONTENT, CONTENT>(mapInFn, mapOutFn)
 
-    fun <OUT : DataContainer<CONTENT>> obj(mapInFn: (CONTENT) -> OUT) =
+    protected fun <OUT : DataContainer<CONTENT>> obj(mapInFn: (CONTENT) -> OUT) =
         obj(mapInFn) { it.content }
 
-    fun <OUT : DataContainer<CONTENT>> optionalObj(mapInFn: (CONTENT) -> OUT) =
+    protected fun <OUT : DataContainer<CONTENT>> optionalObj(mapInFn: (CONTENT) -> OUT) =
         property<OUT?, CONTENT, CONTENT>(mapInFn) { it?.content }
 
     /** List **/
 
-    fun <OUT, IN> list(mapInFn: (IN) -> OUT, mapOutFn: (OUT) -> IN?) =
+    protected fun <OUT, IN> list(mapInFn: (IN) -> OUT, mapOutFn: (OUT) -> IN?) =
         property<List<OUT>, List<IN>, List<IN>>({ it.map(mapInFn) }, { it.mapNotNull(mapOutFn) })
 
-    fun <IN, OUT> list(mapInFn: (IN) -> OUT) = list(mapInFn) { error("no outbound mapping defined") }
+    protected fun <IN, OUT> list(mapInFn: (IN) -> OUT) = list(mapInFn) { error("no outbound mapping defined") }
 
-    fun <OUT> list() = list<OUT, OUT>({ it }, { it })
+    protected fun <OUT> list() = list<OUT, OUT>({ it }, { it })
 
-    fun <IN : Any, OUT : Value<IN>> list(factory: ValueFactory<OUT, IN>) = list(factory::of) { it.value }
+    protected fun <IN : Any, OUT : Value<IN>> list(factory: ValueFactory<OUT, IN>) = list(factory::of) { it.value }
 
     @JvmName("listDataContainer")
-    fun <OUT : DataContainer<CONTENT>?> list(mapInFn: (CONTENT) -> OUT) = list(mapInFn) { it?.content }
+    protected fun <OUT : DataContainer<CONTENT>?> list(mapInFn: (CONTENT) -> OUT) = list(mapInFn) { it?.content }
 
-    fun <OUT, IN> optionalList(mapInFn: (IN) -> OUT, mapOutFn: (OUT) -> IN?) =
+    protected fun <OUT, IN> optionalList(mapInFn: (IN) -> OUT, mapOutFn: (OUT) -> IN?) =
         property<List<OUT>?, List<IN>, List<IN>>({ it.map(mapInFn) }, { it?.mapNotNull(mapOutFn) })
 
-    fun <OUT, IN> optionalList(mapInFn: (IN) -> OUT) = optionalList(mapInFn) { error("no outbound mapping defined") }
+    protected fun <OUT, IN> optionalList(mapInFn: (IN) -> OUT) =
+        optionalList(mapInFn) { error("no outbound mapping defined") }
 
-    fun <OUT> optionalList() = optionalList<OUT, OUT & Any>({ it }, { it })
+    protected fun <OUT> optionalList() = optionalList<OUT, OUT & Any>({ it }, { it })
 
-    fun <IN : Any, OUT : Value<IN>> optionalList(factory: ValueFactory<OUT, IN>) =
+    protected fun <IN : Any, OUT : Value<IN>> optionalList(factory: ValueFactory<OUT, IN>) =
         optionalList(factory::of) { it.value }
 
     @JvmName("optionalListDataContainer")
-    fun <OUT : DataContainer<CONTENT>?> optionalList(mapInFn: (CONTENT) -> OUT) = optionalList(mapInFn) { it?.content }
+    protected fun <OUT : DataContainer<CONTENT>?> optionalList(mapInFn: (CONTENT) -> OUT) =
+        optionalList(mapInFn) { it?.content }
 
     /** Utility **/
 
