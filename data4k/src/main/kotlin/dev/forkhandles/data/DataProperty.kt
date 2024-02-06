@@ -8,7 +8,7 @@ class DataProperty<IN, OUT : Any?>(
     private val existsFn: IN.(String) -> Boolean,
     private val getFn: IN.(String) -> OUT?,
     private val setFn: IN.(String, OUT?) -> Unit,
-    val meta: List<MetaProperty>
+    val data: List<MetaDatum>
 ) : ReadWriteProperty<IN, OUT> {
 
     @Suppress("UNCHECKED_CAST")
@@ -30,4 +30,3 @@ class DataProperty<IN, OUT : Any?>(
 
     override fun setValue(thisRef: IN, property: KProperty<*>, value: OUT) = thisRef.setFn(property.name, value)
 }
-

@@ -1,6 +1,10 @@
 package dev.forkhandles.lens
 
-import dev.forkhandles.data.MetaProperty
+import dev.forkhandles.data.DataContainer
+import dev.forkhandles.data.MetaDatum
+import dev.forkhandles.data.PropertyMetaData
+import dev.forkhandles.lens.ContainerMeta.bar
+import dev.forkhandles.lens.ContainerMeta.foo
 import dev.forkhandles.values.IntValue
 import dev.forkhandles.values.IntValueFactory
 import org.junit.jupiter.api.Test
@@ -12,7 +16,7 @@ import strikt.assertions.message
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.reflect.KMutableProperty0
-import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.starProjectedType
 
 interface MainClassFields<T : SubClassFields> {
 
@@ -49,8 +53,7 @@ interface MainClassFields<T : SubClassFields> {
     var optionalMappedList: List<Int>?
 }
 
-
-enum class ContainerMeta : MetaProperty {
+enum class ContainerMeta : MetaDatum {
     foo, bar
 }
 
@@ -231,20 +234,10 @@ abstract class DataContainerContract<T : SubClassFields> {
 
     @Test
     fun `get meta data from the container`() {
-        val input = container(
-            mapOf(
-                "list" to listOf("string1", "string2")
-            )
-        )
+        val input = container(emptyMap()) as DataContainer<*>
 
-        input::class.declaredMemberProperties
-
-        expectSetWorks(input::list, listOf("123"))
-        expectSetWorks(input::listSubClass, listOf(subContainer(mapOf("123" to "123"))))
-        expectSetWorks(input::listValue, listOf(MyType.of(123), MyType.of(456)))
-        expectSetWorks(input::optionalSubClassList, listOf(subContainer(mapOf("123" to "123"))))
-        expectSetWorks(input::optionalValueList, listOf(MyType.of(123), MyType.of(456)))
-        expectSetWorks(input::optionalList, listOf("hello"))
+        val propertyMetaData = input.propertyMetaData().find { it.name == "string" }
+        expectThat(propertyMetaData).isEqualTo(PropertyMetaData("string", String::class.starProjectedType, listOf(foo, bar)))
     }
 
     private fun <T> expectSetWorks(prop: KMutableProperty0<T>, value: T) {
