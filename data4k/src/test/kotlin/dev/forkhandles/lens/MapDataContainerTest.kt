@@ -6,14 +6,14 @@ import dev.forkhandles.lens.ContainerMeta.foo
 import java.math.BigDecimal
 import java.math.BigInteger
 
-class MapDataContainerTest : DataContainerContract<MapDataContainerTest.SubMap>() {
+class MapDataContainerTest : ComplexClassFieldsDataContainerContract<MapDataContainerTest.SubMap> {
 
     class SubMap(propertySet: Map<String, Any?>) : MapDataContainer(propertySet), SubClassFields {
         override var string by required<String>()
         override var noSuch by required<String>()
     }
 
-    class MapBacked(map: Map<String, Any?>) : MapDataContainer(map), MainClassFields<SubMap> {
+    class MapBacked(map: Map<String, Any?>) : MapDataContainer(map), PolymorphicClassFields, ComplexClassFields<SubMap> {
         override var standardField = "foobar"
         override var string by required<String>(foo, bar)
         override var boolean by required<Boolean>(foo, bar)
@@ -21,7 +21,7 @@ class MapDataContainerTest : DataContainerContract<MapDataContainerTest.SubMap>(
         override var long by required<Long>(foo, bar)
         override var double by required<Double>(foo, bar)
         override var decimal by required<BigDecimal>(foo, bar)
-        override var notAString by required<String>(foo, bar)
+        override var notAnInt by required<Int>(foo, bar)
         override var bigInt by required<BigInteger>(foo, bar)
 
         override var mapped by required(String::toInt, Int::toString, foo, bar)
