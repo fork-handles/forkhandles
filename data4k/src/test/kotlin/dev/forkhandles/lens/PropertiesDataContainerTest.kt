@@ -14,6 +14,8 @@ class PropertiesDataContainerTest : SimpleClassFieldsContract {
 
         override var optional by optional<String>(foo, bar)
         override var optionalList by optionalList<String>(foo, bar)
+
+        override var mapped by required(String::toInt, Int::toString, foo, bar)
     }
 
     override fun container(input: Map<String, Any?>) = PropertiesBacked(Properties().also { props ->

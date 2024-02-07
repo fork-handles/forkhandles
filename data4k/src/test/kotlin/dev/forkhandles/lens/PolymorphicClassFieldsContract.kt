@@ -10,16 +10,6 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.reflect.KMutableProperty0
 
-interface SimpleClassFields {
-    var standardField: String
-
-    var string: String
-    var list: List<String>
-    var optional: String?
-    var optionalList: List<String>?
-
-}
-
 interface PolymorphicClassFields : SimpleClassFields {
     var boolean: Boolean
     var int: Int
@@ -35,7 +25,6 @@ interface PolymorphicClassFields : SimpleClassFields {
     var value: MyType
 
     val listMapped: List<String>
-    var mapped: Int
     var optionalMapped: Int?
     var optionalMappedList: List<Int>?
 
@@ -75,7 +64,6 @@ interface PolymorphicClassFieldsContract : SimpleClassFieldsContract {
         expectThat(input.long).isEqualTo(Long.MAX_VALUE)
         expectThat(input.double).isEqualTo(1.1234)
 
-        expectThat(input.mapped).isEqualTo(123)
         expectThrows<ClassCastException> { container(mapOf("mapped" to 123)).mapped }
         expectThat(input.value).isEqualTo(MyType.of(123))
 

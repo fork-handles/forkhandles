@@ -10,6 +10,17 @@ import strikt.assertions.isNull
 import strikt.assertions.message
 import kotlin.reflect.full.starProjectedType
 
+interface SimpleClassFields {
+    var standardField: String
+
+    var string: String
+    var list: List<String>
+    var optional: String?
+    var optionalList: List<String>?
+
+    var mapped: Int
+}
+
 interface SimpleClassFieldsContract {
     fun container(input: Map<String, Any?>): SimpleClassFields
 
@@ -30,6 +41,8 @@ interface SimpleClassFieldsContract {
 
         expectThat(input.optional).isEqualTo("optional")
         expectThat(container(mapOf()).optional).isNull()
+
+        expectThat(input.mapped).isEqualTo(123)
     }
 
     @Test
