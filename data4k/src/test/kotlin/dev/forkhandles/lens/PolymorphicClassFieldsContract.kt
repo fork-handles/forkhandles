@@ -17,10 +17,6 @@ interface SimpleClassFields {
     var list: List<String>
     var optional: String?
     var optionalList: List<String>?
-    var mapped: Int
-    val listMapped: List<String>
-    var optionalMapped: Int?
-    var optionalMappedList: List<Int>?
 
 }
 
@@ -37,6 +33,11 @@ interface PolymorphicClassFields : SimpleClassFields {
     var listValue: List<MyType>
 
     var value: MyType
+
+    val listMapped: List<String>
+    var mapped: Int
+    var optionalMapped: Int?
+    var optionalMappedList: List<Int>?
 
     val optionalValue: MyType?
     var optionalValueList: List<MyType>?
@@ -55,7 +56,6 @@ interface PolymorphicClassFieldsContract : SimpleClassFieldsContract {
     fun `can read polymorphic values`() {
         val input = container(
             mapOf(
-                "string" to "string",
                 "boolean" to true,
                 "int" to 123,
                 "long" to Long.MAX_VALUE,
@@ -65,14 +65,9 @@ interface PolymorphicClassFieldsContract : SimpleClassFieldsContract {
                 "value" to 123,
                 "mapped" to "123",
                 "optionalValue" to 123,
-                "optional" to "optional",
             )
         )
 
-        expectThat(input.standardField).isEqualTo("foobar")
-
-        expectThat(input.string).isEqualTo("string")
-        expectThrows<NoSuchElementException> { container(mapOf()).string }.message.isEqualTo("Field <string> is missing")
         expectThrows<NoSuchElementException> { input.notAnInt }.message.isEqualTo("Value for field <notAnInt> is not a class kotlin.Int but class kotlin.String")
 
         expectThat(input.boolean).isEqualTo(true)
@@ -84,9 +79,6 @@ interface PolymorphicClassFieldsContract : SimpleClassFieldsContract {
         expectThrows<ClassCastException> { container(mapOf("mapped" to 123)).mapped }
         expectThat(input.value).isEqualTo(MyType.of(123))
 
-        expectThat(input.optional).isEqualTo("optional")
-        expectThat(container(mapOf()).optional).isNull()
-
         expectThat(input.optionalValue).isEqualTo(MyType.of(123))
         expectThat(container(mapOf()).optionalValue).isNull()
     }
@@ -95,16 +87,13 @@ interface PolymorphicClassFieldsContract : SimpleClassFieldsContract {
     fun `can write polymorphic values`() {
         val input = container(
             mapOf(
-                "string" to "string",
                 "boolean" to true,
                 "int" to 123,
                 "long" to Long.MAX_VALUE,
                 "double" to 1.1234,
                 "value" to 123,
                 "mapped" to "123",
-
                 "optionalValue" to 123,
-                "optional" to "optional",
             )
         )
 
@@ -119,8 +108,6 @@ interface PolymorphicClassFieldsContract : SimpleClassFieldsContract {
         expectSetWorks(input::optional, null)
         expectSetWorks(input::mapped, 123)
     }
-
-
 }
 
 fun <T> expectSetWorks(prop: KMutableProperty0<T>, value: T) {
