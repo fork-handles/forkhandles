@@ -1,0 +1,30 @@
+@startuml
+skinparam state  {
+   BackgroundColor<<Command>> PaleGoldenRod
+   BorderColor<<Command>> PaleGoldenRod
+}
+
+state two {
+    state "firedOnTwo" as two_firedOnTwo <<Command>>
+}
+state four {
+    state "eject" as four_eject <<Command>>
+}
+state six {
+    state "eject" as six_eject <<Command>>
+}
+state three {
+    state "firedOnThree" as three_firedOnThree <<Command>>
+}
+state five {
+
+}
+
+title helloworld
+  one --> two : OneToTwoEvent
+  one --> four : OneToFourEvent
+  one --> six : OneToSixEvent
+  two --> three : TwoToThreeEvent
+  three --> four : ThreeToFourEvent
+  four --> five : ThreeToFourEvent
+@enduml

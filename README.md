@@ -15,6 +15,7 @@ Forkhandles (4k) contains foundational libraries for Kotlin
 - [Parser4k](parser4k) - Recursive descent parser combinator library
 - [Partial4k](partial4k) - Adds partial application of functions to Kotlin
 - [Result4k](result4k) - A usable Result type
+- [State4k](state4k) - Simple event/command state machine modelling
 - [Time4k](time4k) - Clock and deterministic scheduler
 - [Tuples4k](tuples4k) - Tuple classes
 - [Values4k](values4k) - Value classes aka Microtypes aka Tinytypes

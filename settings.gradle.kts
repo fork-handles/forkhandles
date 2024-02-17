@@ -30,6 +30,7 @@ include("partial4k")
     includeSubModule("hamkrest")
 }
 
+include("state4k")
 include("time4k")
 include("tuples4k")
 include("values4k")
