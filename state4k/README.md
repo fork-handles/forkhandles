@@ -106,3 +106,5 @@ To manipulate the machine, we can call one of 2 methods - one for async events a
         }
     }
 ```
+
+Note that the storage of the controlled entity is done entirely outside of State4k. The typical model is for commands to be issued to a queue and the reprocessed back into the machine. In the case of a database, you will want to process each command or async event in an "select for update"-type block to ensure that only a single operation is processed at once.
