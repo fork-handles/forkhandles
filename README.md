@@ -1,5 +1,7 @@
 # ForK Handles
 
+<img src="forkhandles.png" alt="fork handles"/>
+
 <a href="https://github.com/fork-handles/forkhandles/actions?query=workflow%3A.github%2Fworkflows%2Fbuild.yaml"><img alt="build" src="https://github.com/fork-handles/forkhandles/workflows/.github/workflows/build.yaml/badge.svg"></a>
 <a href="https://mvnrepository.com/artifact/dev.forkhandles"><img alt="download" src="https://img.shields.io/maven-central/v/dev.forkhandles/forkhandles-bom"></a>
 
