@@ -24,23 +24,23 @@ val exampleStateMachine = StateMachine<MyState, MyEntity, MyEvent, MyCommandType
     { _, _ -> Success(Unit) },
     EntityStateLens(MyEntity::state) { entity, state -> entity.copy(state = state) },
     buildState(one)
-        .transition<OneToTwoEvent>(two, { e, o -> o.copy(data = OneToTwoEvent.data) }, firedOnTwo)
-        .transition<OneToFourEvent>(four, { e, o -> o.copy(data = OneToFourEvent.data) })
-        .transition<OneToSixEvent>(six, { e, o -> o.copy(data = OneToSixEvent.data) }, eject),
+        .transition<OneToTwoEvent>(two, { _, o -> o.copy(data = OneToTwoEvent.data) }, firedOnTwo)
+        .transition<OneToFourEvent>(four, { _, o -> o.copy(data = OneToFourEvent.data) })
+        .transition<OneToSixEvent>(six, { _, o -> o.copy(data = OneToSixEvent.data) }, eject),
     buildState(two)
         .transition<TwoToThreeEvent>(
             three,
-            { e, o -> o.copy(data = TwoToThreeEvent.data) },
+            { _, o -> o.copy(data = TwoToThreeEvent.data) },
             firedOnThree
         ),
     buildState(three)
         .transition<ThreeToFourEvent>(
             four,
-            { e, o -> o.copy(data = ThreeToFourEvent.data) },
+            { _, o -> o.copy(data = ThreeToFourEvent.data) },
             eject
         ),
     buildState(four)
-        .transition<ThreeToFourEvent>(five, { e, o -> o.copy(data = ThreeToFourEvent.data) })
+        .transition<ThreeToFourEvent>(five, { _, o -> o.copy(data = ThreeToFourEvent.data) })
 )
 
 fun buildState(start: MyState) = StateBuilder<MyState, MyEntity, MyCommandType>(start)

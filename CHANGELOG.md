@@ -4,6 +4,7 @@ This list is not intended to be all-encompassing - it will document major and br
 when appropriate:
 
 ### v2.13.1.0
+- **all** : Upgrade of dependencies
 - **state4k** : [New module] Simple state machine modelling
 
 ### v2.13.0.0
