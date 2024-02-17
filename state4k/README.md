@@ -34,7 +34,7 @@ Transitions occur in one of 2 ways:
 
 ## Example
 
-We have a state machine which has 4 states. On transition to state 2 we generate a command, the result of which will generate one of 2 commands:
+We have a state machine which has 4 states. On transition to state 2 we generate a command, the result of which will generate one of 2 events:
 
 <img src="example.png" alt="state machine"/>
 
