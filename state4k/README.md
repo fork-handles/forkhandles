@@ -23,7 +23,7 @@ State4k introduces a mechanic for moving a state machine from state to state usi
 
 1. An `Entity` which is the object being modelled
 2. A set of `States`, which the entity can be in
-3. A set of `Events` to transition between those states. Each transition may result in an optional command being generated as a reaction to the transition. 
+3. A set of `Events` to transition between those states. Each transition may result in an optional `Command` being generated as a reaction to the transition. 
 
 The model is built by creating the machine with a set of transitions which tie a starting `State`, an `Event`, a modification process to the `Entity` when that event is received, and an optional `Command` to generate and send upon the transition.
 
