@@ -138,8 +138,8 @@ abstract class DataContainer<CONTENT>(
         mapOutFn: (IN) -> NEXT?,
         vararg metaData: Metadatum
     ) = DataProperty<DataContainer<CONTENT>, IN>(
-        { existsFn(content(), it) },
-        { getFn(content(), it)?.let { value -> value as OUT }?.let(mapInFn) },
+        { name -> existsFn(content(), name) },
+        { name -> getFn(content(), name)?.let { value -> value as OUT }?.let(mapInFn) },
         { name, value -> setFn(content(), name, value?.let(mapOutFn)) },
         metaData.toList(),
     )
