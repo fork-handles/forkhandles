@@ -1,1 +1,1 @@
-{object={string=string2}, optionalObject={string=string}, subClass={string=string2}, optionalSubClass=null}
+{object={string=string2}, optionalObject={string=string}, subClass={string=string2, grandchild={long=1234}}, optionalSubClass=null}

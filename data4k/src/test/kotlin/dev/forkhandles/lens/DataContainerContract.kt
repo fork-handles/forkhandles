@@ -21,7 +21,7 @@ import java.math.BigInteger
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.full.starProjectedType
 
-interface MainClassFields<T : SubClassFields> {
+interface MainClassFields<C : ChildFields<G>, G : GrandchildFields> {
 
     var standardField: String
 
@@ -37,20 +37,20 @@ interface MainClassFields<T : SubClassFields> {
     var mapped: Int
 
     var list: List<String>
-    var listSubClass: List<T>
+    var listSubClass: List<C>
     var listInts: List<Int>
     var listValue: List<MyType>
     val listMapped: List<String>
 
-    var subClass: T
+    var subClass: C
 
     var value: MyType
 
     var optional: String?
     var optionalMapped: Int?
     val optionalValue: MyType?
-    var optionalSubClass: T?
-    var optionalSubClassList: List<T>?
+    var optionalSubClass: C?
+    var optionalSubClassList: List<C>?
     var optionalList: List<String>?
     var optionalValueList: List<MyType>?
     var optionalMappedList: List<Int>?
@@ -60,9 +60,14 @@ enum class ContainerMeta : Metadatum {
     foo, bar
 }
 
-interface SubClassFields {
+interface GrandchildFields {
+    var long: Long
+}
+
+interface ChildFields<T : GrandchildFields> {
     var string: String
     var noSuch: String
+    var grandchild: T
 }
 
 class MyType private constructor(value: Int) : IntValue(value) {
@@ -70,10 +75,11 @@ class MyType private constructor(value: Int) : IntValue(value) {
 }
 
 @ExtendWith(ApprovalsExtension::class)
-abstract class DataContainerContract<T : SubClassFields> {
+abstract class DataContainerContract<C : ChildFields<G>, G : GrandchildFields> {
 
-    abstract fun container(input: Map<String, Any?>): MainClassFields<T>
-    abstract fun subContainer(input: Map<String, Any?>): T
+    abstract fun container(input: Map<String, Any?>): MainClassFields<C, G>
+    abstract fun childContainer(input: Map<String, Any?>): C
+    abstract fun grandchildContainer(input: Map<String, Any?>): G
 
     @Test
     fun `can read primitives values`() {
@@ -167,28 +173,35 @@ abstract class DataContainerContract<T : SubClassFields> {
 
     @Test
     fun `write object values`(approver: Approver) {
-        val objFieldNext = mapOf(
+        val grandchild = mapOf(
+            "long" to 1234
+        )
+        val child = mapOf(
             "string" to "string2"
         )
-        val input = container(
+        val top = container(
             mapOf(
-                "object" to objFieldNext,
+                "object" to child,
                 "optionalObject" to mapOf(
                     "string" to "string"
                 )
             )
         )
 
-        val nextObj = subContainer(objFieldNext)
-        expectSetWorks(input::subClass, nextObj)
-        expectThat(input.subClass).isEqualTo(subContainer(objFieldNext))
+        val childObj = childContainer(child)
+        expectSetWorks(top::subClass, childObj)
+        expectThat(top.subClass).isEqualTo(childContainer(child))
 
-        expectSetWorks(input::optionalSubClass, nextObj)
-        expectThat(input.optionalSubClass).isEqualTo(nextObj)
-        expectSetWorks(input::optionalSubClass, null)
-        expectThat(input.optionalSubClass).isEqualTo(null)
+        val gcObj = grandchildContainer(grandchild)
+        expectSetWorks(childObj::grandchild, gcObj)
+        expectThat(childObj.grandchild).isEqualTo(grandchildContainer(grandchild))
 
-        approver.assertApproved((input as DataContainer<*>).toString())
+        expectSetWorks(top::optionalSubClass, childObj)
+        expectThat(top.optionalSubClass).isEqualTo(childObj)
+        expectSetWorks(top::optionalSubClass, null)
+        expectThat(top.optionalSubClass).isEqualTo(null)
+
+        approver.assertApproved((top as DataContainer<*>).toString())
     }
 
     @Test
@@ -231,9 +244,9 @@ abstract class DataContainerContract<T : SubClassFields> {
         )
 
         expectSetWorks(input::list, listOf("123"))
-        expectSetWorks(input::listSubClass, listOf(subContainer(mapOf("123" to "123"))))
+        expectSetWorks(input::listSubClass, listOf(childContainer(mapOf("123" to "123"))))
         expectSetWorks(input::listValue, listOf(MyType.of(123), MyType.of(456)))
-        expectSetWorks(input::optionalSubClassList, listOf(subContainer(mapOf("123" to "123"))))
+        expectSetWorks(input::optionalSubClassList, listOf(childContainer(mapOf("123" to "123"))))
         expectSetWorks(input::optionalValueList, listOf(MyType.of(123), MyType.of(456)))
         expectSetWorks(input::optionalList, listOf("hello"))
     }
