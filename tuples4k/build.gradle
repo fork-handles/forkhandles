@@ -1,11 +1,11 @@
-description = 'ForkHandles Tuples library'
+description = "ForkHandles Tuples library"
 
 // Increasing this requires a minor version increment.
 // Decreasing it is not backward compatible, and so requires a major version increment.
 ext.maxTupleSize = 8
 
 ext.packageName = "dev.forkhandles.tuples"
-ext.packageSubdir = packageName.replace('.', '/')
+ext.packageSubdir = packageName.replace(".", "/")
 ext.generatedSrcDir = new File("$buildDir/generated-src/main/kotlin")
 ext.generatedPackageDir = new File("$generatedSrcDir/$packageSubdir")
 
@@ -19,7 +19,7 @@ def generateSourceFile(name, contents) {
     }
 }
 
-task recreateGeneratedSrcDir {
+tasks.register("recreateGeneratedSrcDir") {
     doLast {
         delete generatedPackageDir
         mkdir generatedPackageDir
