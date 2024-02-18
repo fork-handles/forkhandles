@@ -49,7 +49,7 @@ def generateSourceFile(name, String packageName = basePackageName, Closure<Void>
     }
 }
 
-task recreateGeneratedSrcDir {
+tasks.register('recreateGeneratedSrcDir') {
     doLast {
         delete generatedSrcDir
         mkdir generatedSrcDir
@@ -57,7 +57,7 @@ task recreateGeneratedSrcDir {
 }
 
 
-task generatePlaceholders {
+tasks.register('generatePlaceholders') {
     dependsOn "recreateGeneratedSrcDir"
 
     doLast {
@@ -69,7 +69,7 @@ task generatePlaceholders {
     }
 }
 
-task generatePartials {
+tasks.register('generatePartials') {
     dependsOn "generatePlaceholders"
 
     doLast {
@@ -155,7 +155,7 @@ def partialParamsSrc(List<Boolean> params, List<Integer> placeholderIndices) {
     paramSrcs.join(", ")
 }
 
-task generateSrcMain {
+tasks.register('generateSrcMain') {
     dependsOn "generatePartials"
 }
 
