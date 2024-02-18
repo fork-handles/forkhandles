@@ -1,6 +1,6 @@
 import static java.util.Locale.ROOT
 
-description = 'ForkHandles Partial Application library'
+description = "ForkHandles Partial Application library"
 
 // Increasing these requires a minor version increment.
 // Decreasing them is not backward compatible, and so requires a major version increment.
@@ -12,7 +12,7 @@ ext.basePackageName = "dev.forkhandles.partial"
 ext.generatedSrcDir = new File("$buildDir/generated-src/main/kotlin")
 
 static def letter(int n) {
-    return Character.toString('a'.toCharacter() + (n - 1))
+    return Character.toString("a".toCharacter() + (n - 1))
 }
 
 static def typeParam(int n) {
@@ -36,7 +36,7 @@ static def placeholder(n) {
 }
 
 def generateSourceFile(name, String packageName = basePackageName, Closure<Void> contents) {
-    def packageSubdir = packageName.replace('.', '/')
+    def packageSubdir = packageName.replace(".", "/")
     def generatedPackageDir = new File("$generatedSrcDir/$packageSubdir")
 
     generatedPackageDir.mkdirs()

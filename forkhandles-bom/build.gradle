@@ -1,4 +1,4 @@
-description = 'Fork Handles Bill Of Materials (BOM)'
+description = "Fork Handles Bill Of Materials (BOM)"
 
 dependencies {
     constraints {

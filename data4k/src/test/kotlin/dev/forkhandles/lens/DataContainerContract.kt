@@ -1,5 +1,7 @@
 package dev.forkhandles.lens
 
+import com.oneeyedmen.okeydoke.Approver
+import com.oneeyedmen.okeydoke.junit5.ApprovalsExtension
 import dev.forkhandles.data.DataContainer
 import dev.forkhandles.data.Metadatum
 import dev.forkhandles.data.PropertyMetadata
@@ -8,6 +10,7 @@ import dev.forkhandles.lens.ContainerMeta.foo
 import dev.forkhandles.values.IntValue
 import dev.forkhandles.values.IntValueFactory
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import strikt.api.expectThat
 import strikt.api.expectThrows
 import strikt.assertions.isEqualTo
@@ -66,6 +69,7 @@ class MyType private constructor(value: Int) : IntValue(value) {
     companion object : IntValueFactory<MyType>(::MyType)
 }
 
+@ExtendWith(ApprovalsExtension::class)
 abstract class DataContainerContract<T : SubClassFields> {
 
     abstract fun container(input: Map<String, Any?>): MainClassFields<T>
@@ -162,7 +166,7 @@ abstract class DataContainerContract<T : SubClassFields> {
     }
 
     @Test
-    fun `write object values`() {
+    fun `write object values`(approver: Approver) {
         val objFieldNext = mapOf(
             "string" to "string2"
         )
@@ -183,6 +187,8 @@ abstract class DataContainerContract<T : SubClassFields> {
         expectThat(input.optionalSubClass).isEqualTo(nextObj)
         expectSetWorks(input::optionalSubClass, null)
         expectThat(input.optionalSubClass).isEqualTo(null)
+
+        approver.assertApproved((input as DataContainer<*>).toString())
     }
 
     @Test
@@ -237,7 +243,13 @@ abstract class DataContainerContract<T : SubClassFields> {
         val input = container(emptyMap()) as DataContainer<*>
 
         val propertyMetaData = input.propertyMetadata().find { it.name == "string" }
-        expectThat(propertyMetaData).isEqualTo(PropertyMetadata("string", String::class.starProjectedType, listOf(foo, bar)))
+        expectThat(propertyMetaData).isEqualTo(
+            PropertyMetadata(
+                "string",
+                String::class.starProjectedType,
+                listOf(foo, bar)
+            )
+        )
     }
 
     private fun <T> expectSetWorks(prop: KMutableProperty0<T>, value: T) {

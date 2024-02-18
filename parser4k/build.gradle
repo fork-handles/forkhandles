@@ -1,7 +1,7 @@
-description = 'ForkHandles Parser Combinator library'
+description = "ForkHandles Parser Combinator library"
 
 dependencies {
-    api project(":tuples4k")
+    api(project(":tuples4k"))
 }
 
 tasks.configureEach {
