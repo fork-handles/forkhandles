@@ -74,14 +74,13 @@ abstract class DataContainer<CONTENT>(
         mapInFn: (CONTENT) -> OUT,
         mapOutFn: (OUT) -> CONTENT?,
         vararg metaData: Metadatum
-    ) =
-        property<OUT, CONTENT, CONTENT>(mapInFn, mapOutFn, *metaData)
+    ) = property<OUT, CONTENT, CONTENT>(mapInFn, mapOutFn, *metaData)
 
     protected fun <OUT : DataContainer<CONTENT>> obj(mapInFn: (CONTENT) -> OUT, vararg metaData: Metadatum) =
-        obj(mapInFn, { it.content }, *metaData)
+        obj(mapInFn, { it.content() }, *metaData)
 
     protected fun <OUT : DataContainer<CONTENT>> optionalObj(mapInFn: (CONTENT) -> OUT, vararg metaData: Metadatum) =
-        property<OUT?, CONTENT, CONTENT>(mapInFn, { it?.content }, *metaData)
+        property<OUT?, CONTENT, CONTENT>(mapInFn, { it?.content() }, *metaData)
 
     /** List **/
 
@@ -101,7 +100,7 @@ abstract class DataContainer<CONTENT>(
 
     @JvmName("listDataContainer")
     protected fun <OUT : DataContainer<CONTENT>?> list(mapInFn: (CONTENT) -> OUT, vararg metaData: Metadatum) =
-        list(mapInFn, { it?.content }, *metaData)
+        list(mapInFn, { it?.content() }, *metaData)
 
     protected fun <OUT, IN> optionalList(mapInFn: (IN) -> OUT, mapOutFn: (OUT) -> IN?, vararg metaData: Metadatum) =
         property<List<OUT>?, List<IN>, List<IN>>({ it.map(mapInFn) }, { it?.mapNotNull(mapOutFn) }, *metaData)
@@ -117,7 +116,7 @@ abstract class DataContainer<CONTENT>(
 
     @JvmName("optionalListDataContainer")
     protected fun <OUT : DataContainer<CONTENT>?> optionalList(mapInFn: (CONTENT) -> OUT, vararg metaData: Metadatum) =
-        optionalList(mapInFn, { it?.content }, *metaData)
+        optionalList(mapInFn, { it?.content() }, *metaData)
 
     /** Utility **/
 
@@ -127,24 +126,23 @@ abstract class DataContainer<CONTENT>(
 
         other as DataContainer<*>
 
-        return content == other.content
+        return content() == other.content()
     }
 
-    override fun hashCode() = content?.hashCode() ?: 0
+    override fun hashCode() = content()?.hashCode() ?: 0
 
-    override fun toString() = content.toString()
+    override fun toString() = content().toString()
 
     private fun <IN, OUT : Any?, NEXT> property(
         mapInFn: (OUT) -> IN,
         mapOutFn: (IN) -> NEXT?,
         vararg metaData: Metadatum
-    ) =
-        DataProperty<DataContainer<CONTENT>, IN>(
-            { existsFn(content, it) },
-            { getFn(content, it)?.let { value -> value as OUT }?.let(mapInFn) },
-            { name, value -> setFn(content, name, value?.let(mapOutFn)) },
-            metaData.toList(),
-        )
+    ) = DataProperty<DataContainer<CONTENT>, IN>(
+        { existsFn(content(), it) },
+        { getFn(content(), it)?.let { value -> value as OUT }?.let(mapInFn) },
+        { name, value -> setFn(content(), name, value?.let(mapOutFn)) },
+        metaData.toList(),
+    )
 
     private fun Any.kClass() = this::class as KClass<DataContainer<CONTENT>>
 }
