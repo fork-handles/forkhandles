@@ -134,9 +134,9 @@ abstract class DataContainer<CONTENT>(
 
     override fun toString() = content.toString()
 
-    private fun <IN, OUT : Any?, OUT2> property(
+    private fun <IN, OUT : Any?, NEXT> property(
         mapInFn: (OUT) -> IN,
-        mapOutFn: (IN) -> OUT2?,
+        mapOutFn: (IN) -> NEXT?,
         vararg metaData: Metadatum
     ) =
         DataProperty<DataContainer<CONTENT>, IN>(
