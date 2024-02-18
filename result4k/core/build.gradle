@@ -1,17 +1,17 @@
 plugins {
-    id "me.champeau.jmh"
+    id("me.champeau.jmh")
 }
 
 description = "A friendly Kotlin Result type"
 
 dependencies {
-    testApi Kotlin.test
+    testApi(Kotlin.test)
 }
 
 compileJmhKotlin.kotlinOptions.jvmTarget = "1.8"
 
 test {
-    include "dev/forkhandles/**"
+    include("dev/forkhandles/**")
     scanForTestClasses true
     reports {
         junitXml.required = true

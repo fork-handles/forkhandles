@@ -68,19 +68,19 @@ subprojects {
         }
     }
 
-    tasks.register('sourcesJar', Jar) {
+    tasks.register("sourcesJar", Jar) {
         dependsOn classes
         archiveClassifier = "sources"
         from sourceSets.main.allSource
     }
 
-    tasks.register('javadocJar', Jar) {
+    tasks.register("javadocJar", Jar) {
         dependsOn javadoc
         archiveClassifier = "javadoc"
         from javadoc.destinationDir
     }
 
-    tasks.register('testJar', Jar) {
+    tasks.register("testJar", Jar) {
         archiveClassifier = "test"
         from sourceSets.test.output
     }

@@ -3,8 +3,8 @@ description = "Fork Handles Bill Of Materials (BOM)"
 dependencies {
     constraints {
         rootProject.subprojects
-            .findAll { it.name != project.name }
-            .sort { "$it.name" }
-            .each { api it }
+            .filter { it.name != project.name }
+            .sortedBy { it.name }
+            .forEach { api(it) }
     }
 }
