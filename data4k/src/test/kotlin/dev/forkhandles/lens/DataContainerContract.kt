@@ -21,7 +21,7 @@ import java.math.BigInteger
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.full.starProjectedType
 
-interface MainClassFields<C : ChildFields<G>, G : GrandchildFields> {
+interface MainClassFields<C : ChildFields<G>, G : GrandchildFields, CONTENT> {
 
     var standardField: String
 
@@ -54,6 +54,8 @@ interface MainClassFields<C : ChildFields<G>, G : GrandchildFields> {
     var optionalList: List<String>?
     var optionalValueList: List<MyType>?
     var optionalMappedList: List<Int>?
+    var optionalData: CONTENT?
+    var requiredData: CONTENT
 }
 
 enum class ContainerMeta : Metadatum {
@@ -75,9 +77,10 @@ class MyType private constructor(value: Int) : IntValue(value) {
 }
 
 @ExtendWith(ApprovalsExtension::class)
-abstract class DataContainerContract<C : ChildFields<G>, G : GrandchildFields> {
+abstract class DataContainerContract<C : ChildFields<G>, G : GrandchildFields, CONTENT> {
 
-    abstract fun container(input: Map<String, Any?>): MainClassFields<C, G>
+    abstract fun data(input: Map<String, Any?>): CONTENT
+    abstract fun container(input: Map<String, Any?>): MainClassFields<C, G, CONTENT>
     abstract fun childContainer(input: Map<String, Any?>): C
     abstract fun grandchildContainer(input: Map<String, Any?>): G
 
@@ -169,6 +172,17 @@ abstract class DataContainerContract<C : ChildFields<G>, G : GrandchildFields> {
         expectThat(input.optionalSubClass?.string).isEqualTo("string")
         expectThat(container(mapOf()).optionalSubClass).isNull()
         expectThat(input.optionalSubClass?.string).isEqualTo("string")
+    }
+
+    @Test
+    fun `read and write data values`() {
+        val inner = data(mutableMapOf("name" to "string"))
+        val outer = container(mapOf("requiredData" to inner))
+
+        expectThat(outer.requiredData).isEqualTo(inner)
+        expectThat(outer.optionalData).isNull()
+        outer.optionalData = inner
+        expectThat(outer.optionalData).isEqualTo(inner)
     }
 
     @Test

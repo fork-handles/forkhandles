@@ -16,7 +16,7 @@ class ChildMap(propertySet: Map<String, Any?>) : MapDataContainer(propertySet), 
     override var grandchild by obj(::GrandchildMap)
 }
 
-class MapBacked(map: Map<String, Any?>) : MapDataContainer(map), MainClassFields<ChildMap, GrandchildMap> {
+class MapBacked(map: Map<String, Any?>) : MapDataContainer(map), MainClassFields<ChildMap, GrandchildMap, MutableMap<String, Any?>> {
     override var standardField = "foobar"
     override var string by required<String>(foo, bar)
     override var boolean by required<Boolean>(foo, bar)
@@ -38,6 +38,7 @@ class MapBacked(map: Map<String, Any?>) : MapDataContainer(map), MainClassFields
     override var subClass by obj(::ChildMap, foo, bar)
 
     override var value by required(MyType, foo, bar)
+    override var requiredData by data(foo, bar)
 
     override var optional by optional<String>(foo, bar)
     override var optionalList by optionalList<String>(foo, bar)
@@ -47,10 +48,12 @@ class MapBacked(map: Map<String, Any?>) : MapDataContainer(map), MainClassFields
     override var optionalValue by optional(MyType, foo, bar)
     override var optionalMapped by optional(String::toInt, Int::toString, foo, bar)
     override var optionalMappedList by optionalList(String::toInt, Int::toString, foo, bar)
+    override var optionalData by optionalData(foo, bar)
 }
 
-class MapDataContainerTest : DataContainerContract<ChildMap, GrandchildMap>() {
-    override fun container(input: Map<String, Any?>) = MapBacked(input)
-    override fun childContainer(input: Map<String, Any?>) = ChildMap(input)
-    override fun grandchildContainer(input: Map<String, Any?>) = GrandchildMap(input)
+class MapDataContainerTest : DataContainerContract<ChildMap, GrandchildMap, MutableMap<String, Any?>>() {
+    override fun data(input: Map<String, Any?>) = input.toMutableMap()
+    override fun container(input: Map<String, Any?>) = MapBacked(data(input))
+    override fun childContainer(input: Map<String, Any?>) = ChildMap(data(input))
+    override fun grandchildContainer(input: Map<String, Any?>) = GrandchildMap(data(input))
 }

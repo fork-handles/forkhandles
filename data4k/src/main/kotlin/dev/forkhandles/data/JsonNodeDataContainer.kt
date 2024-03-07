@@ -60,7 +60,7 @@ open class JsonNodeDataContainer(input: JsonNode = instance.objectNode()) :
             when (this) {
                 null -> NullNode.instance
                 is JsonNode -> this
-                is DataContainer<*> -> content().toNode()
+                is DataContainer<*> -> unwrap().toNode()
                 is Boolean -> if (this) TRUE else FALSE
                 is Int -> IntNode(this)
                 is Long -> LongNode(this)

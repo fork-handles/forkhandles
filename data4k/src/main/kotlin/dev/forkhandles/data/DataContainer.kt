@@ -11,11 +11,11 @@ import kotlin.reflect.jvm.isAccessible
  * underlying data structure.
  */
 @Suppress("UNCHECKED_CAST")
-abstract class DataContainer<CONTENT>(
-    private val content: CONTENT,
-    private val existsFn: (CONTENT, String) -> Boolean,
-    private val getFn: (CONTENT, String) -> Any?,
-    private val setFn: (CONTENT, String, Any?) -> Unit
+abstract class DataContainer<DATA>(
+    private val data: DATA,
+    private val existsFn: (DATA, String) -> Boolean,
+    private val getFn: (DATA, String) -> Any?,
+    private val setFn: (DATA, String, Any?) -> Unit
 ) {
     /**
      * Retrieve the attached metadata data about each of the properties
@@ -31,9 +31,9 @@ abstract class DataContainer<CONTENT>(
         }
 
     /**
-     * Expose the underlying data structure
+     * Expose the backing data structure
      */
-    fun content() = content
+    fun unwrap() = data
 
     /** Required **/
 
@@ -70,17 +70,25 @@ abstract class DataContainer<CONTENT>(
 
     /** Object **/
 
-    protected fun <OUT : DataContainer<CONTENT>> obj(
-        mapInFn: (CONTENT) -> OUT,
-        mapOutFn: (OUT) -> CONTENT?,
+    protected fun <OUT : DataContainer<DATA>> obj(
+        mapInFn: (DATA) -> OUT,
+        mapOutFn: (OUT) -> DATA?,
         vararg metaData: Metadatum
-    ) = property<OUT, CONTENT, CONTENT>(mapInFn, mapOutFn, *metaData)
+    ) = property<OUT, DATA, DATA>(mapInFn, mapOutFn, *metaData)
 
-    protected fun <OUT : DataContainer<CONTENT>> obj(mapInFn: (CONTENT) -> OUT, vararg metaData: Metadatum) =
-        obj(mapInFn, { it.content() }, *metaData)
+    protected fun <OUT : DataContainer<DATA>> obj(mapInFn: (DATA) -> OUT, vararg metaData: Metadatum) =
+        obj(mapInFn, { it.unwrap() }, *metaData)
 
-    protected fun <OUT : DataContainer<CONTENT>> optionalObj(mapInFn: (CONTENT) -> OUT, vararg metaData: Metadatum) =
-        property<OUT?, CONTENT, CONTENT>(mapInFn, { it?.content() }, *metaData)
+    protected fun <OUT : DataContainer<DATA>> optionalObj(mapInFn: (DATA) -> OUT, vararg metaData: Metadatum) =
+        property<OUT?, DATA, DATA>(mapInFn, { it?.unwrap() }, *metaData)
+
+    /** Data **/
+
+    protected fun data(vararg metaData: Metadatum) =
+        property<DATA, DATA, DATA>({ it }, { it }, *metaData)
+
+    protected fun optionalData(vararg metaData: Metadatum) =
+        property<DATA?, DATA, DATA>({ it }, { it }, *metaData)
 
     /** List **/
 
@@ -99,8 +107,8 @@ abstract class DataContainer<CONTENT>(
         list(factory::of, { it.value }, *metaData)
 
     @JvmName("listDataContainer")
-    protected fun <OUT : DataContainer<CONTENT>?> list(mapInFn: (CONTENT) -> OUT, vararg metaData: Metadatum) =
-        list(mapInFn, { it?.content() }, *metaData)
+    protected fun <OUT : DataContainer<DATA>?> list(mapInFn: (DATA) -> OUT, vararg metaData: Metadatum) =
+        list(mapInFn, { it?.unwrap() }, *metaData)
 
     protected fun <OUT, IN> optionalList(mapInFn: (IN) -> OUT, mapOutFn: (OUT) -> IN?, vararg metaData: Metadatum) =
         property<List<OUT>?, List<IN>, List<IN>>({ it.map(mapInFn) }, { it?.mapNotNull(mapOutFn) }, *metaData)
@@ -115,8 +123,8 @@ abstract class DataContainer<CONTENT>(
         optionalList(factory::of, { it.value }, *metaData)
 
     @JvmName("optionalListDataContainer")
-    protected fun <OUT : DataContainer<CONTENT>?> optionalList(mapInFn: (CONTENT) -> OUT, vararg metaData: Metadatum) =
-        optionalList(mapInFn, { it?.content() }, *metaData)
+    protected fun <OUT : DataContainer<DATA>?> optionalList(mapInFn: (DATA) -> OUT, vararg metaData: Metadatum) =
+        optionalList(mapInFn, { it?.unwrap() }, *metaData)
 
     /** Utility **/
 
@@ -126,24 +134,24 @@ abstract class DataContainer<CONTENT>(
 
         other as DataContainer<*>
 
-        return content() == other.content()
+        return unwrap() == other.unwrap()
     }
 
-    override fun hashCode() = content()?.hashCode() ?: 0
+    override fun hashCode() = unwrap()?.hashCode() ?: 0
 
-    override fun toString() = content().toString()
+    override fun toString() = unwrap().toString()
 
     private fun <IN, OUT : Any?, NEXT> property(
         mapInFn: (OUT) -> IN,
         mapOutFn: (IN) -> NEXT?,
         vararg metaData: Metadatum
-    ) = DataProperty<DataContainer<CONTENT>, IN>(
-        { name -> existsFn(content(), name) },
-        { name -> getFn(content(), name)?.let { value -> value as OUT }?.let(mapInFn) },
-        { name, value -> setFn(content(), name, value?.let(mapOutFn)) },
+    ) = DataProperty<DataContainer<DATA>, IN>(
+        { name -> existsFn(unwrap(), name) },
+        { name -> getFn(unwrap(), name)?.let { value -> value as OUT }?.let(mapInFn) },
+        { name, value -> setFn(unwrap(), name, value?.let(mapOutFn)) },
         metaData.toList(),
     )
 
-    private fun Any.kClass() = this::class as KClass<DataContainer<CONTENT>>
+    private fun Any.kClass() = this::class as KClass<DataContainer<DATA>>
 }
 

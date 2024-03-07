@@ -18,7 +18,7 @@ class ChildNode(node: JsonNode) : JsonNodeDataContainer(node), ChildFields<Grand
     override var grandchild by obj(::GrandchildNode)
 }
 
-class TopNode(node: JsonNode) : JsonNodeDataContainer(node), MainClassFields<ChildNode, GrandchildNode> {
+class TopNode(node: JsonNode) : JsonNodeDataContainer(node), MainClassFields<ChildNode, GrandchildNode, JsonNode> {
     override var standardField = "foobar"
     override var string by required<String>(foo, bar)
     override var boolean by required<Boolean>(foo, bar)
@@ -36,6 +36,7 @@ class TopNode(node: JsonNode) : JsonNodeDataContainer(node), MainClassFields<Chi
     override var subClass by obj(::ChildNode, foo, bar)
     override var value by required(MyType, foo, bar)
     override var mapped by required(String::toInt, Int::toString, foo, bar)
+    override var requiredData by data(foo, bar)
 
     override var optional by optional<String>(foo, bar)
     override var optionalMapped by optional(String::toInt, Int::toString, foo, bar)
@@ -45,15 +46,17 @@ class TopNode(node: JsonNode) : JsonNodeDataContainer(node), MainClassFields<Chi
     override var optionalSubClass by optionalObj(::ChildNode, foo, bar)
     override var optionalSubClassList by optionalList(::ChildNode, foo, bar)
     override var optionalValue by optional(MyType, foo, bar)
+    override var optionalData by optionalData(foo, bar)
 }
 
-class JsonNodeDataContainerTest : DataContainerContract<ChildNode, GrandchildNode>() {
+class JsonNodeDataContainerTest : DataContainerContract<ChildNode, GrandchildNode, JsonNode>() {
+    override fun data(input: Map<String, Any?>): JsonNode = ObjectMapper().valueToTree(input)
 
     override fun container(input: Map<String, Any?>) = TopNode(ObjectMapper().valueToTree(input))
 
     override fun childContainer(input: Map<String, Any?>) =
-        ChildNode(ObjectMapper().valueToTree(input))
+        ChildNode(data(input))
 
     override fun grandchildContainer(input: Map<String, Any?>) =
-        GrandchildNode(ObjectMapper().valueToTree(input))
+        GrandchildNode(data(input))
 }
