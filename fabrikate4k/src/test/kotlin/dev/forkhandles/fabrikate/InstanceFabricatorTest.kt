@@ -418,8 +418,8 @@ class InstanceFabricatorTest {
 
     @Test
     fun `registered Fabricators override defaults`(){
-        val defaultFabrikate = Fabrikate(FabricatorConfig())
-        val overriddenFabrikate = Fabrikate(FabricatorConfig().register(TestListFabricator()))
+        val defaultFabrikate = Fabrikate(FabricatorConfig(2).withStandardMappings())
+        val overriddenFabrikate = Fabrikate(FabricatorConfig().withStandardMappings().register(TestListFabricator()))
 
         val randomDefault = defaultFabrikate.random<List<String>>()
         val randomOverridden = overriddenFabrikate.random<List<String>>()
