@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.15.0.0
+- **result4k** : Add `resultFromCatching` to catch some (but not all!) exceptions and turn them into a `Result4k` H/T @MarcusDunn
+
 ### v2.14.0.0
 - **all** : Upgrade of dependencies, including Kotlin to 1.9.23
 - **data4k** : Add ability to declare child data-type fields (eg. JsonNode or submap) with data() and optionalData()
