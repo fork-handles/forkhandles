@@ -81,15 +81,18 @@ class StateMachineTest {
         (valueOrNull()!! as OK).entity
 
     @Test
-    fun `failure during sending of next event`() {
+    fun `failure during sending of next command`() {
         val stateMachine = StateMachine<MyState, MyEntity, MyEvent, MyCommandType, String>(
             { _, _ -> Failure("foo") },
             EntityStateLens(MyEntity::state, MyEntity::withState),
             buildState(one)
-                .transition<OneToTwoEvent>(two, { e, o -> o.copy(data = e.data) }, firedOnTwo)
+                .transition<OneToTwoEvent>(two) { e, o -> o.copy(data = e.data) },
+            buildState(two)
+                .onEnter(firedOnTwo)
         )
 
-        expectThat(stateMachine.transition(MyEntity(one, 0.0), OneToTwoEvent).failureOrNull())
+        val transition = stateMachine.transition(MyEntity(one, 0.0), OneToTwoEvent)
+        expectThat(transition.failureOrNull())
             .isEqualTo(("foo"))
     }
 
