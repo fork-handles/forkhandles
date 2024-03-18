@@ -10,7 +10,7 @@ import dev.forkhandles.state4k.render.Puml
 import kotlin.random.Random
 
 // the lens gets and sets the state on the Entity
-val lens = EntityStateLens(SimpleEntity::state) { entity, state -> entity.copy(state = state) }
+val lens = StateIdLens(SimpleEntity::state) { entity, state -> entity.copy(state = state) }
 
 // the commands is responsible for issuing new commands to process the machine
 val commands = Commands<SimpleEntity, SimpleCommand, String> { _: SimpleEntity, _ -> Success(Unit) }

@@ -74,12 +74,13 @@ val simpleStateMachine = StateMachine<SimpleState, SimpleEntity, SimpleEvent, Si
     lens,
     // define the state transitions for state one
     StateBuilder<SimpleState, SimpleEntity, SimpleCommand>(one)
-        .transition<SimpleEvent1>(two, { e, o -> o.copy(lastAction = "received $e") }, aCommand),
+        .transition<SimpleEvent1>(two) { e, o -> o.copy(lastAction = "received $e") },
 
     // define the state transitions for state two
     StateBuilder<SimpleState, SimpleEntity, SimpleCommand>(two)
-        .transition<SimpleEvent2>(three, { e, o -> o.copy(lastAction = "received $e") })
-        .transition<SimpleEvent3>(four, { e, o -> o.copy(lastAction = "received $e") })
+        .onEnter(aCommand)
+        .transition<SimpleEvent2>(three) { e, o -> o.copy(lastAction = "received $e") }
+        .transition<SimpleEvent3>(four) { e, o -> o.copy(lastAction = "received $e") }
 )
 ```
 

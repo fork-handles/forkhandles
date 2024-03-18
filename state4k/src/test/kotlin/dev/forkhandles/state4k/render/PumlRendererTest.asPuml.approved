@@ -4,20 +4,23 @@ skinparam state  {
    BorderColor<<Command>> PaleGoldenRod
 }
 
+state one {
+
+}
 state two {
     state "firedOnTwo" as two_firedOnTwo <<Command>>
-}
-state four {
-    state "eject" as four_eject <<Command>>
-}
-state six {
-    state "eject" as six_eject <<Command>>
 }
 state three {
     state "firedOnThree" as three_firedOnThree <<Command>>
 }
+state four {
+    state "eject" as four_eject <<Command>>
+}
 state five {
 
+}
+state six {
+    state "eject" as six_eject <<Command>>
 }
 
 title helloworld
@@ -27,4 +30,6 @@ title helloworld
   two --> three : TwoToThreeEvent
   three --> four : ThreeToFourEvent
   four --> five : ThreeToFourEvent
+
+
 @enduml
