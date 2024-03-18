@@ -10,7 +10,7 @@ import dev.forkhandles.state4k.render.Puml
 import kotlin.random.Random
 
 // the lens gets and sets the state on the Entity
-val lens = EntityStateLens(SimpleEntity::state) { entity, state -> entity.copy(state = state) }
+val lens = StateIdLens(SimpleEntity::state) { entity, state -> entity.copy(state = state) }
 
 // the commands is responsible for issuing new commands to process the machine
 val commands = Commands<SimpleEntity, SimpleCommand, String> { _: SimpleEntity, _ -> Success(Unit) }
@@ -21,12 +21,13 @@ val simpleStateMachine = StateMachine<SimpleState, SimpleEntity, SimpleEvent, Si
     lens,
     // define the state transitions for state one
     StateBuilder<SimpleState, SimpleEntity, SimpleCommand>(one)
-        .transition<SimpleEvent1>(two, { e, o -> o.copy(lastAction = "received $e") }, aCommand),
+        .transition<SimpleEvent1>(two) { e, o -> o.copy(lastAction = "received $e") },
 
     // define the state transitions for state two
     StateBuilder<SimpleState, SimpleEntity, SimpleCommand>(two)
-        .transition<SimpleEvent2>(three, { e, o -> o.copy(lastAction = "received $e") })
-        .transition<SimpleEvent3>(four, { e, o -> o.copy(lastAction = "received $e") })
+        .onEnter(aCommand)
+        .transition<SimpleEvent2>(three) { e, o -> o.copy(lastAction = "received $e") }
+        .transition<SimpleEvent3>(four) { e, o -> o.copy(lastAction = "received $e") }
 )
 
 data class SimpleEntity(val state: SimpleState, val lastAction: String)

@@ -5,21 +5,19 @@ import dev.forkhandles.state4k.StateMachineRenderer
 /**
  * Standard PUML diagram generator for a StateMachine
  */
-fun Puml(title: String, commandColour: String = "PaleGoldenRod") = StateMachineRenderer { transitions ->
-    val commands = transitions
-        .groupBy { it.end.toString() }
-        .mapValues { it.value.mapNotNull { it.nextCommand?.toString() } }
-        .map {
-            val stateName = it.key
-            """
-            |state $stateName {
+fun Puml(title: String, commandColour: String = "PaleGoldenRod") = StateMachineRenderer { states ->
+
+    val stateDefinitions = states.joinToString("\n") {
+        val stateId = it.id
+        """
+            |state $stateId {
             |${
-                it.value.sortedBy { it }
-                    .joinToString("\n") { command -> "    state \"$command\" as ${stateName}_$command <<Command>>" }
-            }
+            it.onEnter?.let { "    state \"$it\" as ${stateId}_$it <<Command>>" } ?: ""
+        }
             |}
             """.trimMargin()
-        }.joinToString("\n")
+    }
+
 
     """
     |@startuml
@@ -28,12 +26,13 @@ fun Puml(title: String, commandColour: String = "PaleGoldenRod") = StateMachineR
     |   BorderColor<<Command>> $commandColour
     |}
     |
-    |$commands
+    |$stateDefinitions
     |
     |title $title
     |${
-        transitions
-            .joinToString("\n") { "  ${it.start} --> ${it.end} : ${it.event.simpleName}" }
+        states.joinToString("\n") { state ->
+            state.transitions.joinToString("\n") { "  ${state.id} --> ${it.end} : ${it.event.simpleName}" }
+        }
     }
     |@enduml""".trimMargin()
 }
