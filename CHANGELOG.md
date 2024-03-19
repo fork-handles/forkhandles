@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.15.0.1
+- **state4k** : Remove errant system out
+
 ### v2.15.0.0
 - **all** : Upgrade of dependencies and gradle.
 - **state4k** : [Breaking change] Migrated to new construction mechanic. We now define sent commands with `onEnter(commands)` and these are defined on the state itself. This allows for a more consistent way of defining state transitions.

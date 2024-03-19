@@ -55,7 +55,6 @@ class StateMachine<StateId, Entity, Event : Any, Command, Error>(
             ?.let {
                 (states.firstOrNull { state -> state.id == it.end }
                     ?.onEnter?.let { commands(entity, it) } ?: Success(Unit))
-                    .also { println(it) }
                     .map { OK(stateLens(transition.applyTo(event, entity), transition.end)) }
             } ?: Success(IllegalEvent(entity, event))
     }
