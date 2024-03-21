@@ -34,7 +34,7 @@ Transitions occur in one of 2 ways:
 
 ## Example
 
-We have a state machine which has 4 states. On transition to state 2 we generate a command, the result of which will generate one of 2 events:
+We have a state machine for making a cup of tea. The state machine looks like this and when the kettle is boiled, we issue a command to check if the person would like milk:
 
 <img src="example.png" alt="state machine"/>
 
