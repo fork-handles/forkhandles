@@ -4,32 +4,28 @@ skinparam state  {
    BorderColor<<Command>> PaleGoldenRod
 }
 
-state one {
+state GetCup {
 
 }
-state two {
-    state "firedOnTwo" as two_firedOnTwo <<Command>>
-}
-state three {
-    state "firedOnThree" as three_firedOnThree <<Command>>
-}
-state four {
-    state "eject" as four_eject <<Command>>
-}
-state five {
+state BoilingWater {
 
 }
-state six {
-    state "eject" as six_eject <<Command>>
+state SteepingTea {
+    state "DoYouHaveMilk" as SteepingTea_DoYouHaveMilk <<Command>>
+}
+state CheckForMilk {
+
+}
+state BlackTea {
+
 }
 
 title helloworld
-  one --> two : OneToTwoEvent
-  one --> four : OneToFourEvent
-  one --> six : OneToSixEvent
-  two --> three : TwoToThreeEvent
-  three --> four : ThreeToFourEvent
-  four --> five : ThreeToFourEvent
-
+  GetCup --> BoilingWater : TurnOnKettle
+  BoilingWater --> SteepingTea : PourWater
+  SteepingTea --> CheckForMilk : MilkPlease
+  SteepingTea --> BlackTea : NoMilkPlease
+  CheckForMilk --> WhiteTea : MilkIsFull
+  CheckForMilk --> BlackTea : MilkIsEmpty
 
 @enduml

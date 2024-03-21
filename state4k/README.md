@@ -40,22 +40,27 @@ We have a state machine which has 4 states. On transition to state 2 we generate
 
 The entities look like:
 ```kotlin
+// this is our entity - it tracks the state
+data class CupOfTea(val state: TeaState, val lastAction: String)
 
-data class SimpleEntity(val state: SimpleState, val lastAction: String)
-
-enum class SimpleState {
-    one, two, three, four
+// the various states the entity can be in
+enum class TeaState {
+    GetCup, BoilingWater, SteepingTea, CheckForMilk, WhiteTea, BlackTea
 }
 
-interface SimpleEvent
+// commands define actions which can result in dynamically generated events
+enum class TeaCommands {
+    DoYouHaveMilk
+}
 
-data object SimpleEvent1 : SimpleEvent
-
-data object SimpleEvent2 : SimpleEvent
-data object SimpleEvent3 : SimpleEvent
-
-enum class SimpleCommandType {
-    aCommand
+// events transition the machine from one state to another
+sealed interface TeaEvent {
+    data object TurnOnKettle : TeaEvent
+    data object PourWater : TeaEvent
+    data object MilkPlease : TeaEvent
+    data object NoMilkPlease : TeaEvent
+    data object MilkIsFull : TeaEvent
+    data object MilkIsEmpty : TeaEvent
 }
 ```
 
@@ -63,49 +68,82 @@ We can define the state machine in code as:
 
 ```kotlin
 // the lens gets and sets the state on the Entity
-val lens = StateIdLens(SimpleEntity::state) { entity, state -> entity.copy(state = state) }
+val lens = StateIdLens(CupOfTea::state) { entity, state -> entity.copy(state = state) }
 
-// the commands is responsible for issuing new commands to process the machine
-val commands = Commands<SimpleEntity, SimpleCommand, String> { _: SimpleEntity, _ -> Success(Unit) }
+// commands is responsible for issuing new orders which will generate new events
+val commands = { entity: CupOfTea, command: TeaCommands ->
+    println("Issuing command $command for $entity")
+    Success(Unit)
+}
 
 // define the machine
-val simpleStateMachine = StateMachine<SimpleState, SimpleEntity, SimpleEvent, SimpleCommand, String>(
+val teaStateMachine = StateMachine<TeaState, CupOfTea, TeaEvent, TeaCommands, String>(
     commands,
     lens,
-    // define the state transitions for state one
-    StateBuilder<SimpleState, SimpleEntity, SimpleCommand>(one)
-        .transition<SimpleEvent1>(two) { e, o -> o.copy(lastAction = "received $e") },
 
-    // define the state transitions for state two
-    StateBuilder<SimpleState, SimpleEntity, SimpleCommand>(two)
-        .onEnter(aCommand)
-        .transition<SimpleEvent2>(three) { e, o -> o.copy(lastAction = "received $e") }
-        .transition<SimpleEvent3>(four) { e, o -> o.copy(lastAction = "received $e") }
+    // the state transitions for GetCup - we don't need to update the entity
+    StateBuilder<TeaState, CupOfTea, TeaCommands>(GetCup)
+        .transition<TurnOnKettle>(BoilingWater),
+
+    // the state transitions for BoilingWater - we can update the entity
+    StateBuilder<TeaState, CupOfTea, TeaCommands>(BoilingWater)
+        .transition<PourWater>(SteepingTea) { event: PourWater, entity: CupOfTea ->
+            entity.copy(lastAction = "Waiting...")
+        },
+
+    // when we enter SteepingTea, we ask if they have milk (a command). The result of that
+    // command will be a MilkPlease or NoMilkPlease event
+    StateBuilder<TeaState, CupOfTea, TeaCommands>(SteepingTea)
+        .onEnter(DoYouHaveMilk)
+        .transition<MilkPlease>(CheckForMilk)
+        .transition<NoMilkPlease>(BlackTea),
+
+    StateBuilder<TeaState, CupOfTea, TeaCommands>(CheckForMilk)
+        .transition<MilkIsFull>(WhiteTea)
+        .transition<MilkIsEmpty>(BlackTea),
+
+    StateBuilder(BlackTea)
 )
 ```
 
 To manipulate the machine, we can call one of 2 methods - one for async events and one for command processing (which will result in a discreet event being generated). Each transition results in a `Result4k` result determining if the transition was successful
 
 ```kotlin
- // returns OK with the updated entity, and the aCommand is issued and sent
-    val update1 = simpleStateMachine.transition(
-        SimpleEntity(one, ""),
-        SimpleEvent1
-    )
-    // returns "illegal transition" - no transition is made and no commands sent
-    val failed = simpleStateMachine.transition(
-        SimpleEntity(one, ""),
-        SimpleEvent2
-    )
+// this is the type of the result of a transition
+typealias TeaResult = Result<StateTransitionResult<TeaState, CupOfTea, TeaCommands>, String>
 
-    // returns OK with the updated entity in state three or four
-    val update2 = simpleStateMachine.transition(SimpleEntity(two, ""), aCommand) {
-        // imagine a remote operation here which could go one of 2 ways (or fail!)
-        when (Random.nextBoolean()) {
-            true -> Success(SimpleEvent2)
-            false -> Success(SimpleEvent3)
-        }
+// returns OK with the updated entity - state only,
+val boilingKettle: TeaResult = teaStateMachine.transition(
+    CupOfTea(GetCup, "-"),
+    TurnOnKettle
+)
+
+val updatedCupOfTea = boilingKettle.valueOrNull()!!.entity
+println(updatedCupOfTea)
+
+// returns OK with the updated entity - the lastAction is updated
+val steepingTea: TeaResult = teaStateMachine.transition(
+    updatedCupOfTea,
+    PourWater
+)
+
+val updatedCupOfTea2 = steepingTea.valueOrNull()!!.entity
+println(updatedCupOfTea2)
+
+// returns OK with the updated entity in state three or four
+val blackOrCheckingForMilk: TeaResult = teaStateMachine.transition(updatedCupOfTea2, DoYouHaveMilk) {
+    // imagine a remote operation here which could go one of 2 ways (or fail!)
+    when (Random.nextBoolean()) {
+        true -> Success(NoMilkPlease)
+        false -> Success(MilkPlease)
     }
+}
+
+println(blackOrCheckingForMilk)
+
+// we can display the state machine as a PlantUML diagram
+println(teaStateMachine.renderUsing(Puml("simple")))
+
 ```
 
 Note that the storage of the controlled entity is done entirely outside of State4k. The typical model is for commands to be issued to a queue and the reprocessed back into the machine. In the case of a database, you will want to process each command or async event in an "select for update"-type block to ensure that only a single operation is processed at once.
