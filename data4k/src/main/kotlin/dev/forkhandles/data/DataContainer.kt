@@ -84,7 +84,7 @@ abstract class DataContainer<DATA>(
 
     /** Data **/
 
-    protected fun data(vararg metaData: Metadatum) =
+    protected fun requiredData(vararg metaData: Metadatum) =
         property<DATA, DATA, DATA>({ it }, { it }, *metaData)
 
     protected fun optionalData(vararg metaData: Metadatum) =
@@ -153,5 +153,9 @@ abstract class DataContainer<DATA>(
     )
 
     private fun Any.kClass() = this::class as KClass<DataContainer<DATA>>
+
+    /** Deprecated **/
+    @Deprecated("renamed", ReplaceWith("requiredData( *metaData)"))
+    protected fun data(vararg metaData: Metadatum) = requiredData( *metaData)
 }
 

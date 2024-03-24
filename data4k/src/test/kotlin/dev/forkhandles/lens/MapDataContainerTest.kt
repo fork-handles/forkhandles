@@ -38,7 +38,7 @@ class MapBacked(map: Map<String, Any?>) : MapDataContainer(map), MainClassFields
     override var subClass by obj(::ChildMap, foo, bar)
 
     override var value by required(MyType, foo, bar)
-    override var requiredData by data(foo, bar)
+    override var requiredData by requiredData(foo, bar)
 
     override var optional by optional<String>(foo, bar)
     override var optionalList by optionalList<String>(foo, bar)

@@ -36,7 +36,7 @@ class TopNode(node: JsonNode) : JsonNodeDataContainer(node), MainClassFields<Chi
     override var subClass by obj(::ChildNode, foo, bar)
     override var value by required(MyType, foo, bar)
     override var mapped by required(String::toInt, Int::toString, foo, bar)
-    override var requiredData by data(foo, bar)
+    override var requiredData by requiredData(foo, bar)
 
     override var optional by optional<String>(foo, bar)
     override var optionalMapped by optional(String::toInt, Int::toString, foo, bar)
