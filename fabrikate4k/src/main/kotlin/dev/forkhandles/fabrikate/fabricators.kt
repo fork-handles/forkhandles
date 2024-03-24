@@ -5,9 +5,20 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.net.URI
 import java.net.URL
-import java.time.*
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.Month
+import java.time.OffsetDateTime
+import java.time.OffsetTime
+import java.time.Year
+import java.time.YearMonth
 import java.time.ZoneOffset.UTC
-import java.util.*
+import java.time.ZonedDateTime
+import java.util.Date
+import java.util.UUID
 import kotlin.random.asJavaRandom
 
 fun interface Fabricator<T> : (Fabrikate) -> T
@@ -122,7 +133,7 @@ class YearFabricator : Fabricator<Year> {
 }
 
 class MonthFabricator : Fabricator<Month> {
-    override fun invoke(fabrikate: Fabrikate): Month = Month.values().random(fabrikate.config.random)
+    override fun invoke(fabrikate: Fabrikate): Month = Month.entries.random(fabrikate.config.random)
 }
 
 class YearMonthFabricator : Fabricator<YearMonth> {
@@ -165,7 +176,7 @@ class UriFabricator : Fabricator<URI> {
 
 class UrlFabricator : Fabricator<URL> {
     override fun invoke(fabrikate: Fabrikate): URL =
-        URL("https://${StringFabricator()(fabrikate).filter { it.isLetterOrDigit() }}.com")
+        URI.create("https://${StringFabricator()(fabrikate).filter { it.isLetterOrDigit() }}.com").toURL()
 }
 
 class FileFabricator : Fabricator<File> {
