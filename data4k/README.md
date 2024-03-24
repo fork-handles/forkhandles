@@ -38,8 +38,8 @@ class MapBacked(propertySet: Map<String, Any?>) : MapDataContainer(propertySet) 
     val stringField: String by required<String>()
     val optionalList: List<String>? by optionalList<String>()
     val optionalStringField: String? by optional<String>()
-    val listSubClassField: List<SubMap> by list(::SubMap)
-    val objectField: SubMap by obj(::SubMap) 
+    val listSubClassField: List<SubMap> by requiredList(::SubMap)
+    val objectField: SubMap by requiredObj(::SubMap) 
     val valueField: MyInt by required(MyInt) // values4k Int tiny/micro type
 }
 
