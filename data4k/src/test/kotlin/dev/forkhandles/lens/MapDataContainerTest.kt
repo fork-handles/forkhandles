@@ -13,7 +13,7 @@ class GrandchildMap(propertySet: Map<String, Any?>) : MapDataContainer(propertyS
 class ChildMap(propertySet: Map<String, Any?>) : MapDataContainer(propertySet), ChildFields<GrandchildMap> {
     override var string by required<String>()
     override var noSuch by required<String>()
-    override var grandchild by obj(::GrandchildMap)
+    override var grandchild by requiredObj(::GrandchildMap)
 }
 
 class MapBacked(map: Map<String, Any?>) : MapDataContainer(map), MainClassFields<ChildMap, GrandchildMap, MutableMap<String, Any?>> {
@@ -35,7 +35,7 @@ class MapBacked(map: Map<String, Any?>) : MapDataContainer(map), MainClassFields
     override var listInts by requiredList<Int>(foo, bar)
     override val listMapped by requiredList(Int::toString, foo, bar)
 
-    override var subClass by obj(::ChildMap, foo, bar)
+    override var subClass by requiredObj(::ChildMap, foo, bar)
 
     override var value by required(MyType, foo, bar)
     override var requiredData by requiredData(foo, bar)

@@ -15,7 +15,7 @@ class GrandchildNode(node: JsonNode) : JsonNodeDataContainer(node), GrandchildFi
 class ChildNode(node: JsonNode) : JsonNodeDataContainer(node), ChildFields<GrandchildNode> {
     override var string by required<String>()
     override var noSuch by required<String>()
-    override var grandchild by obj(::GrandchildNode)
+    override var grandchild by requiredObj(::GrandchildNode)
 }
 
 class TopNode(node: JsonNode) : JsonNodeDataContainer(node), MainClassFields<ChildNode, GrandchildNode, JsonNode> {
@@ -33,7 +33,7 @@ class TopNode(node: JsonNode) : JsonNodeDataContainer(node), MainClassFields<Chi
     override var listInts by requiredList<Int>(foo, bar)
     override var listValue by requiredList(MyType, foo, bar)
     override val listMapped by requiredList(Int::toString, foo, bar)
-    override var subClass by obj(::ChildNode, foo, bar)
+    override var subClass by requiredObj(::ChildNode, foo, bar)
     override var value by required(MyType, foo, bar)
     override var mapped by required(String::toInt, Int::toString, foo, bar)
     override var requiredData by requiredData(foo, bar)

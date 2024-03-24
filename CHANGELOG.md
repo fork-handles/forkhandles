@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.15.1.0
+- **data4k** : Rename methods for consistency. Old methods have been deprecated.
+
 ### v2.15.0.1
 - **state4k** : Remove errant system out
 

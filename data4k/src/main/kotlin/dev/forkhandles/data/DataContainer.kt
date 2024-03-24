@@ -70,14 +70,14 @@ abstract class DataContainer<DATA>(
 
     /** Object **/
 
-    protected fun <OUT : DataContainer<DATA>> obj(
+    protected fun <OUT : DataContainer<DATA>> requiredObj(
         mapInFn: (DATA) -> OUT,
         mapOutFn: (OUT) -> DATA?,
         vararg metaData: Metadatum
     ) = property<OUT, DATA, DATA>(mapInFn, mapOutFn, *metaData)
 
-    protected fun <OUT : DataContainer<DATA>> obj(mapInFn: (DATA) -> OUT, vararg metaData: Metadatum) =
-        obj(mapInFn, { it.unwrap() }, *metaData)
+    protected fun <OUT : DataContainer<DATA>> requiredObj(mapInFn: (DATA) -> OUT, vararg metaData: Metadatum) =
+        requiredObj(mapInFn, { it.unwrap() }, *metaData)
 
     protected fun <OUT : DataContainer<DATA>> optionalObj(mapInFn: (DATA) -> OUT, vararg metaData: Metadatum) =
         property<OUT?, DATA, DATA>(mapInFn, { it?.unwrap() }, *metaData)
@@ -155,7 +155,8 @@ abstract class DataContainer<DATA>(
     private fun Any.kClass() = this::class as KClass<DataContainer<DATA>>
 
     /** Deprecated **/
-    @Deprecated("renamed", ReplaceWith("requiredData(*metaData)"))
+
+    @Deprecated("renamed", ReplaceWith("requiredData( *metaData)"))
     protected fun data(vararg metaData: Metadatum) = requiredData( *metaData)
 
     @Deprecated("renamed", ReplaceWith("requiredList(mapInFn, mapOutFn, *metaData)"))
@@ -168,16 +169,28 @@ abstract class DataContainer<DATA>(
     protected fun <IN, OUT> list(mapInFn: (IN) -> OUT, vararg metaData: Metadatum) =
         requiredList(mapInFn, *metaData)
 
-    @Deprecated("renamed", ReplaceWith("requiredList(*metaData)"))
+    @Deprecated("renamed", ReplaceWith("requiredList<OUT>(*metaData)"))
     protected fun <OUT> list(vararg metaData: Metadatum) = requiredList<OUT>(*metaData)
 
-    @Deprecated("renamed", ReplaceWith("requiredList(mapInFn, mapOutFn, *metaData)"))
+    @Deprecated("renamed", ReplaceWith("requiredList(factory, *metaData)"))
     protected fun <IN : Any, OUT : Value<IN>> list(factory: ValueFactory<OUT, IN>, vararg metaData: Metadatum) =
         requiredList(factory, *metaData)
 
     @JvmName("listDataContainerDeprecated")
-    @Deprecated("renamed", ReplaceWith("requiredList(mapInFn, mapOutFn, *metaData)"))
+    @Deprecated("renamed", ReplaceWith("requiredList(mapInFn,  *metaData)"))
     protected fun <OUT : DataContainer<DATA>?> list(mapInFn: (DATA) -> OUT, vararg metaData: Metadatum) =
         requiredList(mapInFn,  *metaData)
+
+    @Deprecated("renamed", ReplaceWith("requiredObj(mapInFn, mapOutFn, *metaData)"))
+    protected fun <OUT : DataContainer<DATA>> obj(
+        mapInFn: (DATA) -> OUT,
+        mapOutFn: (OUT) -> DATA?,
+        vararg metaData: Metadatum
+    ) = requiredObj(mapInFn, mapOutFn, *metaData)
+
+    @Deprecated("renamed", ReplaceWith("Customize Toolbar..."))
+    protected fun <OUT : DataContainer<DATA>> obj(mapInFn: (DATA) -> OUT, vararg metaData: Metadatum) =
+        requiredObj(mapInFn, *metaData)
+
 }
 
