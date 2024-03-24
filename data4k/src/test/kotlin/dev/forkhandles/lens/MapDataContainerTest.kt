@@ -29,11 +29,11 @@ class MapBacked(map: Map<String, Any?>) : MapDataContainer(map), MainClassFields
 
     override var mapped by required(String::toInt, Int::toString, foo, bar)
 
-    override var list by list<String>(foo, bar)
-    override var listValue by list(MyType, foo, bar)
-    override var listSubClass by list(::ChildMap, foo, bar)
-    override var listInts by list<Int>(foo, bar)
-    override val listMapped by list(Int::toString, foo, bar)
+    override var list by requiredList<String>(foo, bar)
+    override var listValue by requiredList(MyType, foo, bar)
+    override var listSubClass by requiredList(::ChildMap, foo, bar)
+    override var listInts by requiredList<Int>(foo, bar)
+    override val listMapped by requiredList(Int::toString, foo, bar)
 
     override var subClass by obj(::ChildMap, foo, bar)
 

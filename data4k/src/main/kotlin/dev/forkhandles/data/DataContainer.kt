@@ -92,23 +92,23 @@ abstract class DataContainer<DATA>(
 
     /** List **/
 
-    protected fun <OUT, IN> list(
+    protected fun <OUT, IN> requiredList(
         mapInFn: (IN) -> OUT, mapOutFn: (OUT) -> IN?,
         vararg metaData: Metadatum
     ) =
         property<List<OUT>, List<IN>, List<IN>>({ it.map(mapInFn) }, { it.mapNotNull(mapOutFn) }, *metaData)
 
-    protected fun <IN, OUT> list(mapInFn: (IN) -> OUT, vararg metaData: Metadatum) =
-        list(mapInFn, { error("no outbound mapping defined") }, *metaData)
+    protected fun <IN, OUT> requiredList(mapInFn: (IN) -> OUT, vararg metaData: Metadatum) =
+        requiredList(mapInFn, { error("no outbound mapping defined") }, *metaData)
 
-    protected fun <OUT> list(vararg metaData: Metadatum) = list<OUT, OUT>({ it }, { it }, *metaData)
+    protected fun <OUT> requiredList(vararg metaData: Metadatum) = requiredList<OUT, OUT>({ it }, { it }, *metaData)
 
-    protected fun <IN : Any, OUT : Value<IN>> list(factory: ValueFactory<OUT, IN>, vararg metaData: Metadatum) =
-        list(factory::of, { it.value }, *metaData)
+    protected fun <IN : Any, OUT : Value<IN>> requiredList(factory: ValueFactory<OUT, IN>, vararg metaData: Metadatum) =
+        requiredList(factory::of, { it.value }, *metaData)
 
     @JvmName("listDataContainer")
-    protected fun <OUT : DataContainer<DATA>?> list(mapInFn: (DATA) -> OUT, vararg metaData: Metadatum) =
-        list(mapInFn, { it?.unwrap() }, *metaData)
+    protected fun <OUT : DataContainer<DATA>?> requiredList(mapInFn: (DATA) -> OUT, vararg metaData: Metadatum) =
+        requiredList(mapInFn, { it?.unwrap() }, *metaData)
 
     protected fun <OUT, IN> optionalList(mapInFn: (IN) -> OUT, mapOutFn: (OUT) -> IN?, vararg metaData: Metadatum) =
         property<List<OUT>?, List<IN>, List<IN>>({ it.map(mapInFn) }, { it?.mapNotNull(mapOutFn) }, *metaData)
@@ -155,7 +155,29 @@ abstract class DataContainer<DATA>(
     private fun Any.kClass() = this::class as KClass<DataContainer<DATA>>
 
     /** Deprecated **/
-    @Deprecated("renamed", ReplaceWith("requiredData( *metaData)"))
+    @Deprecated("renamed", ReplaceWith("requiredData(*metaData)"))
     protected fun data(vararg metaData: Metadatum) = requiredData( *metaData)
+
+    @Deprecated("renamed", ReplaceWith("requiredList(mapInFn, mapOutFn, *metaData)"))
+    protected fun <OUT, IN> list(
+        mapInFn: (IN) -> OUT, mapOutFn: (OUT) -> IN?,
+        vararg metaData: Metadatum
+    ) = requiredList(mapInFn, mapOutFn, *metaData)
+
+    @Deprecated("renamed", ReplaceWith("requiredList(mapInFn, *metaData)"))
+    protected fun <IN, OUT> list(mapInFn: (IN) -> OUT, vararg metaData: Metadatum) =
+        requiredList(mapInFn, *metaData)
+
+    @Deprecated("renamed", ReplaceWith("requiredList(*metaData)"))
+    protected fun <OUT> list(vararg metaData: Metadatum) = requiredList<OUT>(*metaData)
+
+    @Deprecated("renamed", ReplaceWith("requiredList(mapInFn, mapOutFn, *metaData)"))
+    protected fun <IN : Any, OUT : Value<IN>> list(factory: ValueFactory<OUT, IN>, vararg metaData: Metadatum) =
+        requiredList(factory, *metaData)
+
+    @JvmName("listDataContainerDeprecated")
+    @Deprecated("renamed", ReplaceWith("requiredList(mapInFn, mapOutFn, *metaData)"))
+    protected fun <OUT : DataContainer<DATA>?> list(mapInFn: (DATA) -> OUT, vararg metaData: Metadatum) =
+        requiredList(mapInFn,  *metaData)
 }
 
