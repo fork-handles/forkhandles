@@ -1,4 +1,4 @@
-<img src="forkhandles-black.png" height="200px" alt="Forkhandles"/>
+<img src="forkhandles-wide-black.png" height="200px" alt="Forkhandles"/>
 
 <a href="https://github.com/fork-handles/forkhandles/actions?query=workflow%3A.github%2Fworkflows%2Fbuild.yaml"><img alt="build" src="https://github.com/fork-handles/forkhandles/workflows/.github/workflows/build.yaml/badge.svg"></a>
 <a href="https://mvnrepository.com/artifact/dev.forkhandles"><img alt="download" src="https://img.shields.io/maven-central/v/dev.forkhandles/forkhandles-bom"></a>
