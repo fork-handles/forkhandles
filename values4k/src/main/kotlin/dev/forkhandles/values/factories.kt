@@ -25,11 +25,13 @@ import java.time.format.DateTimeFormatter.ISO_OFFSET_TIME
 import java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME
 import java.time.format.DateTimeFormatter.ofPattern
 import java.util.UUID
+import java.util.Base64
 
-private val rfcBase64Alphabet get() = "^[0-9A-Za-z+/]+$".toRegex() // https://www.rfc-editor.org/rfc/rfc4648.html#section-4
-private val rfcBase32Alphabet get() = "^[2-7A-Z]+$".toRegex()  // https://www.rfc-editor.org/rfc/rfc4648.html#section-6
+
+private val rfcBase64Alphabet get() = "^[0-9A-Za-z+/=]+$".toRegex() // https://www.rfc-editor.org/rfc/rfc4648.html#section-4
+private val rfcBase32Alphabet get() = "^[2-7A-Z=]+$".toRegex()  // https://www.rfc-editor.org/rfc/rfc4648.html#section-6
 private val rfcBase16Alphabet get() = "^[0-9A-F]+$".toRegex() // https://www.rfc-editor.org/rfc/rfc4648.html#section-8
-private val base36Alphabet get() = "^[0-9A-Z]+$".toRegex()
+private val base36Alphabet get() = "^[0-9A-Z=]+$".toRegex()
 
 open class StringValueFactory<DOMAIN : Value<String>>(
     fn: (String) -> DOMAIN, validation: Validation<String>? = null,
@@ -51,7 +53,10 @@ open class Base64StringValueFactory<DOMAIN : Value<String>>(
     validation: Validation<String> = { true },
     parseFn: (String) -> String = { it },
     showFn: (String) -> String = { it },
-) : ValueFactory<DOMAIN, String>(fn, rfcBase64Alphabet::matches.and(validation), parseFn, showFn)
+) : ValueFactory<DOMAIN, String>(fn, rfcBase64Alphabet::matches.and(validation), parseFn, showFn) {
+    private val encoder = Base64.getEncoder()
+    fun encode(value: ByteArray) = encoder.encodeToString(value).let(coerceFn)
+}
 
 open class Base36StringValueFactory<DOMAIN : Value<String>>(
     fn: (String) -> DOMAIN,
@@ -72,7 +77,19 @@ open class Base16StringValueFactory<DOMAIN : Value<String>>(
     validation: Validation<String> = { true },
     parseFn: (String) -> String = { it },
     showFn: (String) -> String = { it },
-) : ValueFactory<DOMAIN, String>(fn, rfcBase16Alphabet::matches.and(validation), parseFn, showFn)
+) : ValueFactory<DOMAIN, String>(fn, rfcBase16Alphabet::matches.and(validation), parseFn, showFn) {
+    // Source: https://stackoverflow.com/a/9855338/1253613
+    private val base16Chars = "0123456789ABCDEF".toCharArray()
+    fun encode(bytes: ByteArray): DOMAIN {
+        val hexChars = CharArray(bytes.size * 2)
+        for (j in bytes.indices) {
+            val v = bytes[j].toInt() and 0xFF
+            hexChars[j * 2] = this.base16Chars[v ushr 4]
+            hexChars[j * 2 + 1] = this.base16Chars[v and 0x0F]
+        }
+        return String(hexChars).let(coerceFn)
+    }
+}
 
 open class CharValueFactory<DOMAIN : Value<Char>>(
     fn: (Char) -> DOMAIN, validation: Validation<Char>? = null
