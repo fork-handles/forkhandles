@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.16.0.0
+- **result4k** : [Breaking change] Changed bounds in `resultFromCatching` from `Throwable` to `Exception`. 
+
 ### v2.15.1.0
 - **data4k** : Rename methods for consistency. Old methods have been deprecated.
 

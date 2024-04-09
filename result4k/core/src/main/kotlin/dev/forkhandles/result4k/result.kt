@@ -23,7 +23,7 @@ inline fun <T> resultFrom(block: () -> T): Result<T, Exception> =
 /**
  * Call a block and catch a specific Throwable type, returning it as an `Err` value.
  */
-inline fun <reified E : Throwable, T> resultFromCatching(block: () -> T): Result<T, E> = resultFrom(block).mapFailure {
+inline fun <reified E : Exception, T> resultFromCatching(block: () -> T): Result<T, E> = resultFrom(block).mapFailure {
     when (it) {
         is E -> it
         else -> throw it
