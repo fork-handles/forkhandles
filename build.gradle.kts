@@ -1,4 +1,3 @@
-import com.google.devtools.ksp.gradle.KspTask
 import groovy.namespace.QName
 import groovy.util.Node
 import org.gradle.api.JavaVersion.VERSION_1_8
@@ -11,7 +10,6 @@ plugins {
     `java-library`
     `maven-publish`
     signing
-    id("com.google.devtools.ksp")
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
     id("com.github.kt3k.coveralls") version "2.12.2"
     id("org.jetbrains.kotlin.plugin.serialization")
@@ -26,7 +24,6 @@ buildscript {
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:_")
         classpath("com.github.kt3k.coveralls:com.github.kt3k.coveralls.gradle.plugin:_")
-        classpath("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:_")
     }
 }
 
@@ -41,7 +38,6 @@ allprojects {
     apply(plugin = "kotlin")
     apply(plugin = "org.gradle.jacoco")
     apply(plugin = "com.github.kt3k.coveralls")
-    apply(plugin = "com.google.devtools.ksp")
     apply(plugin = "java-test-fixtures")
     apply(plugin = "maven-publish")
 
@@ -57,10 +53,6 @@ allprojects {
             kotlinOptions {
                 jvmTarget = "1.8"
             }
-        }
-
-        withType<KspTask> {
-            outputs.upToDateWhen { false }
         }
 
         java {

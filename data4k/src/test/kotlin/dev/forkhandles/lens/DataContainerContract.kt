@@ -99,6 +99,9 @@ abstract class DataContainerContract<C : ChildFields<G>, G : GrandchildFields, C
                 "mapped" to "123",
                 "optionalValue" to 123,
                 "optional" to "optional",
+                "stringValue" to "stringValue",
+                "booleanValue" to true,
+                "intValue" to 1,
             )
         )
 
