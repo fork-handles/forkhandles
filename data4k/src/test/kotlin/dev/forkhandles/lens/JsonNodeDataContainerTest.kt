@@ -31,12 +31,16 @@ class TopNode(node: JsonNode) : JsonNodeDataContainer(node), MainClassFields<Chi
     override var listSubClass by requiredList(::ChildNode, foo, bar)
     override var list by requiredList<String>(foo, bar)
     override var listInts by requiredList<Int>(foo, bar)
-    override var listValue by requiredList(MyType, foo, bar)
+    override var listValue by requiredList(LocalDateType, foo, bar)
     override val listMapped by requiredList(Int::toString, foo, bar)
     override var subClass by requiredObj(::ChildNode, foo, bar)
     override var value by required(MyType, foo, bar)
     override var mapped by required(String::toInt, Int::toString, foo, bar)
     override var requiredData by requiredData(foo, bar)
+
+    override var intValue by optional(IntType)
+    override var stringValue by required(StringType)
+    override var localDateValue by required(LocalDateType)
 
     override var optional by optional<String>(foo, bar)
     override var optionalMapped by optional(String::toInt, Int::toString, foo, bar)
@@ -50,9 +54,11 @@ class TopNode(node: JsonNode) : JsonNodeDataContainer(node), MainClassFields<Chi
 }
 
 class JsonNodeDataContainerTest : DataContainerContract<ChildNode, GrandchildNode, JsonNode>() {
-    override fun data(input: Map<String, Any?>): JsonNode = ObjectMapper().valueToTree(input)
+    private val mapper = ObjectMapper()
 
-    override fun container(input: Map<String, Any?>) = TopNode(ObjectMapper().valueToTree(input))
+    override fun data(input: Map<String, Any?>): JsonNode = mapper.valueToTree(input)
+
+    override fun container(input: Map<String, Any?>) = TopNode(mapper.valueToTree(input))
 
     override fun childContainer(input: Map<String, Any?>) =
         ChildNode(data(input))

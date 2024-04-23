@@ -23,18 +23,37 @@ import java.math.BigInteger
 /**
  * Jackson JsonNode-based implementation of the DataContainer
  */
-open class JsonNodeDataContainer(input: JsonNode = instance.objectNode()) :
+open class JsonNodeDataContainer(input: JsonNode) :
     DataContainer<JsonNode>(
         input,
         { content, it -> content.has(it) },
         { content, it -> content[it]?.let(::nodeToValue) },
-        { node: JsonNode, name, value ->
+        { node, name, value ->
             (node as? ObjectNode)?.also { node.replace(name, value.toNode()) }
                 ?: error("Invalid node type ${input::class.java}")
         }
     ) {
-
     companion object {
+        private fun Any?.toNode(): JsonNode? = when (this) {
+            null -> NullNode.instance
+            is JsonNode -> this
+            is DataContainer<*> -> unwrap().toNode()
+            is Boolean -> if (this) TRUE else FALSE
+            is Int -> IntNode(this)
+            is Long -> LongNode(this)
+            is Float -> FloatNode(this)
+            is ByteArray -> BinaryNode(this)
+            is Short -> ShortNode(this)
+            is BigDecimal -> DecimalNode(this)
+            is BigInteger -> BigIntegerNode(this)
+            is Double -> DoubleNode(this)
+            is String -> TextNode(this)
+            is Iterable<*> -> ArrayNode(instance)
+                .also { map { if (it is JsonNode) it else it.toNode() }.forEach(it::add) }
+
+            else -> error("Invalid node type ${this::class.java}")
+        }
+
         private fun nodeToValue(input: JsonNode): Any? = when (input) {
             is NullNode -> null
             is TextNode -> input.textValue()
@@ -52,29 +71,9 @@ open class JsonNodeDataContainer(input: JsonNode = instance.objectNode()) :
                 input.canConvertToLong() -> input.longValue()
                 else -> input.bigIntegerValue()
             }
+
             is BinaryNode -> input.binaryValue()
             else -> error("Invalid node type ${input::class.java}")
         }
-
-        private fun Any?.toNode(): JsonNode? =
-            when (this) {
-                null -> NullNode.instance
-                is JsonNode -> this
-                is DataContainer<*> -> unwrap().toNode()
-                is Boolean -> if (this) TRUE else FALSE
-                is Int -> IntNode(this)
-                is Long -> LongNode(this)
-                is Float -> FloatNode(this)
-                is ByteArray -> BinaryNode(this)
-                is Short -> ShortNode(this)
-                is BigDecimal -> DecimalNode(this)
-                is BigInteger -> BigIntegerNode(this)
-                is Double -> DoubleNode(this)
-                is String -> TextNode(this)
-                is Iterable<*> -> ArrayNode(instance)
-                    .also { map { if (it is JsonNode) it else it.toNode() }.forEach(it::add) }
-
-                else -> error("Cannot set value of type ${this::class.java}")
-            }
     }
 }

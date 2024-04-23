@@ -28,5 +28,7 @@ class DataProperty<IN, OUT : Any?>(
         }
     }
 
-    override fun setValue(thisRef: IN, property: KProperty<*>, value: OUT) = thisRef.setFn(property.name, value)
+    override fun setValue(thisRef: IN, property: KProperty<*>, value: OUT) {
+        thisRef.setFn(property.name, value)
+    }
 }

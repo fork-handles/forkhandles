@@ -30,7 +30,7 @@ class MapBacked(map: Map<String, Any?>) : MapDataContainer(map), MainClassFields
     override var mapped by required(String::toInt, Int::toString, foo, bar)
 
     override var list by requiredList<String>(foo, bar)
-    override var listValue by requiredList(MyType, foo, bar)
+    override var listValue by requiredList(LocalDateType, foo, bar)
     override var listSubClass by requiredList(::ChildMap, foo, bar)
     override var listInts by requiredList<Int>(foo, bar)
     override val listMapped by requiredList(Int::toString, foo, bar)
@@ -39,6 +39,10 @@ class MapBacked(map: Map<String, Any?>) : MapDataContainer(map), MainClassFields
 
     override var value by required(MyType, foo, bar)
     override var requiredData by requiredData(foo, bar)
+
+    override var intValue by optional(IntType)
+    override var stringValue by required(StringType)
+    override var localDateValue by required(LocalDateType)
 
     override var optional by optional<String>(foo, bar)
     override var optionalList by optionalList<String>(foo, bar)

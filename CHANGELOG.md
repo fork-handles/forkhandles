@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.16.0.0
+- **data4k** [Unlikely Break] : Better support for values4k tiny types - we use the correct representation as per the show method if there is a non-primitive datatype underneath the covers.
+
 ### v2.15.2.0
 - **all** : Upgrade of dependencies and gradle. Convert build to kotlin.
 
