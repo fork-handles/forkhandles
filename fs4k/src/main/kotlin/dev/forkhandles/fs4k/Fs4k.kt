@@ -2,14 +2,19 @@ package dev.forkhandles.fs4k
 
 import dev.forkhandles.fs4k.CreateMode.Automatic
 import java.io.File
+import java.io.InputStream
 
 class Fs4k internal constructor(private val rootDir: File) {
 
     private val execute = mutableListOf<() -> Unit>({ rootDir.mkdirs() })
 
-    fun file(name: String, content: String) =
+    fun file(name: String, content: () -> String) = file(name, content().byteInputStream())
+
+    fun file(name: String, content: InputStream) =
         execute.add {
-            File(rootDir, name).apply { writeText(content) }
+            File(rootDir, name).apply {
+                content.use { input -> writeBytes(input.readBytes()) }
+            }
         }
 
     fun dir(name: String, fn: Fs4k.() -> Unit) = execute.add {
@@ -23,10 +28,7 @@ class Fs4k internal constructor(private val rootDir: File) {
             dir(File(rootDir), createMode, fn)
 
         fun dir(rootDir: File = File("."), createMode: CreateMode = Automatic, fn: Fs4k.() -> Unit) =
-            Fs4k(rootDir).apply(fn)
-                .apply {
-                    if (createMode == Automatic) create()
-                }
+            Fs4k(rootDir).apply(fn).apply { if (createMode == Automatic) create() }
     }
 }
 

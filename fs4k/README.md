@@ -10,10 +10,14 @@ Super-simple file tree creation in Kotlin. Create a file tree, with a simple DSL
 
 ```kotlin
 dir(file, createMode = Automatic) {
-    file("plainfile.txt", "hello")
+    file("plainfile.txt") {
+        "hello"
+    }
 
     dir("directory") {
-        file("file2.html", "<html/>")
+        file("file2.html") {
+            "<html/>"
+        }
     }
 }
 ```

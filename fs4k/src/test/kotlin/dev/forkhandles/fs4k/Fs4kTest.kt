@@ -15,10 +15,14 @@ class Fs4kTest {
     fun `creates files automatically`() {
         val file = Files.createTempDirectory("fs4k").toFile()
         dir(file, createMode = Automatic) {
-            file("plainfile.txt", "hello")
+            file("plainfile.txt") {
+                "hello"
+            }
 
             dir("directory") {
-                file("file2.html", "<html/>")
+                file("file2.html") {
+                    "<html/>"
+                }
             }
         }
 
@@ -32,10 +36,14 @@ class Fs4kTest {
         val file = Files.createTempDirectory("fs4k").toFile()
 
         val fs4k = dir(file, createMode = Manual) {
-            file("plainfile.txt", "hello")
+            file("plainfile.txt") {
+                "hello"
+            }
 
             dir("directory") {
-                file("file2.html", "<html/>")
+                file("file2.html") {
+                    "<html/>"
+                }
             }
         }
 
