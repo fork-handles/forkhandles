@@ -1,4 +1,4 @@
-# Fs4k - Super-simple file tree creation DSL in Kotlin.
+# Fs4k - Super-simple file tree manipulation DSL in Kotlin.
 
 <a href="https://mvnrepository.com/artifact/dev.forkhandles"><img alt="Download" src="https://img.shields.io/maven-central/v/dev.forkhandles/forkhandles-bom"></a>
 [![.github/workflows/build.yaml](https://github.com/fork-handles/forkhandles/actions/workflows/build.yaml/badge.svg)](https://github.com/fork-handles/forkhandles/actions/workflows/build.yaml)
