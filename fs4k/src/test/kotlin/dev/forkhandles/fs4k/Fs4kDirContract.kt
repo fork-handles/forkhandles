@@ -15,7 +15,7 @@ interface Fs4kDirContract {
 
     @Test
     fun `creates files automatically`() {
-        dir(nonExistingPath, fs4k, Automatic) {
+        dir(nonExistingPath, Automatic, fs4k) {
             text("plainfile.txt") {
                 content = "hello"
             }
@@ -43,7 +43,7 @@ interface Fs4kDirContract {
     @Test
     fun `creates files manually`() {
 
-        val topDir = dir(nonExistingPath, fs4k, Manual)
+        val topDir = dir(nonExistingPath, Manual, fs4k)
 
         val plainFile = topDir.text("plainfile.txt") {
             content = "hello"
@@ -70,7 +70,7 @@ interface Fs4kDirContract {
 
     @Test
     fun `delete file after creation`() {
-        val file = dir(nonExistingPath, fs4k, Manual).text("plainfile.txt")
+        val file = dir(nonExistingPath, Manual, fs4k).text("plainfile.txt")
 
         file.create()
         assertTrue(exists(nonExistingPath, "plainfile.txt"), "plainfile.txt should exist")
@@ -81,7 +81,7 @@ interface Fs4kDirContract {
 
     @Test
     fun `delete directory deletes children`() {
-        val dir = dir(nonExistingPath, fs4k)
+        val dir = dir(nonExistingPath, fs4k = fs4k)
         dir.text("plainfile.txt")
 
         assertTrue(exists(nonExistingPath, "plainfile.txt"), "plainfile.txt should exist")
@@ -93,7 +93,7 @@ interface Fs4kDirContract {
 
     @Test
     fun `delete file from existing`() {
-        val file = dir(existingParentPath, fs4k, Manual).text("plainfile.txt")
+        val file = dir(existingParentPath, Manual, fs4k).text("plainfile.txt")
 
         file.create()
         assertTrue(exists(existingParentPath, "plainfile.txt"), "plainfile.txt should exist")

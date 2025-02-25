@@ -8,8 +8,8 @@ import dev.forkhandles.fs4k.disk.DiskFs4k
  */
 fun dir(
     path: Fs4kPath,
-    fs4k: Fs4k = DiskFs4k,
     createMode: CreateMode = Automatic,
+    fs4k: Fs4k = DiskFs4k,
     fn: Fs4kDir.() -> Unit = {}
 ): Fs4kDir = fs4k(path, createMode).apply(fn)
 
@@ -18,7 +18,7 @@ fun dir(
  */
 fun dir(
     path: String = ".",
-    fs4k: Fs4k = DiskFs4k,
     createMode: CreateMode = Automatic,
+    fs4k: Fs4k = DiskFs4k,
     fn: Fs4kDir.() -> Unit = {}
-) = dir(Fs4kPath.of(path), fs4k, createMode, fn)
+) = dir(Fs4kPath.of(path), createMode, fs4k, fn)
