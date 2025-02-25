@@ -6,13 +6,16 @@ import java.nio.file.Path
 class DiskFs(private val dir: File, private val createMode: CreateMode = CreateMode.Automatic) : Fs {
     constructor(path: Path, createMode: CreateMode = CreateMode.Automatic) : this(path.toFile(), createMode)
 
-    override fun create() {
-        TODO("Not yet implemented")
-    }
+    override fun create() = dir.mkdirs()
 
     override fun delete() = dir.delete()
 
     private class DiskFile(private val file: File) : FsFile {
+        override fun create() = with(file) {
+            mkdirs()
+            createNewFile()
+        }
+
         override fun delete() = file.delete()
 
         override var content: String
