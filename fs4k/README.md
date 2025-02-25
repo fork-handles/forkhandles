@@ -36,3 +36,6 @@ You can manipulate files in a nested way to only create/delete the parts you nee
 dir("parent").dir("child").text("file.txt").delete()
 ```
 
+### Supported FS types:
+
+- Disk
