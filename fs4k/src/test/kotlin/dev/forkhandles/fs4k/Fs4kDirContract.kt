@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import java.io.File
 
 interface Fs4kDirContract {
     val fs4k: Fs4k
@@ -31,13 +30,11 @@ interface Fs4kDirContract {
             }
         }
 
-        val text = File(nonExistingPath.toFile(), "plainfile.txt")
-        assertTrue(text.exists(), "plainfile.txt should exist")
-        assertEquals("hello", text.reader().readText())
+        assertTrue(exists(nonExistingPath, "plainfile.txt"), "plainfile.txt should exist")
+        assertEquals("hello", content(nonExistingPath, "plainfile.txt"))
 
-        val binary = File(nonExistingPath.toFile(), "binary.png")
-        assertTrue(binary.exists(), "binary.png should exist")
-        assertEquals("goodbye", binary.reader().readText())
+        assertTrue(exists(nonExistingPath, "binary.png"), "binary.png should exist")
+        assertEquals("goodbye", content(nonExistingPath, "binary.png"))
 
         assertTrue(exists(nonExistingPath, "directory"), "directory should exist")
         assertTrue(exists(nonExistingPath, "directory/file2.html"), "directory/file2.html should exist")
@@ -57,9 +54,9 @@ interface Fs4kDirContract {
             content = "<html/>"
         }
 
-        assertFalse(nonExistingPath.toFile().exists(), "directory should not exist")
+        assertFalse(exists(nonExistingPath), "directory should not exist")
         topDir.create()
-        assertTrue(nonExistingPath.toFile().exists(), "directory should exist")
+        assertTrue(exists(nonExistingPath), "directory should exist")
 
         assertFalse(exists(nonExistingPath, "plainfile.txt"), "plainfile.txt should not exist")
         plainFile.create()
@@ -91,7 +88,7 @@ interface Fs4kDirContract {
 
         dir.delete()
 
-        assertFalse(nonExistingPath.toFile().exists(), "rootpath should not exist")
+        assertFalse(exists(nonExistingPath), "rootpath should not exist")
     }
 
     @Test
@@ -107,5 +104,7 @@ interface Fs4kDirContract {
 
     fun exists(path: Fs4kPath, name: String): Boolean
 
-    fun Fs4kPath.toFile() = File(toString())
+    fun content(path: Fs4kPath, s: String): String
+
+    fun exists(nonExistingPath1: Fs4kPath): Boolean
 }
