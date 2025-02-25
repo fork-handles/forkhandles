@@ -1,51 +1,58 @@
 package dev.forkhandles.fs4k
 
-import org.junit.jupiter.api.Assertions
+import dev.forkhandles.fs4k.CreateMode.Automatic
+import dev.forkhandles.fs4k.CreateMode.Manual
+import dev.forkhandles.fs4k.Fs.Companion.dir
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.io.File
 
 interface FsContract {
     val rootPath: String
 
-   @Test
-   fun `creates files automatically`() {
-       Fs.dir(File(rootPath, "foo").path, createMode = CreateMode.Automatic) {
-           file("plainfile.txt") {
-               content = "hello"
-           }
+    @Test
+    fun `creates files automatically`() {
+        val newRoot = File(rootPath, "foo").path
+        dir(newRoot, createMode = Automatic) {
+            file("plainfile.txt") {
+                content = "hello"
+            }
 
-           dir("directory") {
-               file("file2.html") {
-                   content = "<html/>"
-               }
-           }
-       }
+            dir("directory") {
+                file("file2.html") {
+                    content = "<html/>"
+                }
+            }
+        }
 
-       Assertions.assertTrue(File(rootPath, "plainfile.txt").exists(), "plainfile.txt should exist")
-       Assertions.assertTrue(File(rootPath, "directory").exists(), "directory should exist")
-       Assertions.assertTrue(File(rootPath, "directory/file2.html").exists(), "directory/file2.html should exist")
-   }
+        assertTrue(File(newRoot, "plainfile.txt").exists(), "plainfile.txt should exist")
+        assertTrue(File(newRoot, "directory").exists(), "directory should exist")
+        assertTrue(File(newRoot, "directory/file2.html").exists(), "directory/file2.html should exist")
+    }
 
-   @Test
-   fun `creates files manually`() {
-       val fs4k = Fs.dir(rootPath, createMode = CreateMode.Manual) {
-           file("plainfile.txt") {
-               content = "hello"
-           }
+    @Test
+    fun `creates files manually`() {
+        val newRoot = File(rootPath, "foo").path
 
-           dir("directory") {
-               file("file2.html") {
-                   content = "<html/>"
-               }
-           }
-       }
+        val fs4k = dir(newRoot, createMode = Manual) {
+            file("plainfile.txt") {
+                content = "hello"
+            }
 
-       Assertions.assertFalse(File(rootPath, "directory").exists(), "directory should exist")
+            dir("directory") {
+                file("file2.html") {
+                    content = "<html/>"
+                }
+            }
+        }
 
-       fs4k.create()
+        assertFalse(File(newRoot, "directory").exists(), "directory should exist")
 
-       Assertions.assertTrue(File(rootPath, "plainfile.txt").exists(), "plainfile.txt should exist")
-       Assertions.assertTrue(File(rootPath, "directory").exists(), "directory should exist")
-       Assertions.assertTrue(File(rootPath, "directory/file2.html").exists(), "directory/file2.html should exist")
-   }
+        fs4k.create()
+
+        assertTrue(File(newRoot, "plainfile.txt").exists(), "plainfile.txt should exist")
+        assertTrue(File(newRoot, "directory").exists(), "directory should exist")
+        assertTrue(File(newRoot, "directory/file2.html").exists(), "directory/file2.html should exist")
+    }
 }
