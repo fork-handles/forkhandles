@@ -4,7 +4,7 @@ import dev.forkhandles.fs4k.CreateMode
 import dev.forkhandles.fs4k.Fs4kFile
 import java.io.File
 
-internal class TextFile(private val createMode: CreateMode, private val file: File) : Fs4kFile.Text {
+internal class TextFile(private val file: File, private val createMode: CreateMode) : Fs4kFile.Text {
     private var toWrite: String = ""
 
     init {

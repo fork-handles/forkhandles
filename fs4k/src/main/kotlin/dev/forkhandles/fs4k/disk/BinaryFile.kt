@@ -8,8 +8,8 @@ import java.io.FileOutputStream
 import java.io.InputStream
 
 internal class BinaryFile(
-    private val createMode: CreateMode,
-    private val file: File
+    private val file: File,
+    private val createMode: CreateMode
 ) : Fs4kFile.Binary {
     private var toWrite: InputStream = "".byteInputStream()
 

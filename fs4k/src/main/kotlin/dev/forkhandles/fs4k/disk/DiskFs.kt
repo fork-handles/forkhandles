@@ -11,7 +11,7 @@ import java.nio.file.Path
  */
 object DiskFs4k : Fs4k {
 
-    override fun invoke(dir: String, createMode: CreateMode): Fs4kDir = Dir(createMode, File(dir))
+    override fun invoke(dir: String, createMode: CreateMode): Fs4kDir = Dir(File(dir), createMode)
 
-    override fun invoke(path: Path, createMode: CreateMode): Fs4kDir = Dir(createMode, path.toFile())
+    override fun invoke(path: Path, createMode: CreateMode): Fs4kDir = Dir(path.toFile(), createMode)
 }
