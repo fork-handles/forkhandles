@@ -2,13 +2,12 @@ package dev.forkhandles.fs4k
 
 import dev.forkhandles.fs4k.CreateMode.Automatic
 import dev.forkhandles.fs4k.disk.DiskFs4k
-import java.nio.file.Path
 
 /**
  * Create a directory in the filesystem.
  */
 fun dir(
-    path: Path,
+    path: Fs4kPath,
     fs4k: Fs4k = DiskFs4k,
     createMode: CreateMode = Automatic,
     fn: Fs4kDir.() -> Unit = {}
@@ -22,4 +21,4 @@ fun dir(
     fs4k: Fs4k = DiskFs4k,
     createMode: CreateMode = Automatic,
     fn: Fs4kDir.() -> Unit = {}
-) = dir(Path.of(path), fs4k, createMode, fn)
+) = dir(Fs4kPath.of(path), fs4k, createMode, fn)

@@ -7,13 +7,12 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.io.File
-import java.nio.file.Path
 
 interface Fs4kDirContract {
     val fs4k: Fs4k
 
-    val nonExistingPath: Path
-    val existingParentPath: Path
+    val nonExistingPath: Fs4kPath
+    val existingParentPath: Fs4kPath
 
     @Test
     fun `creates files automatically`() {
@@ -105,4 +104,6 @@ interface Fs4kDirContract {
         file.delete()
         assertFalse(File(existingParentPath.toFile(), "plainfile.txt").exists(), "plainfile.txt should not exist")
     }
+
+    fun Fs4kPath.toFile() = File(toString())
 }
