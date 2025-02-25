@@ -2,7 +2,6 @@ package dev.forkhandles.fs4k
 
 import dev.forkhandles.fs4k.CreateMode.Automatic
 import dev.forkhandles.fs4k.CreateMode.Manual
-import dev.forkhandles.fs4k.Fs4k.Companion.dir
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -14,14 +13,14 @@ class FsTest {
     @Test
     fun `creates files automatically`() {
         val file = Files.createTempDirectory("fs4k").toFile()
-        dir(file, createMode = Automatic) {
+        fsDir(file.path, createMode = Automatic) {
             file("plainfile.txt") {
-                "hello"
+                content = "hello"
             }
 
             dir("directory") {
                 file("file2.html") {
-                    "<html/>"
+                    content = "<html/>"
                 }
             }
         }
@@ -35,14 +34,14 @@ class FsTest {
     fun `creates files manually`() {
         val file = Files.createTempDirectory("fs4k").toFile()
 
-        val fs4k = dir(file, createMode = Manual) {
+        val fs4k = fsDir(file.path, createMode = Manual) {
             file("plainfile.txt") {
-                "hello"
+                content = "hello"
             }
 
             dir("directory") {
                 file("file2.html") {
-                    "<html/>"
+                    content = "<html/>"
                 }
             }
         }
