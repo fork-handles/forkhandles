@@ -1,4 +1,4 @@
-description = "ForkHandles: Library to make creating file hierarchies."
+description = "ForkHandles: Library to make manipulate file-systems."
 
 dependencies {
     testImplementation(platform("org.junit:junit-bom:_"))

@@ -6,18 +6,33 @@
 <a href="http//www.apache.org/licenses/LICENSE-2.0"><img alt="GitHub license" src="https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat"></a>
 <a href="https://codebeat.co/projects/github-com-fork-handles-forkhandles-trunk"><img alt="codebeat badge" src="https://codebeat.co/badges/5b369ed4-af27-46f4-ad9c-a307d900617e"></a>
 
-Create a file tree on disk.
+File system manipulation in Kotlin with a pluggable file system abstraction. You can set the content of files and directories, and the file system to use.
+
+To create a file system (automatically):
 
 ```kotlin
-dir(file, createMode = Automatic) {
-    file("plainfile.txt") {
-        "hello"
+val directory = dir("path", Automatic) {
+    text("plainfile.txt") {
+        content = "hello"
+    }
+    binary("binary.png") {
+        content = "goodbye".byteInputStream()
     }
 
     dir("directory") {
-        file("file2.html") {
-            "<html/>"
+        text("file2.html") {
+            content = "<html/>"
         }
     }
 }
+
+// directory is created automatically
+directory.delete()
 ```
+
+You can manipulate files in a nested way to only create/delete the parts you need:
+
+```kotlin
+dir("parent").dir("child").text("file.txt").delete()
+```
+

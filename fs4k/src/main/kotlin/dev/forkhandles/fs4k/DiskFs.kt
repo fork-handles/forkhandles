@@ -7,7 +7,10 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.nio.file.Path
 
-fun Fs4k.Companion.Disk(dir: File, createMode: CreateMode = Automatic): Fs4k = object : Fs4k {
+/**
+ * A [Fs4kDir] implementation that uses the local filesystem.
+ */
+fun Fs4kDir.Companion.Disk(dir: File, createMode: CreateMode = Automatic): Fs4kDir = object : Fs4kDir {
     init {
         if (createMode == Automatic) create()
     }
@@ -22,11 +25,18 @@ fun Fs4k.Companion.Disk(dir: File, createMode: CreateMode = Automatic): Fs4k = o
     override fun text(name: String, fn: Fs4kFile.Text.() -> Unit): Fs4kFile.Text =
         Fs4kFile.Text.Disk(File(dir, name), createMode).apply(fn)
 
-    override fun dir(name: String, fn: Fs4k.() -> Unit): Fs4k = Fs4k.Disk(File(dir, name), createMode).apply(fn)
+    override fun dir(name: String, fn: Fs4kDir.() -> Unit): Fs4kDir = Fs4kDir.Disk(File(dir, name), createMode).apply(fn)
 }
 
-fun Fs4k.Companion.Disk(dir: String, createMode: CreateMode = Automatic) = Disk(File(dir), createMode)
-fun Fs4k.Companion.Disk(path: Path, createMode: CreateMode = Automatic) = Disk(path.toFile(), createMode)
+/**
+ * A [Fs4kDir] implementation that uses the local filesystem.
+ */
+fun Fs4kDir.Companion.Disk(dir: String, createMode: CreateMode = Automatic) = Disk(File(dir), createMode)
+
+/**
+ * A [Fs4kDir] implementation that uses the local filesystem.
+ */
+fun Fs4kDir.Companion.Disk(path: Path, createMode: CreateMode = Automatic) = Disk(path.toFile(), createMode)
 
 private fun Fs4kFile.Text.Companion.Disk(file: File, createMode: CreateMode) = object : Fs4kFile.Text {
     private var toWrite: String = ""

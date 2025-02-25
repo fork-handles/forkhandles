@@ -2,7 +2,7 @@ package dev.forkhandles.fs4k
 
 import dev.forkhandles.fs4k.CreateMode.Automatic
 import dev.forkhandles.fs4k.CreateMode.Manual
-import dev.forkhandles.fs4k.Fs4k.Companion.dir
+import dev.forkhandles.fs4k.Fs4kDir.Companion.dir
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test
 import java.io.File
 import java.nio.file.Path
 
-interface Fs4kContract {
-    val fs4k: (Path, CreateMode) -> Fs4k
+interface Fs4kDirContract {
+    val fs4k: (Path, CreateMode) -> Fs4kDir
 
     val nonExistingPath: Path
     val existingParentPath: Path
