@@ -7,14 +7,17 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.io.File
+import java.nio.file.Path
 
 interface FsContract {
-    val rootPath: String
+    val nonExistingPath: Path
+    val existingParentPath: Path
+
+    val fs: (Path, CreateMode) -> Fs
 
     @Test
     fun `creates files automatically`() {
-        val newRoot = File(rootPath, "foo").path
-        dir(newRoot, createMode = Automatic) {
+        dir(nonExistingPath, fs, Automatic) {
             file("plainfile.txt") {
                 content = "hello"
             }
@@ -26,33 +29,70 @@ interface FsContract {
             }
         }
 
-        assertTrue(File(newRoot, "plainfile.txt").exists(), "plainfile.txt should exist")
-        assertTrue(File(newRoot, "directory").exists(), "directory should exist")
-        assertTrue(File(newRoot, "directory/file2.html").exists(), "directory/file2.html should exist")
+        assertTrue(File(nonExistingPath.toFile(), "plainfile.txt").exists(), "plainfile.txt should exist")
+        assertTrue(File(nonExistingPath.toFile(), "directory").exists(), "directory should exist")
+        assertTrue(File(nonExistingPath.toFile(), "directory/file2.html").exists(), "directory/file2.html should exist")
     }
 
     @Test
     fun `creates files manually`() {
-        val newRoot = File(rootPath, "foo").path
 
-        val fs4k = dir(newRoot, createMode = Manual) {
-            file("plainfile.txt") {
-                content = "hello"
-            }
+        val topDir = dir(nonExistingPath, fs, Manual)
 
-            dir("directory") {
-                file("file2.html") {
-                    content = "<html/>"
-                }
-            }
+        val plainFile = topDir.file("plainfile.txt") {
+            content = "hello"
+        }
+        val bottomDir = topDir.dir("directory")
+
+        val bottomFile = bottomDir.file("file2.html") {
+            content = "<html/>"
         }
 
-        assertFalse(File(newRoot, "directory").exists(), "directory should exist")
+        assertFalse(nonExistingPath.toFile().exists(), "directory should not exist")
+        topDir.create()
+        assertTrue(nonExistingPath.toFile().exists(), "directory should exist")
 
-        fs4k.create()
+        assertFalse(File(nonExistingPath.toFile(), "plainfile.txt").exists(), "plainfile.txt should not exist")
+        plainFile.create()
+        assertTrue(File(nonExistingPath.toFile(), "plainfile.txt").exists(), "plainfile.txt should exist")
 
-        assertTrue(File(newRoot, "plainfile.txt").exists(), "plainfile.txt should exist")
-        assertTrue(File(newRoot, "directory").exists(), "directory should exist")
-        assertTrue(File(newRoot, "directory/file2.html").exists(), "directory/file2.html should exist")
+        assertFalse(File(nonExistingPath.toFile(), "directory/file2.html").exists(), "file2.html should not exist")
+        bottomFile.create()
+        assertTrue(File(nonExistingPath.toFile(), "directory").exists(), "directory should exist")
+        assertTrue(File(nonExistingPath.toFile(), "directory/file2.html").exists(), "file2.html should exist")
+    }
+
+    @Test
+    fun `delete file after creation`() {
+        val file = dir(nonExistingPath, fs, Manual).file("plainfile.txt")
+
+        file.create()
+        assertTrue(File(nonExistingPath.toFile(), "plainfile.txt").exists(), "plainfile.txt should exist")
+
+        file.delete()
+        assertFalse(File(nonExistingPath.toFile(), "plainfile.txt").exists(), "plainfile.txt should not exist")
+    }
+
+    @Test
+    fun `delete directory deletes children`() {
+        val dir = dir(nonExistingPath, fs)
+        dir.file("plainfile.txt")
+
+        assertTrue(File(nonExistingPath.toFile(), "plainfile.txt").exists(), "plainfile.txt should exist")
+
+        dir.delete()
+
+        assertFalse(nonExistingPath.toFile().exists(), "rootpath should not exist")
+    }
+
+    @Test
+    fun `delete file from existing`() {
+        val file = dir(existingParentPath, fs, Manual).file("plainfile.txt")
+
+        file.create()
+        assertTrue(File(existingParentPath.toFile(), "plainfile.txt").exists(), "plainfile.txt should exist")
+
+        file.delete()
+        assertFalse(File(existingParentPath.toFile(), "plainfile.txt").exists(), "plainfile.txt should not exist")
     }
 }
