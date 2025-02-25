@@ -11,7 +11,7 @@ import java.io.File
 import java.nio.file.Path
 
 interface Fs4kDirContract {
-    val fs4k: (Path, CreateMode) -> Fs4kDir
+    val fs4k: Fs4k
 
     val nonExistingPath: Path
     val existingParentPath: Path

@@ -1,6 +1,7 @@
 package dev.forkhandles.fs4k
 
 import dev.forkhandles.fs4k.CreateMode.Automatic
+import dev.forkhandles.fs4k.disk.DiskFs4k
 import java.nio.file.Path
 
 /**
@@ -44,7 +45,7 @@ interface Fs4kDir {
          */
         fun dir(
             path: Path,
-            fs4k: (Path, CreateMode) -> Fs4kDir = Companion::Disk,
+            fs4k: Fs4k = DiskFs4k,
             createMode: CreateMode = Automatic,
             fn: Fs4kDir.() -> Unit = {}
         ): Fs4kDir = fs4k(path, createMode).apply(fn)
@@ -54,7 +55,7 @@ interface Fs4kDir {
          */
         fun dir(
             path: String = ".",
-            fs4k: (Path, CreateMode) -> Fs4kDir = Companion::Disk,
+            fs4k: Fs4k = DiskFs4k,
             createMode: CreateMode = Automatic,
             fn: Fs4kDir.() -> Unit = {}
         ) = dir(Path.of(path), fs4k, createMode, fn)

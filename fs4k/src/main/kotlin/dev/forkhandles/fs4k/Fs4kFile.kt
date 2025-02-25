@@ -6,6 +6,7 @@ import java.io.InputStream
  * Represents a file in the filesystem.
  */
 interface Fs4kFile {
+
     /**
      * Create the file.
      */
