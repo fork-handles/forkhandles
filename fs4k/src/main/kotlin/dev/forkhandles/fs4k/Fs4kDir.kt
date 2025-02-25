@@ -3,22 +3,12 @@ package dev.forkhandles.fs4k
 /**
  * Represents a directory in the filesystem.
  */
-interface Fs4kDir {
+interface Fs4kDir: Fs4kEntity {
 
     /**
      * Manipulate the directory filesystem.
      */
     operator fun invoke(fn: Fs4kDir.() -> Unit) = apply(fn)
-
-    /**
-     * Create the directory.
-     */
-    fun create(): Boolean
-
-    /**
-     * Delete the directory.
-     */
-    fun delete(): Boolean
 
     /**
      * Create a binary file in the directory.

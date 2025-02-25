@@ -5,23 +5,14 @@ import java.io.InputStream
 /**
  * Represents a file in the filesystem.
  */
-interface Fs4kFile {
-
-    /**
-     * Create the file.
-     */
-    fun create(): Boolean
-
-    /**
-     * Delete the file.
-     */
-    fun delete(): Boolean
+interface Fs4kFile : Fs4kEntity {
 
     /**
      * Represents a text file in the filesystem.
      */
     interface Text : Fs4kFile {
         var content: String
+
         companion object
     }
 
@@ -30,6 +21,7 @@ interface Fs4kFile {
      */
     interface Binary : Fs4kFile {
         var content: InputStream
+
         companion object
     }
 }
