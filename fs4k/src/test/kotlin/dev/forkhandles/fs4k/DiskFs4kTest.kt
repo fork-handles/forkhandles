@@ -13,4 +13,7 @@ class DiskFs4kTest : Fs4kDirContract {
 
     override val nonExistingPath: Fs4kPath =
         Fs4kPath.of(File(existingParentPath.toFile(), UUID.randomUUID().toString()).toPath().toString())
+
+    override fun exists(path: Fs4kPath, name: String): Boolean =
+        File(path.toFile(), name).exists()
 }
