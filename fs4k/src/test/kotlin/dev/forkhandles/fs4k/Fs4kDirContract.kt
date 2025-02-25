@@ -2,7 +2,6 @@ package dev.forkhandles.fs4k
 
 import dev.forkhandles.fs4k.CreateMode.Automatic
 import dev.forkhandles.fs4k.CreateMode.Manual
-import dev.forkhandles.fs4k.Fs4kDir.Companion.dir
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
