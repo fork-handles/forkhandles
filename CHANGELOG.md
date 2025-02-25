@@ -3,6 +3,10 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.21.0.0
+- **all** : Upgrade of dependencies including Kotlin to v2.1, gradle to 8.12.1
+- **all** : [Breaking] Minimum target Java version is now 11
+
 ### v2.20.0.0
 - **ropes4k**: [New Library] rope implementation for kotlin
 
