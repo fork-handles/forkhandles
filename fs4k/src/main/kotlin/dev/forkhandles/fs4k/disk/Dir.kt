@@ -10,6 +10,8 @@ internal class Dir(private val dir: File, private val createMode: CreateMode) : 
         if (createMode == CreateMode.Automatic) create()
     }
 
+    override fun exists() = dir.exists()
+
     override fun create() = dir.mkdirs()
 
     override fun delete() = dir.deleteRecursively()

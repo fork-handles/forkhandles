@@ -17,6 +17,8 @@ internal class BinaryFile(
         if (createMode == CreateMode.Automatic) create()
     }
 
+    override fun exists() = file.exists()
+
     override fun create() = with(file) {
         parentFile.mkdirs()
         if (!exists()) {

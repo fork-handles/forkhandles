@@ -15,7 +15,7 @@ interface Fs4kDirContract {
 
     @Test
     fun `creates files automatically`() {
-        dir(nonExistingPath, Automatic, fs4k) {
+        val dir = dir(nonExistingPath, Automatic, fs4k) {
             text("plainfile.txt") {
                 content = "hello"
             }
@@ -30,53 +30,54 @@ interface Fs4kDirContract {
             }
         }
 
-        assertTrue(exists(nonExistingPath, "plainfile.txt"), "plainfile.txt should exist")
-        assertEquals("hello", content(nonExistingPath, "plainfile.txt"))
+        assertTrue(dir.exists(nonExistingPath, "plainfile.txt"), "plainfile.txt should exist")
+        assertEquals("hello", dir.content(nonExistingPath, "plainfile.txt"))
 
-        assertTrue(exists(nonExistingPath, "binary.png"), "binary.png should exist")
-        assertEquals("goodbye", content(nonExistingPath, "binary.png"))
+        assertTrue(dir.exists(nonExistingPath, "binary.png"), "binary.png should exist")
+        assertEquals("goodbye", dir.content(nonExistingPath, "binary.png"))
 
-        assertTrue(exists(nonExistingPath, "directory"), "directory should exist")
-        assertTrue(exists(nonExistingPath, "directory/file2.html"), "directory/file2.html should exist")
+        assertTrue(dir.exists(nonExistingPath, "directory"), "directory should exist")
+        assertTrue(dir.exists(nonExistingPath, "directory/file2.html"), "directory/file2.html should exist")
     }
 
     @Test
     fun `creates files manually`() {
 
-        val topDir = dir(nonExistingPath, Manual, fs4k)
+        val dir = dir(nonExistingPath, Manual, fs4k)
 
-        val plainFile = topDir.text("plainfile.txt") {
+        val plainFile = dir.text("plainfile.txt") {
             content = "hello"
         }
-        val bottomDir = topDir.dir("directory")
+        val bottomDir = dir.dir("directory")
 
         val bottomFile = bottomDir.text("file2.html") {
             content = "<html/>"
         }
 
-        assertFalse(exists(nonExistingPath), "directory should not exist")
-        topDir.create()
-        assertTrue(exists(nonExistingPath), "directory should exist")
+        assertFalse(dir.exists(nonExistingPath), "directory should not exist")
+        dir.create()
+        assertTrue(dir.exists(nonExistingPath), "directory should exist")
 
-        assertFalse(exists(nonExistingPath, "plainfile.txt"), "plainfile.txt should not exist")
+        assertFalse(dir.exists(nonExistingPath, "plainfile.txt"), "plainfile.txt should not exist")
         plainFile.create()
-        assertTrue(exists(nonExistingPath, "plainfile.txt"), "plainfile.txt should exist")
+        assertTrue(dir.exists(nonExistingPath, "plainfile.txt"), "plainfile.txt should exist")
 
-        assertFalse(exists(nonExistingPath, "directory/file2.html"), "file2.html should not exist")
+        assertFalse(dir.exists(nonExistingPath, "directory/file2.html"), "file2.html should not exist")
         bottomFile.create()
-        assertTrue(exists(nonExistingPath, "directory"), "directory should exist")
-        assertTrue(exists(nonExistingPath, "directory/file2.html"), "file2.html should exist")
+        assertTrue(dir.exists(nonExistingPath, "directory"), "directory should exist")
+        assertTrue(dir.exists(nonExistingPath, "directory/file2.html"), "file2.html should exist")
     }
 
     @Test
     fun `delete file after creation`() {
-        val file = dir(nonExistingPath, Manual, fs4k).text("plainfile.txt")
+        val dir = dir(nonExistingPath, Manual, fs4k)
+        val file = dir.text("plainfile.txt")
 
         file.create()
-        assertTrue(exists(nonExistingPath, "plainfile.txt"), "plainfile.txt should exist")
+        assertTrue(dir.exists(nonExistingPath, "plainfile.txt"), "plainfile.txt should exist")
 
         file.delete()
-        assertFalse(exists(nonExistingPath, "plainfile.txt"), "plainfile.txt should not exist")
+        assertFalse(dir.exists(nonExistingPath, "plainfile.txt"), "plainfile.txt should not exist")
     }
 
     @Test
@@ -84,27 +85,28 @@ interface Fs4kDirContract {
         val dir = dir(nonExistingPath, fs4k = fs4k)
         dir.text("plainfile.txt")
 
-        assertTrue(exists(nonExistingPath, "plainfile.txt"), "plainfile.txt should exist")
+        assertTrue(dir.exists(nonExistingPath, "plainfile.txt"), "plainfile.txt should exist")
 
         dir.delete()
 
-        assertFalse(exists(nonExistingPath), "rootpath should not exist")
+        assertFalse(dir.exists(nonExistingPath), "rootpath should not exist")
     }
 
     @Test
     fun `delete file from existing`() {
-        val file = dir(existingParentPath, Manual, fs4k).text("plainfile.txt")
+        val dir = dir(existingParentPath, Manual, fs4k)
+        val file = dir.text("plainfile.txt")
 
         file.create()
-        assertTrue(exists(existingParentPath, "plainfile.txt"), "plainfile.txt should exist")
+        assertTrue(dir.exists(existingParentPath, "plainfile.txt"), "plainfile.txt should exist")
 
         file.delete()
-        assertFalse(exists(existingParentPath, "plainfile.txt"), "plainfile.txt should not exist")
+        assertFalse(dir.exists(existingParentPath, "plainfile.txt"), "plainfile.txt should not exist")
     }
 
-    fun exists(path: Fs4kPath, name: String): Boolean
+    fun Fs4kDir.exists(path: Fs4kPath, name: String): Boolean
 
-    fun content(path: Fs4kPath, s: String): String
+    fun Fs4kDir.content(path: Fs4kPath, name: String): String
 
-    fun exists(nonExistingPath1: Fs4kPath): Boolean
+    fun Fs4kDir.exists(path: Fs4kPath): Boolean
 }

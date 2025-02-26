@@ -11,6 +11,8 @@ internal class TextFile(private val file: File, private val createMode: CreateMo
         if (createMode == CreateMode.Automatic) create()
     }
 
+    override fun exists() = file.exists()
+
     override fun create() = with(file) {
         parentFile.mkdirs()
         if (!exists()) {
