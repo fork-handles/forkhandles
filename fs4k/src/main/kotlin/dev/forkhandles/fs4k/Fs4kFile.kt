@@ -11,6 +11,7 @@ interface Fs4kFile : Fs4kEntity {
      * Represents a text file in the filesystem.
      */
     interface Text : Fs4kFile {
+        var lines: List<String>
         var content: String
 
         companion object

@@ -27,6 +27,13 @@ internal class TextFile(private val file: File, private val createMode: CreateMo
 
     override fun delete() = file.delete()
 
+    override var lines: List<String>
+        get() = file.reader().readLines()
+        set(value) {
+            toWrite = value.joinToString("\n")
+            if (createMode == CreateMode.Automatic) create()
+        }
+
     override var content: String
         get() = file.reader().readText()
         set(value) {
