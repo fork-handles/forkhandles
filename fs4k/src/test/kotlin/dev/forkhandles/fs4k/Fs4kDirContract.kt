@@ -16,8 +16,11 @@ interface Fs4kDirContract {
     @Test
     fun `creates files automatically`() {
         val dir = dir(nonExistingPath, Automatic, fs4k) {
-            text("plainfile.txt") {
+            text("plainfile_content.txt") {
                 content = "hello"
+            }
+            text("plainfile_lines.txt") {
+                lines = listOf("hello")
             }
             binary("binary.png") {
                 content = "goodbye".byteInputStream()
@@ -30,8 +33,11 @@ interface Fs4kDirContract {
             }
         }
 
-        assertTrue(dir.exists(nonExistingPath, "plainfile.txt"), "plainfile.txt should exist")
-        assertEquals("hello", dir.content(nonExistingPath, "plainfile.txt"))
+        assertTrue(dir.exists(nonExistingPath, "plainfile_content.txt"), "plainfile_content.txt should exist")
+        assertEquals("hello", dir.content(nonExistingPath, "plainfile_content.txt"))
+
+        assertTrue(dir.exists(nonExistingPath, "plainfile_lines.txt"), "plainfile_lines.txt should exist")
+        assertEquals("hello", dir.content(nonExistingPath, "plainfile_lines.txt"))
 
         assertTrue(dir.exists(nonExistingPath, "binary.png"), "binary.png should exist")
         assertEquals("goodbye", dir.content(nonExistingPath, "binary.png"))
