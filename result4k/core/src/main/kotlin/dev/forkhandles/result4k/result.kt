@@ -103,6 +103,15 @@ fun <T, X : Throwable> Result<T, X>.orThrow(): T = when (this) {
 }
 
 /**
+ * Unwrap a successful result or convert an error into an exception and throw it
+ */
+fun <T, E> Result<T, E>.orThrow(x: (E)->Throwable): T = when (this) {
+    is Success<T> -> value
+    is Failure<E> -> throw x(reason)
+}
+
+
+/**
  * Unwrap a `Result`, by returning the success value or calling `block` on failure to abort from the current function.
  */
 inline fun <T, E> Result<T, E>.onFailure(block: (Failure<E>) -> Nothing): T = when (this) {
