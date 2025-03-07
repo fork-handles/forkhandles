@@ -186,42 +186,4 @@ abstract class DataContainer<DATA>(
             (property.getDelegate(it) as ReadWriteProperty<NEXT, PROP>).setValue(it, property, value)
         } ?: error("No constructor defined in ${NEXT::class}")
     }
-
-    /** Deprecated **/
-
-    @Deprecated("renamed", ReplaceWith("requiredData( *metaData)"))
-    protected fun data(vararg metaData: Metadatum) = requiredData(*metaData)
-
-    @Deprecated("renamed", ReplaceWith("requiredList(mapInFn, mapOutFn, *metaData)"))
-    protected fun <OUT, IN> list(
-        mapInFn: (IN) -> OUT, mapOutFn: (OUT) -> IN?,
-        vararg metaData: Metadatum
-    ) = requiredList(mapInFn, mapOutFn, *metaData)
-
-    @Deprecated("renamed", ReplaceWith("requiredList(mapInFn, *metaData)"))
-    protected fun <IN, OUT> list(mapInFn: (IN) -> OUT, vararg metaData: Metadatum) =
-        requiredList(mapInFn, *metaData)
-
-    @Deprecated("renamed", ReplaceWith("requiredList<OUT>(*metaData)"))
-    protected fun <OUT> list(vararg metaData: Metadatum) = requiredList<OUT>(*metaData)
-
-    @Deprecated("renamed", ReplaceWith("requiredList(factory, *metaData)"))
-    protected fun <IN : Any, OUT : Value<IN>> list(factory: ValueFactory<OUT, IN>, vararg metaData: Metadatum) =
-        requiredList(factory, *metaData)
-
-    @JvmName("listDataContainerDeprecated")
-    @Deprecated("renamed", ReplaceWith("requiredList(mapInFn,  *metaData)"))
-    protected fun <OUT : DataContainer<DATA>?> list(mapInFn: (DATA) -> OUT, vararg metaData: Metadatum) =
-        requiredList(mapInFn, *metaData)
-
-    @Deprecated("renamed", ReplaceWith("requiredObj(mapInFn, mapOutFn, *metaData)"))
-    protected fun <OUT : DataContainer<DATA>> obj(
-        mapInFn: (DATA) -> OUT,
-        mapOutFn: (OUT) -> DATA?,
-        vararg metaData: Metadatum
-    ) = requiredObj(mapInFn, mapOutFn, *metaData)
-
-    @Deprecated("renamed", ReplaceWith("Customize Toolbar..."))
-    protected fun <OUT : DataContainer<DATA>> obj(mapInFn: (DATA) -> OUT, vararg metaData: Metadatum) =
-        requiredObj(mapInFn, *metaData)
 }

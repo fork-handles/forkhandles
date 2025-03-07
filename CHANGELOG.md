@@ -3,6 +3,11 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.22.0.0
+- **all** : Upgrade of dependencies including Kotlin to v2.1, gradle to 8.12.1
+- **fs4k** : [New module] File system manipulation in Kotlin with a pluggable file system abstraction
+- **data4k** : [Breaking] Removed deprecated methods
+
 ### v2.21.0.0
 - **all** : Upgrade of dependencies including Kotlin to v2.1, gradle to 8.12.1
 - **all** : [Breaking] Minimum target Java version is now 11

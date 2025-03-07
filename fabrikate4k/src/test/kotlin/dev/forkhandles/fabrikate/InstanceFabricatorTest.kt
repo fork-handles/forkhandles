@@ -336,6 +336,7 @@ class InstanceFabricatorTest {
     }
 
     @Suppress("DataClassPrivateConstructor")
+    @ExposedCopyVisibility
     data class X private constructor(val a: Instant) {
         companion object {
             fun parse(a: String): X = X(Instant.parse(a))

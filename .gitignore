@@ -6,3 +6,4 @@ gradle.properties
 .DS_Store
 classes/
 out/
+.kotlin/

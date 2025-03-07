@@ -79,6 +79,9 @@ allprojects {
             enabled = false
         }
     }
+
+    dependencies {
+    }
 }
 
 subprojects {
@@ -128,8 +131,11 @@ subprojects {
 
     dependencies {
         api(Kotlin.stdlib)
-        testApi(Testing.junit.jupiter.api)
-        testApi(Testing.junit.jupiter.engine)
+        testApi(platform("org.junit:junit-bom:_"))
+        testApi("org.junit.jupiter:junit-jupiter")
+        testApi("org.junit.jupiter:junit-jupiter-api")
+        testApi("org.junit.jupiter:junit-jupiter-engine")
+        testApi("org.junit.platform:junit-platform-launcher")
         testApi("com.natpryce:hamkrest:_")
     }
 
