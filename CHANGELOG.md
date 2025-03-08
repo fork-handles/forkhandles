@@ -11,6 +11,7 @@ when appropriate:
 - **all** : Upgrade of dependencies including Kotlin to v2.1, gradle to 8.12.1
 - **fs4k** : [New module] File system manipulation in Kotlin with a pluggable file system abstraction
 - **data4k** : [Breaking] Removed deprecated methods
+- **result4k**: Convenience overload of Result.orThrow that takes a function to map error value to throwable.
 
 ### v2.21.0.0
 - **all** : Upgrade of dependencies including Kotlin to v2.1, gradle to 8.12.1
