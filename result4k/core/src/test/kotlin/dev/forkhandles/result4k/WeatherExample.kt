@@ -28,7 +28,7 @@ fun Weather.toConditions(): Result<Conditions, WeatherError> =
  * Get the current weather, interpret the conditions, and print them
  */
 fun main() {
-    val forecast: String = getWeather(20) // get initial result (success or failure)
+    val forecast: String = getWeather(20) // get an initial result (success or failure)
         .flatMap(Weather::toConditions) // convert success to result (success or failure)
         .map { it.message } // convert success to message
         .peekFailure { println("Physics has imploded!") }  // perform side-effect if failure
