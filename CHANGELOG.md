@@ -3,7 +3,7 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
-### ???
+### v2.22.1.0
 
 - **result4k**: add asSuccess() and asFailure() extensions, retainIf and rejectIf operations, and the `begin` as a way to start result pipelines.
 
