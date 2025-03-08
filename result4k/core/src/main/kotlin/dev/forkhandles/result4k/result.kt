@@ -125,7 +125,7 @@ inline fun <T, E> Result<T, E>.onFailure(block: (Failure<E>) -> Nothing): T = wh
 }
 
 /**
- * Unwrap a `Result` by returning the success value or calling `failureToValue` to mapping the failure reason to a plain value.
+ * Unwrap a `Result` by returning the success value or calling `errorToValue` to mapping the failure reason to a plain value.
  */
 inline fun <S, T : S, U : S, E> Result<T, E>.recover(errorToValue: (E) -> U): S =
     mapFailure(errorToValue).get()
