@@ -5,7 +5,7 @@ when appropriate:
 
 ### v2.22.1.0
 
-- **result4k**: add asSuccess() and asFailure() extensions, retainIf and rejectIf operations, and the `begin` as a way to start result pipelines.
+- **result4k**: add asSuccess() and asFailure() extensions, retainIf and rejectIf operations, and `begin` as a way to start result pipelines.
 
 ### v2.22.0.0
 - **all** : Upgrade of dependencies including Kotlin to v2.1, gradle to 8.12.1
