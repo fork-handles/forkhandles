@@ -10,17 +10,18 @@ private val cold = 283.15.toBigDecimal()
 private val hot = 298.15.toBigDecimal()
 
 fun getWeather(location: Int): Result<Weather, WeatherError> =
-    when (location) {
-        in 1..100 -> Success(Weather(kelvin = BigDecimal("295.15"), pascals = 101_390))
-        else -> Failure(WeatherError(code = 404, message = "unsupported location"))
-    }
+    begin
+        .retainIf(location in (1..100), otherwise = {
+            WeatherError(code = 404, message = "unsupported location")
+        })
+        .map { Weather(kelvin = BigDecimal("295.15"), pascals = 101_390) }
 
 fun Weather.toConditions(): Result<Conditions, WeatherError> =
     when {
-        kelvin < BigDecimal.ZERO -> Failure(WeatherError(400, "impossible!"))
-        kelvin < cold -> Success(Conditions("cold :("))
-        kelvin > hot -> Success(Conditions("HOT! X("))
-        else -> Success(Conditions("Nice :)"))
+        kelvin < BigDecimal.ZERO -> WeatherError(400, "impossible!").asFailure()
+        kelvin < cold -> Conditions("cold :(").asSuccess()
+        kelvin > hot -> Conditions("HOT! X(").asSuccess()
+        else -> Conditions("Nice :)").asSuccess()
     }
 
 /**
@@ -29,10 +30,9 @@ fun Weather.toConditions(): Result<Conditions, WeatherError> =
 fun main() {
     val forecast: String = getWeather(20) // get initial result (success or failure)
         .flatMap(Weather::toConditions) // convert success to result (success or failure)
-        .map { it.message } // convert success to success
-        .mapFailure { message -> "WARNING: $message" } // convert failure to failure
+        .map { it.message } // convert success to message
         .peekFailure { println("Physics has imploded!") }  // perform side-effect if failure
-        .get() // unwrap success, or failure if same type as success (in this case, String)
-
+        .recover { message -> "WARNING: $message" } // convert failure to message
+    
     println(forecast)
 }
