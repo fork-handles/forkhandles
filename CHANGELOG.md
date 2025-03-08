@@ -3,6 +3,10 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### ???
+
+- **result4k**: add asSuccess() and asFailure() extensions, retainIf and rejectIf operations, and the `begin` as a way to start result pipelines.
+
 ### v2.22.0.0
 - **all** : Upgrade of dependencies including Kotlin to v2.1, gradle to 8.12.1
 - **fs4k** : [New module] File system manipulation in Kotlin with a pluggable file system abstraction
