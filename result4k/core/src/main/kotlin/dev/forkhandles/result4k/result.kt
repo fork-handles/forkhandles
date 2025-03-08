@@ -10,6 +10,11 @@ sealed class Result<out T, out E>
 data class Success<out T>(val value: T) : Result<T, Nothing>()
 data class Failure<out E>(val reason: E) : Result<Nothing, E>()
 
+fun <T> T.asSuccess(): Result<T,Nothing> = Success(this)
+fun <E> E.asFailure(): Result<Nothing,E> = Failure(this)
+
+val begin = Unit.asSuccess()
+
 /**
  * Call a function and wrap the result in a `Result`, catching any `Exception` and returning it as `Err` value.
  */
@@ -124,3 +129,4 @@ inline fun <T, E> Result<T, E>.onFailure(block: (Failure<E>) -> Nothing): T = wh
  */
 inline fun <S, T : S, U : S, E> Result<T, E>.recover(errorToValue: (E) -> U): S =
     mapFailure(errorToValue).get()
+
