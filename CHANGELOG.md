@@ -3,8 +3,11 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
-### v2.22.1.0
+### v2.22.2.0
+- **all** : Upgrade of dependencies.
+- **fs3k**: Add in-memory fs implementation. H/T @potfur
 
+### v2.22.1.0
 - **result4k**: add asSuccess() and asFailure() extensions, retainIf and rejectIf operations, and `begin` as a way to start result pipelines.
 
 ### v2.22.0.0

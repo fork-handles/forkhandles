@@ -88,17 +88,17 @@ subprojects {
 
     apply(plugin = "java-test-fixtures")
 
-    val sourcesJar by tasks.creating(Jar::class) {
+    val sourcesJar by tasks.registering(Jar::class, fun Jar.() {
         archiveClassifier.set("sources")
         from(project.the<SourceSetContainer>()["main"].allSource)
         dependsOn(tasks.named("classes"))
-    }
+    })
 
-    val javadocJar by tasks.creating(Jar::class) {
+    val javadocJar by tasks.registering(Jar::class, fun Jar.() {
         archiveClassifier.set("javadoc")
         from(tasks.named<Javadoc>("javadoc").get().destinationDir)
         dependsOn(tasks.named("javadoc"))
-    }
+    })
 
     tasks {
         named<Jar>("jar") {
@@ -113,10 +113,10 @@ subprojects {
             }
         }
 
-        val testJar by creating(Jar::class) {
+        val testJar by registering(Jar::class, fun Jar.() {
             archiveClassifier.set("test")
             from(project.the<SourceSetContainer>()["test"].output)
-        }
+        })
 
         configurations.create("testArtifacts") {
             extendsFrom(configurations["testApi"])
@@ -248,7 +248,8 @@ tasks.register<JacocoReport>("jacocoRootReport") {
 
     sourceDirectories.from(subprojects.flatMap { it.the<SourceSetContainer>()["main"].allSource.srcDirs })
     classDirectories.from(subprojects.map { it.the<SourceSetContainer>()["main"].output })
-    executionData.from(subprojects
+    executionData.from(
+        subprojects
         .filter { it.name != "forkhandles-bom" }
         .map {
             it.tasks.named<JacocoReport>("jacocoTestReport").get().executionData
