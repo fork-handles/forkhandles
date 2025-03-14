@@ -86,9 +86,9 @@ private fun <T : Bunting> T.unknownCommand(it: String): Boolean {
     return commandNames.isNotEmpty() && !commandNames.contains(it)
 }
 
-private inline fun <reified F : BuntingFlag<*>, OUT : Any> Bunting.members(fn: (KProperty<*>, F) -> OUT) =
-    this::class.members.filterIsInstance<KProperty<F>>().mapNotNull { p ->
-        (p.javaField!!.apply { trySetAccessible() }[this@members] as? F)
+private inline fun <reified F : BuntingFlag<*>, OUT : Any> Bunting.members(fn: (KProperty<*>, F) -> OUT): List<OUT> =
+    this::class.members.filterIsInstance<KProperty<*>>().mapNotNull { p ->
+        (p.javaField?.apply { trySetAccessible() }?.get(this@members) as? F)
             ?.let { fn(p, it) }
     }
 

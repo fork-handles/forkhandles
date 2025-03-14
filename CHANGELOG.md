@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.22.2.1
+- **Bunting** : [Fix] Don't blow up when descriptions cannot be retrieved via refllection.
+
 ### v2.22.2.0
 - **all** : Upgrade of dependencies.
 - **fs3k**: Add in-memory fs implementation. H/T @potfur
