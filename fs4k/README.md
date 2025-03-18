@@ -39,3 +39,4 @@ dir("parent").dir("child").text("file.txt").delete()
 ### Supported FS types:
 
 - Disk
+- In-Memory
