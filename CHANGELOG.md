@@ -3,8 +3,11 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.22.3.0
+- **all** : Upgrade of dependencies.
+
 ### v2.22.2.1
-- **Bunting** : [Fix] Don't blow up when descriptions cannot be retrieved via refllection.
+- **Bunting** : [Fix] Don't blow up when descriptions cannot be retrieved via reflection.
 
 ### v2.22.2.0
 - **all** : Upgrade of dependencies.
