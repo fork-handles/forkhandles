@@ -41,6 +41,6 @@ jobs:
       - name: Release to Maven Central
         run: |
           ./gradlew closeAndReleaseRepository \
-          -PnexusUsername="${{ secrets.NEXUS_USERNAME }}" \
-          -PnexusPassword="${{ secrets.NEXUS_PASSWORD }}"
+          -PmavenCentralUsername="${{ secrets.MAVENCENTRAL_USERNAME }}" \
+          -PmavenCentralPassword="${{ secrets.MAVENCENTRAL_PASSWORD }}"
 
