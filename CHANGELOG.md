@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.22.4.0
+- **all** : Release to new Maven Central target
+
 ### v2.22.3.0
 - **all** : Upgrade of dependencies.
 
