@@ -141,8 +141,8 @@ subprojects {
 
     val enableSigning = project.findProperty("sign") == "true"
 
-    val nexusUsername: String? by project
-    val nexusPassword: String? by project
+    val mavenCentralUsername: String? by project
+    val mavenCentralPassword: String? by project
 
     apply(plugin = "maven-publish") // required to upload to sonatype
 
@@ -166,18 +166,18 @@ subprojects {
             repositories {
                 maven {
                     name = "SonatypeStaging"
-                    url = URI.create("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+                    url = URI.create("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
                     credentials {
-                        username = nexusUsername
-                        password = nexusPassword
+                        username = mavenCentralUsername
+                        password = mavenCentralPassword
                     }
                 }
                 maven {
                     name = "SonatypeSnapshot"
-                    url = URI.create("https://oss.sonatype.org/content/repositories/snapshots/")
+                    url = URI.create("https://ossrh-staging-api.central.sonatype.com/content/repositories/snapshots/")
                     credentials {
-                        username = nexusUsername
-                        password = nexusPassword
+                        username = mavenCentralUsername
+                        password = mavenCentralPassword
                     }
                 }
             }

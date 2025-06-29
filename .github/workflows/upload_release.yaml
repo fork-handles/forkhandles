@@ -25,8 +25,8 @@ jobs:
           -PreleaseVersion="${{ steps.tagName.outputs.tag }}" \
           -PsigningKey="${{ secrets.SIGNING_KEY }}" \
           -PsigningPassword="${{ secrets.SIGNING_PASSWORD }}" \
-          -PnexusUsername="${{ secrets.NEXUS_USERNAME }}" \
-          -PnexusPassword="${{ secrets.NEXUS_PASSWORD }}"
+          -PmavenCentralUsername="${{ secrets.MAVENCENTRAL_USERNAME }}" \
+          -PmavenCentralPassword="${{ secrets.MAVENCENTRAL_PASSWORD }}"
   ReleaseMC:
     needs: [StageMC]
     runs-on: ubuntu-latest
