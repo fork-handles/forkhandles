@@ -22,5 +22,7 @@ jobs:
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVENCENTRAL_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+          RELEASE_SIGNING_ENABLED: true
+          SONATYPE_AUTOMATIC_RELEASE: true
         run: sh ./gradlew publish --no-configuration-cache --info -PreleaseVersion="2.22.4.0"
         shell: bash
