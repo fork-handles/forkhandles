@@ -133,9 +133,6 @@ subprojects {
         testApi("com.natpryce:hamkrest:_")
     }
 
-    mavenPublishing {
-        signAllPublications()
-    }
 
     publishing {
         val javaComponent = components["java"] as AdhocComponentWithVariants
