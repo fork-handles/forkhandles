@@ -25,7 +25,3 @@ test {
         println " -> ${result.resultType}"
     }
 }
-
-artifacts {
-    archives sourcesJar, javadocJar
-}

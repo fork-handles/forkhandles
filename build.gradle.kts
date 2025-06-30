@@ -3,18 +3,14 @@ import groovy.util.Node
 import org.gradle.api.JavaVersion.VERSION_11
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
-import java.net.URI
 
 plugins {
     kotlin("jvm")
     jacoco
     `java-library`
-    `maven-publish`
-    signing
-    id("io.github.gradle-nexus.publish-plugin")
+    id("com.vanniktech.maven.publish")
     id("com.github.kt3k.coveralls")
     id("org.jetbrains.kotlin.plugin.serialization")
-    id("io.codearte.nexus-staging")
 }
 
 buildscript {
@@ -28,7 +24,6 @@ buildscript {
     }
 }
 
-apply(plugin = "io.codearte.nexus-staging")
 
 allprojects {
     repositories {
@@ -40,7 +35,6 @@ allprojects {
     apply(plugin = "org.gradle.jacoco")
     apply(plugin = "com.github.kt3k.coveralls")
     apply(plugin = "java-test-fixtures")
-    apply(plugin = "maven-publish")
 
     version = project.properties["releaseVersion"] ?: "LOCAL"
     group = "dev.forkhandles"
@@ -85,8 +79,8 @@ allprojects {
 }
 
 subprojects {
-
     apply(plugin = "java-test-fixtures")
+    apply(plugin = "com.vanniktech.maven.publish")
 
     val sourcesJar by tasks.registering(Jar::class, fun Jar.() {
         archiveClassifier.set("sources")
@@ -139,22 +133,6 @@ subprojects {
         testApi("com.natpryce:hamkrest:_")
     }
 
-    val enableSigning = project.findProperty("sign") == "true"
-
-    val mavenCentralUsername: String? by project
-    val mavenCentralPassword: String? by project
-
-    apply(plugin = "maven-publish") // required to upload to sonatype
-
-    if (enableSigning) { // when added it expects signing keys to be configured
-        apply(plugin = "signing")
-        signing {
-            val signingKey: String? by project
-            val signingPassword: String? by project
-            useInMemoryPgpKeys(signingKey, signingPassword)
-            sign(publishing.publications)
-        }
-    }
 
     publishing {
         val javaComponent = components["java"] as AdhocComponentWithVariants
@@ -163,25 +141,6 @@ subprojects {
         javaComponent.withVariantsFromConfiguration(configurations["testFixturesRuntimeElements"]) { skip() }
 
         publications {
-            repositories {
-                maven {
-                    name = "SonatypeStaging"
-                    url = URI.create("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
-                    credentials {
-                        username = mavenCentralUsername
-                        password = mavenCentralPassword
-                    }
-                }
-                maven {
-                    name = "SonatypeSnapshot"
-                    url = URI.create("https://ossrh-staging-api.central.sonatype.com/content/repositories/snapshots/")
-                    credentials {
-                        username = mavenCentralUsername
-                        password = mavenCentralPassword
-                    }
-                }
-            }
-
 
             val archivesBaseName = tasks.jar.get().archiveBaseName.get()
             create<MavenPublication>("mavenJava") {
@@ -220,9 +179,6 @@ subprojects {
                         .flatMap { it.childrenCalled("scope") }
                         .forEach { if (it.text() == "runtime") it.setValue("provided") }
                 }
-
-                artifact(sourcesJar)
-                artifact(javadocJar)
             }
         }
     }
@@ -239,7 +195,8 @@ fun hasCodeCoverage(project: Project) = project.name != "forkhandles-bom" &&
     !project.name.endsWith("generator")
 
 coveralls {
-    sourceDirs = subprojects.map { it.sourceSets.getByName("main").allSource.srcDirs }.flatten().map { it.absolutePath }
+    sourceDirs =
+        subprojects.map { it.sourceSets.getByName("main").allSource.srcDirs }.flatten().map { it.absolutePath }
     jacocoReportPath = file("${layout.buildDirectory}/reports/jacoco/test/jacocoRootReport.xml")
 }
 
@@ -250,10 +207,10 @@ tasks.register<JacocoReport>("jacocoRootReport") {
     classDirectories.from(subprojects.map { it.the<SourceSetContainer>()["main"].output })
     executionData.from(
         subprojects
-        .filter { it.name != "forkhandles-bom" }
-        .map {
-            it.tasks.named<JacocoReport>("jacocoTestReport").get().executionData
-        }
+            .filter { it.name != "forkhandles-bom" }
+            .map {
+                it.tasks.named<JacocoReport>("jacocoTestReport").get().executionData
+            }
     )
 
     reports {
