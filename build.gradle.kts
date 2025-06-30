@@ -11,10 +11,8 @@ plugins {
     `java-library`
     `maven-publish`
     signing
-    id("io.github.gradle-nexus.publish-plugin")
     id("com.github.kt3k.coveralls")
     id("org.jetbrains.kotlin.plugin.serialization")
-    id("io.codearte.nexus-staging")
 }
 
 buildscript {
@@ -28,8 +26,6 @@ buildscript {
     }
 }
 
-apply(plugin = "io.codearte.nexus-staging")
-
 allprojects {
     repositories {
         mavenCentral()
@@ -40,7 +36,6 @@ allprojects {
     apply(plugin = "org.gradle.jacoco")
     apply(plugin = "com.github.kt3k.coveralls")
     apply(plugin = "java-test-fixtures")
-    apply(plugin = "maven-publish")
 
     version = project.properties["releaseVersion"] ?: "LOCAL"
     group = "dev.forkhandles"
@@ -85,7 +80,6 @@ allprojects {
 }
 
 subprojects {
-
     apply(plugin = "java-test-fixtures")
 
     val sourcesJar by tasks.registering(Jar::class, fun Jar.() {
@@ -145,7 +139,6 @@ subprojects {
     val mavenCentralPassword: String? by project
 
     apply(plugin = "maven-publish") // required to upload to sonatype
-
     if (enableSigning) { // when added it expects signing keys to be configured
         apply(plugin = "signing")
         signing {
@@ -165,16 +158,8 @@ subprojects {
         publications {
             repositories {
                 maven {
-                    name = "SonatypeStaging"
-                    url = URI.create("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
-                    credentials {
-                        username = mavenCentralUsername
-                        password = mavenCentralPassword
-                    }
-                }
-                maven {
-                    name = "SonatypeSnapshot"
-                    url = URI.create("https://ossrh-staging-api.central.sonatype.com/content/repositories/snapshots/")
+                    name = "MavenCentral"
+                    url = URI.create("https://central.sonatype.com")
                     credentials {
                         username = mavenCentralUsername
                         password = mavenCentralPassword
