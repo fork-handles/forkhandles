@@ -3,14 +3,12 @@ import groovy.util.Node
 import org.gradle.api.JavaVersion.VERSION_11
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
-import java.net.URI
 
 plugins {
     kotlin("jvm")
     jacoco
     `java-library`
-    `maven-publish`
-    signing
+    id("com.vanniktech.maven.publish")
     id("com.github.kt3k.coveralls")
     id("org.jetbrains.kotlin.plugin.serialization")
 }
@@ -81,6 +79,7 @@ allprojects {
 
 subprojects {
     apply(plugin = "java-test-fixtures")
+    apply(plugin = "com.vanniktech.maven.publish")
 
     val sourcesJar by tasks.registering(Jar::class, fun Jar.() {
         archiveClassifier.set("sources")
@@ -133,45 +132,11 @@ subprojects {
         testApi("com.natpryce:hamkrest:_")
     }
 
-    val enableSigning = project.findProperty("sign") == "true"
-
-    val mavenCentralUsername: String? by project
-    val mavenCentralPassword: String? by project
-
-    apply(plugin = "maven-publish") // required to upload to sonatype
-    if (enableSigning) { // when added it expects signing keys to be configured
-        apply(plugin = "signing")
-        signing {
-            val signingKey: String? by project
-            val signingPassword: String? by project
-            useInMemoryPgpKeys(signingKey, signingPassword)
-            sign(publishing.publications)
-        }
-    }
-
-    publishing {
-        val javaComponent = components["java"] as AdhocComponentWithVariants
-
-        javaComponent.withVariantsFromConfiguration(configurations["testFixturesApiElements"]) { skip() }
-        javaComponent.withVariantsFromConfiguration(configurations["testFixturesRuntimeElements"]) { skip() }
-
-        publications {
-            repositories {
-                maven {
-                    name = "MavenCentral"
-                    url = URI.create("https://central.sonatype.com")
-                    credentials {
-                        username = mavenCentralUsername
-                        password = mavenCentralPassword
-                    }
-                }
-            }
-
-
-            val archivesBaseName = tasks.jar.get().archiveBaseName.get()
-            create<MavenPublication>("mavenJava") {
-                artifactId = archivesBaseName
-                pom.withXml {
+    mavenPublishing {
+        configure<MavenPublication> {
+            pom {
+                val archivesBaseName = tasks.jar.get().archiveBaseName.get()
+                withXml {
                     asNode().appendNode("name", archivesBaseName)
                     asNode().appendNode("description", description)
                     asNode().appendNode("url", "https://forkhandles.dev")
@@ -195,22 +160,38 @@ subprojects {
                         .parent().appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.html")
                 }
 
-                from(components["java"])
-
                 // replace all runtime dependencies with provided
-                pom.withXml {
+                withXml {
                     asNode()
                         .childrenCalled("dependencies")
                         .flatMap { it.childrenCalled("dependency") }
                         .flatMap { it.childrenCalled("scope") }
                         .forEach { if (it.text() == "runtime") it.setValue("provided") }
                 }
-
-                artifact(sourcesJar)
-                artifact(javadocJar)
             }
         }
+        publishToMavenCentral(automaticRelease = true)
     }
+
+//    publishing {
+//        val javaComponent = components["java"] as AdhocComponentWithVariants
+//
+//        javaComponent.withVariantsFromConfiguration(configurations["testFixturesApiElements"]) { skip() }
+//        javaComponent.withVariantsFromConfiguration(configurations["testFixturesRuntimeElements"]) { skip() }
+
+//        publications {
+//            repositories {
+//                maven {
+//                    name = "MavenCentral"
+//                    url = URI.create("https://central.sonatype.com")
+//                    credentials {
+//                        username = mavenCentralUsername
+//                        password = mavenCentralPassword
+//                    }
+//                }
+//            }
+//
+//    }
 }
 
 fun Node.childrenCalled(wanted: String) = children()
@@ -224,7 +205,8 @@ fun hasCodeCoverage(project: Project) = project.name != "forkhandles-bom" &&
     !project.name.endsWith("generator")
 
 coveralls {
-    sourceDirs = subprojects.map { it.sourceSets.getByName("main").allSource.srcDirs }.flatten().map { it.absolutePath }
+    sourceDirs =
+        subprojects.map { it.sourceSets.getByName("main").allSource.srcDirs }.flatten().map { it.absolutePath }
     jacocoReportPath = file("${layout.buildDirectory}/reports/jacoco/test/jacocoRootReport.xml")
 }
 
@@ -235,10 +217,10 @@ tasks.register<JacocoReport>("jacocoRootReport") {
     classDirectories.from(subprojects.map { it.the<SourceSetContainer>()["main"].output })
     executionData.from(
         subprojects
-        .filter { it.name != "forkhandles-bom" }
-        .map {
-            it.tasks.named<JacocoReport>("jacocoTestReport").get().executionData
-        }
+            .filter { it.name != "forkhandles-bom" }
+            .map {
+                it.tasks.named<JacocoReport>("jacocoTestReport").get().executionData
+            }
     )
 
     reports {
