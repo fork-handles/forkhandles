@@ -3,27 +3,8 @@ on:
     branches:
       - nottrunk
 jobs:
-  publish:
+  todo:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
-      - name: Grab tag name
-        uses: olegtarasov/get-tag@v2.1.4
-        id: tagName
-      - name: Setup Java
-        uses: actions/setup-java@v4.7.1
-        with:
-          distribution: temurin
-          java-version: 21
-      - name: Publish
-        run: |
-          ./gradlew publishToMavenCentral \
-          -Psign=true \
-          -PreleaseVersion="${{ steps.tagName.outputs.tag }}" \
-          -Psigning.keyId="${{ secrets.SIGNING_KEY }}" \
-          -Psigning.password="${{ secrets.SIGNING_PASSWORD }}" \
-          -PmavenCentralUsername="${{ secrets.MAVENCENTRAL_USERNAME }}" \
-          -PmavenCentralPassword="${{ secrets.MAVENCENTRAL_PASSWORD }}" \
-          --no-configuration-cache
-        shell: bash
