@@ -17,9 +17,13 @@ jobs:
           distribution: temurin
           java-version: 21
       - name: Publish
-        run: ./gradlew publishToMavenCentral --no-configuration-cache -PreleaseVersion="2.22.4.0" \
-            -PmavenCentralUsername=${{ secrets.MAVENCENTRAL_USERNAME }} \
-            -PmavenCentralPassword=${{ secrets.MAVENCENTRAL_PASSWORD }} \
-            -PsigningInMemoryKey=${{ secrets.SIGNING_KEY }} \
-            -PsigningInMemoryKeyPassword=${{ secrets.SIGNING_PASSWORD }}
+        run: |
+          ./gradlew publishToMavenCentral \
+          -Psign=true \
+          -PreleaseVersion="${{ steps.tagName.outputs.tag }}" \
+          -Psigning.keyId="${{ secrets.SIGNING_KEY }}" \
+          -Psigning.password="${{ secrets.SIGNING_PASSWORD }}" \
+          -PmavenCentralUsername="${{ secrets.MAVENCENTRAL_USERNAME }}" \
+          -PmavenCentralPassword="${{ secrets.MAVENCENTRAL_PASSWORD }}" \
+          --no-configuration-cache
         shell: bash
