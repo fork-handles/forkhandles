@@ -13,12 +13,10 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - name: Upload to Sonatype
-        run: |
-          ./gradlew publish \
-          -Psign=true \
-          -PreleaseVersion="0.0.0.1-alpha" \
-          -PsigningKey="${{ secrets.SIGNING_KEY }}" \
-          -PsigningPassword="${{ secrets.SIGNING_PASSWORD }}" \
-          -PmavenCentralUsername="${{ secrets.MAVENCENTRAL_USERNAME }}" \
-          -PmavenCentralPassword="${{ secrets.MAVENCENTRAL_PASSWORD }}"
+      - name: Publish
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVENCENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVENCENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+        run: sh ./gradlew publish --no-configuration-cache --info
