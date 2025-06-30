@@ -134,6 +134,7 @@ subprojects {
     }
 
     mavenPublishing {
+        publishToMavenCentral(automaticRelease = true)
         signAllPublications()
     }
 
