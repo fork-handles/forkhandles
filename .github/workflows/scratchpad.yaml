@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - trunk
+      - nottrunk
 jobs:
   publish:
     runs-on: ubuntu-latest
