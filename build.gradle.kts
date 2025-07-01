@@ -1,8 +1,10 @@
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import groovy.namespace.QName
 import groovy.util.Node
 import org.gradle.api.JavaVersion.VERSION_11
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+import java.net.URI
 
 plugins {
     kotlin("jvm")
@@ -133,44 +135,58 @@ subprojects {
     }
 
     mavenPublishing {
-        configure<MavenPublication> {
-            pom {
-                val archivesBaseName = tasks.jar.get().archiveBaseName.get()
-                withXml {
-                    asNode().appendNode("name", archivesBaseName)
-                    asNode().appendNode("description", description)
-                    asNode().appendNode("url", "https://forkhandles.dev")
-                    asNode().appendNode("developers")
-                        .appendNode("developer").appendNode("name", "Nat Pryce").parent()
-                        .appendNode("email", "nat@forkhandles.dev")
-                        .parent().parent()
-                        .appendNode("developer").appendNode("name", "David Denton").parent()
-                        .appendNode("email", "david@forkhandles.dev")
-                        .parent().parent()
-                        .appendNode("developer").appendNode("name", "Dmitry Kandalov").parent()
-                        .appendNode("email", "dmitry@forkhandles.dev")
-                        .parent().parent()
-                        .appendNode("developer").appendNode("name", "Duncan McGregor").parent()
-                        .appendNode("email", "duncan@forkhandles.dev")
-                    asNode().appendNode("scm").appendNode("url", "git@github.com:fork-handles/forkhandles.git").parent()
-                        .appendNode("connection", "scm:git:git@github.com:fork-handles/forkhandles.git").parent()
-                        .appendNode("developerConnection", "scm:git:git@github.com:fork-handles/forkhandles.git")
-                    asNode().appendNode("licenses").appendNode("license")
-                        .appendNode("name", "Apache License, Version 2.0")
-                        .parent().appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.html")
+        configure<PublishingExtension> {
+            publications {
+                repositories {
+                    maven {
+                        name = "MavenCentral2"
+                        url = URI.create("https://central.sonatype.com")
+                        credentials {
+                            username = "asd"
+                            password = "mavenCentralPassword"
+                        }
+                    }
                 }
 
-                // replace all runtime dependencies with provided
-                withXml {
-                    asNode()
-                        .childrenCalled("dependencies")
-                        .flatMap { it.childrenCalled("dependency") }
-                        .flatMap { it.childrenCalled("scope") }
-                        .forEach { if (it.text() == "runtime") it.setValue("provided") }
+                pom {
+                    val archivesBaseName = tasks.jar.get().archiveBaseName.get()
+                    withXml {
+                        asNode().appendNode("name", archivesBaseName)
+                        asNode().appendNode("description", description)
+                        asNode().appendNode("url", "https://forkhandles.dev")
+                        asNode().appendNode("developers")
+                            .appendNode("developer").appendNode("name", "Nat Pryce").parent()
+                            .appendNode("email", "nat@forkhandles.dev")
+                            .parent().parent()
+                            .appendNode("developer").appendNode("name", "David Denton").parent()
+                            .appendNode("email", "david@forkhandles.dev")
+                            .parent().parent()
+                            .appendNode("developer").appendNode("name", "Dmitry Kandalov").parent()
+                            .appendNode("email", "dmitry@forkhandles.dev")
+                            .parent().parent()
+                            .appendNode("developer").appendNode("name", "Duncan McGregor").parent()
+                            .appendNode("email", "duncan@forkhandles.dev")
+                        asNode().appendNode("scm").appendNode("url", "git@github.com:fork-handles/forkhandles.git")
+                            .parent()
+                            .appendNode("connection", "scm:git:git@github.com:fork-handles/forkhandles.git").parent()
+                            .appendNode("developerConnection", "scm:git:git@github.com:fork-handles/forkhandles.git")
+                        asNode().appendNode("licenses").appendNode("license")
+                            .appendNode("name", "Apache License, Version 2.0")
+                            .parent().appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.html")
+                    }
+
+                    // replace all runtime dependencies with provided
+                    withXml {
+                        asNode()
+                            .childrenCalled("dependencies")
+                            .flatMap { it.childrenCalled("dependency") }
+                            .flatMap { it.childrenCalled("scope") }
+                            .forEach { if (it.text() == "runtime") it.setValue("provided") }
+                    }
                 }
             }
+            configure<MavenPublishBaseExtension> { publishToMavenCentral(automaticRelease = true) }
         }
-        publishToMavenCentral(automaticRelease = true)
     }
 
 //    publishing {
@@ -179,17 +195,6 @@ subprojects {
 //        javaComponent.withVariantsFromConfiguration(configurations["testFixturesApiElements"]) { skip() }
 //        javaComponent.withVariantsFromConfiguration(configurations["testFixturesRuntimeElements"]) { skip() }
 
-//        publications {
-//            repositories {
-//                maven {
-//                    name = "MavenCentral"
-//                    url = URI.create("https://central.sonatype.com")
-//                    credentials {
-//                        username = mavenCentralUsername
-//                        password = mavenCentralPassword
-//                    }
-//                }
-//            }
 //
 //    }
 }
