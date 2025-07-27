@@ -167,6 +167,7 @@ subprojects {
 
             pom {
                 withXml {
+                    asNode().appendNode("name", project.name)
                     asNode().appendNode("description", description)
                     asNode().appendNode("url", "https://forkhandles.dev")
                     asNode().appendNode("developers")
