@@ -163,7 +163,7 @@ subprojects {
                 }
             }
 
-            publishToMavenCentral(automaticRelease = false)
+            publishToMavenCentral(automaticRelease = true)
 
             coordinates(
                 "dev.forkhandles",
