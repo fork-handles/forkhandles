@@ -134,61 +134,59 @@ subprojects {
 
     val enableSigning = project.findProperty("sign") == "true"
 
-    publishing {
+    mavenPublishing {
         val javaComponent = components["java"] as AdhocComponentWithVariants
 
         javaComponent.withVariantsFromConfiguration(configurations["testFixturesApiElements"]) { skip() }
         javaComponent.withVariantsFromConfiguration(configurations["testFixturesRuntimeElements"]) { skip() }
 
-        mavenPublishing {
-            configure<PublishingExtension> {
-                if (enableSigning) {
-                    apply(plugin = "signing")
-                    signing {
-                        val signingKey: String? by project
-                        val signingPassword: String? by project
-                        useInMemoryPgpKeys(signingKey, signingPassword)
-                        sign(publishing.publications)
-                    }
+        configure<PublishingExtension> {
+            if (enableSigning) {
+                apply(plugin = "signing")
+                signing {
+                    val signingKey: String? by project
+                    val signingPassword: String? by project
+                    useInMemoryPgpKeys(signingKey, signingPassword)
+                    sign(publishing.publications)
                 }
+            }
 
-                publishToMavenCentral(automaticRelease = false)
+            publishToMavenCentral(automaticRelease = false)
 
-                coordinates(
-                    "org.http4k.test",
-                    project.name,
-                    project.properties["releaseVersion"]?.toString() ?: "LOCAL"
-                )
+            coordinates(
+                "org.forkhandles",
+                project.name,
+                project.properties["releaseVersion"]?.toString() ?: "LOCAL"
+            )
 
-                pom {
-                    withXml {
-                        asNode().appendNode("description", description)
-                        asNode().appendNode("url", "https://forkhandles.dev")
-                        asNode().appendNode("developers")
-                            .appendNode("developer").appendNode("name", "Nat Pryce").parent()
-                            .appendNode("email", "nat@forkhandles.dev")
-                            .parent().parent()
-                            .appendNode("developer").appendNode("name", "David Denton").parent()
-                            .appendNode("email", "david@forkhandles.dev")
-                            .parent().parent()
-                            .appendNode("developer").appendNode("name", "Dmitry Kandalov").parent()
-                            .appendNode("email", "dmitry@forkhandles.dev")
-                            .parent().parent()
-                            .appendNode("developer").appendNode("name", "Duncan McGregor").parent()
-                            .appendNode("email", "duncan@forkhandles.dev")
-                        asNode().appendNode("scm").appendNode("url", "git@github.com:fork-handles/forkhandles.git")
-                            .parent()
-                            .appendNode("connection", "scm:git:git@github.com:fork-handles/forkhandles.git").parent()
-                            .appendNode("developerConnection", "scm:git:git@github.com:fork-handles/forkhandles.git")
-                        asNode().appendNode("licenses").appendNode("license")
-                            .appendNode("name", "Apache License, Version 2.0")
-                            .parent().appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.html")
-                        asNode()
-                            .childrenCalled("dependencies")
-                            .flatMap { it.childrenCalled("dependency") }
-                            .flatMap { it.childrenCalled("scope") }
-                            .forEach { if (it.text() == "runtime") it.setValue("provided") }
-                    }
+            pom {
+                withXml {
+                    asNode().appendNode("description", description)
+                    asNode().appendNode("url", "https://forkhandles.dev")
+                    asNode().appendNode("developers")
+                        .appendNode("developer").appendNode("name", "Nat Pryce").parent()
+                        .appendNode("email", "nat@forkhandles.dev")
+                        .parent().parent()
+                        .appendNode("developer").appendNode("name", "David Denton").parent()
+                        .appendNode("email", "david@forkhandles.dev")
+                        .parent().parent()
+                        .appendNode("developer").appendNode("name", "Dmitry Kandalov").parent()
+                        .appendNode("email", "dmitry@forkhandles.dev")
+                        .parent().parent()
+                        .appendNode("developer").appendNode("name", "Duncan McGregor").parent()
+                        .appendNode("email", "duncan@forkhandles.dev")
+                    asNode().appendNode("scm").appendNode("url", "git@github.com:fork-handles/forkhandles.git")
+                        .parent()
+                        .appendNode("connection", "scm:git:git@github.com:fork-handles/forkhandles.git").parent()
+                        .appendNode("developerConnection", "scm:git:git@github.com:fork-handles/forkhandles.git")
+                    asNode().appendNode("licenses").appendNode("license")
+                        .appendNode("name", "Apache License, Version 2.0")
+                        .parent().appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.html")
+                    asNode()
+                        .childrenCalled("dependencies")
+                        .flatMap { it.childrenCalled("dependency") }
+                        .flatMap { it.childrenCalled("scope") }
+                        .forEach { if (it.text() == "runtime") it.setValue("provided") }
                 }
             }
         }
