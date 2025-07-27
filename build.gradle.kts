@@ -86,7 +86,6 @@ subprojects {
         }
     }
 
-
     val sourcesJar by tasks.registering(Jar::class, fun Jar.() {
         archiveClassifier.set("sources")
         from(project.the<SourceSetContainer>()["main"].allSource)
@@ -147,6 +146,13 @@ subprojects {
         javaComponent.withVariantsFromConfiguration(configurations["testFixturesRuntimeElements"]) { skip() }
 
         configure<PublishingExtension> {
+            publications {
+                create<MavenPublication>("maven") {
+                    from(components["java"])
+                    artifact(tasks.named("sourcesJar"))
+                    artifact(tasks.named("javadocJar"))
+                }
+            }
             if (enableSigning) {
                 apply(plugin = "signing")
                 signing {
@@ -160,7 +166,7 @@ subprojects {
             publishToMavenCentral(automaticRelease = false)
 
             coordinates(
-                "org.forkhandles",
+                "dev.forkhandles",
                 project.name,
                 project.properties["releaseVersion"]?.toString() ?: "LOCAL"
             )
@@ -168,7 +174,7 @@ subprojects {
             pom {
                 withXml {
                     asNode().appendNode("name", project.name)
-                    asNode().appendNode("description", description)
+                    asNode().appendNode("description", project.description)
                     asNode().appendNode("url", "https://forkhandles.dev")
                     asNode().appendNode("developers")
                         .appendNode("developer").appendNode("name", "Nat Pryce").parent()
