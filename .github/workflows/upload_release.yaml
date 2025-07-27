@@ -24,4 +24,4 @@ jobs:
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
-        run: sh ./gradlew publish --no-configuration-cache --info -PreleaseVersion="${{ steps.tagName.outputs.tag }}" -PsigningKey="${{ secrets.SIGNING_KEY }}" -PsigningPassword="${{ secrets.SIGNING_PASSWORD }}"
+        run: sh ./gradlew publish --no-configuration-cache --info -Psign=true -PreleaseVersion="${{ steps.tagName.outputs.tag }}" -PsigningKey="${{ secrets.SIGNING_KEY }}" -PsigningPassword="${{ secrets.SIGNING_PASSWORD }}"
