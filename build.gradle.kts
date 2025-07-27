@@ -3,18 +3,16 @@ import groovy.util.Node
 import org.gradle.api.JavaVersion.VERSION_11
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
-import java.net.URI
 
 plugins {
     kotlin("jvm")
     jacoco
     `java-library`
-    `maven-publish`
     signing
-    id("io.github.gradle-nexus.publish-plugin")
+
     id("com.github.kt3k.coveralls")
     id("org.jetbrains.kotlin.plugin.serialization")
-    id("io.codearte.nexus-staging")
+    id("com.vanniktech.maven.publish.base") version "0.34.0"
 }
 
 buildscript {
@@ -28,19 +26,21 @@ buildscript {
     }
 }
 
-apply(plugin = "io.codearte.nexus-staging")
+repositories {
+    mavenCentral()
+}
 
-allprojects {
+subprojects {
     repositories {
         mavenCentral()
     }
 
     apply(plugin = "java")
-    apply(plugin = "kotlin")
     apply(plugin = "org.gradle.jacoco")
     apply(plugin = "com.github.kt3k.coveralls")
     apply(plugin = "java-test-fixtures")
-    apply(plugin = "maven-publish")
+    apply(plugin = "com.vanniktech.maven.publish.base")
+    apply(plugin = "kotlin")
 
     version = project.properties["releaseVersion"] ?: "LOCAL"
     group = "dev.forkhandles"
@@ -80,13 +80,6 @@ allprojects {
         }
     }
 
-    dependencies {
-    }
-}
-
-subprojects {
-
-    apply(plugin = "java-test-fixtures")
 
     val sourcesJar by tasks.registering(Jar::class, fun Jar.() {
         archiveClassifier.set("sources")
@@ -141,88 +134,62 @@ subprojects {
 
     val enableSigning = project.findProperty("sign") == "true"
 
-    val mavenCentralUsername: String? by project
-    val mavenCentralPassword: String? by project
-
-    apply(plugin = "maven-publish") // required to upload to sonatype
-
-    if (enableSigning) { // when added it expects signing keys to be configured
-        apply(plugin = "signing")
-        signing {
-            val signingKey: String? by project
-            val signingPassword: String? by project
-            useInMemoryPgpKeys(signingKey, signingPassword)
-            sign(publishing.publications)
-        }
-    }
-
     publishing {
         val javaComponent = components["java"] as AdhocComponentWithVariants
 
         javaComponent.withVariantsFromConfiguration(configurations["testFixturesApiElements"]) { skip() }
         javaComponent.withVariantsFromConfiguration(configurations["testFixturesRuntimeElements"]) { skip() }
 
-        publications {
-            repositories {
-                maven {
-                    name = "SonatypeStaging"
-                    url = URI.create("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
-                    credentials {
-                        username = mavenCentralUsername
-                        password = mavenCentralPassword
+        mavenPublishing {
+            configure<PublishingExtension> {
+                if (enableSigning) {
+                    apply(plugin = "signing")
+                    signing {
+                        val signingKey: String? by project
+                        val signingPassword: String? by project
+                        useInMemoryPgpKeys(signingKey, signingPassword)
+                        sign(publishing.publications)
                     }
                 }
-                maven {
-                    name = "SonatypeSnapshot"
-                    url = URI.create("https://ossrh-staging-api.central.sonatype.com/content/repositories/snapshots/")
-                    credentials {
-                        username = mavenCentralUsername
-                        password = mavenCentralPassword
+
+                publishToMavenCentral(automaticRelease = false)
+
+                coordinates(
+                    "org.http4k.test",
+                    project.name,
+                    project.properties["releaseVersion"]?.toString() ?: "LOCAL"
+                )
+
+                pom {
+                    withXml {
+                        asNode().appendNode("description", description)
+                        asNode().appendNode("url", "https://forkhandles.dev")
+                        asNode().appendNode("developers")
+                            .appendNode("developer").appendNode("name", "Nat Pryce").parent()
+                            .appendNode("email", "nat@forkhandles.dev")
+                            .parent().parent()
+                            .appendNode("developer").appendNode("name", "David Denton").parent()
+                            .appendNode("email", "david@forkhandles.dev")
+                            .parent().parent()
+                            .appendNode("developer").appendNode("name", "Dmitry Kandalov").parent()
+                            .appendNode("email", "dmitry@forkhandles.dev")
+                            .parent().parent()
+                            .appendNode("developer").appendNode("name", "Duncan McGregor").parent()
+                            .appendNode("email", "duncan@forkhandles.dev")
+                        asNode().appendNode("scm").appendNode("url", "git@github.com:fork-handles/forkhandles.git")
+                            .parent()
+                            .appendNode("connection", "scm:git:git@github.com:fork-handles/forkhandles.git").parent()
+                            .appendNode("developerConnection", "scm:git:git@github.com:fork-handles/forkhandles.git")
+                        asNode().appendNode("licenses").appendNode("license")
+                            .appendNode("name", "Apache License, Version 2.0")
+                            .parent().appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.html")
+                        asNode()
+                            .childrenCalled("dependencies")
+                            .flatMap { it.childrenCalled("dependency") }
+                            .flatMap { it.childrenCalled("scope") }
+                            .forEach { if (it.text() == "runtime") it.setValue("provided") }
                     }
                 }
-            }
-
-
-            val archivesBaseName = tasks.jar.get().archiveBaseName.get()
-            create<MavenPublication>("mavenJava") {
-                artifactId = archivesBaseName
-                pom.withXml {
-                    asNode().appendNode("name", archivesBaseName)
-                    asNode().appendNode("description", description)
-                    asNode().appendNode("url", "https://forkhandles.dev")
-                    asNode().appendNode("developers")
-                        .appendNode("developer").appendNode("name", "Nat Pryce").parent()
-                        .appendNode("email", "nat@forkhandles.dev")
-                        .parent().parent()
-                        .appendNode("developer").appendNode("name", "David Denton").parent()
-                        .appendNode("email", "david@forkhandles.dev")
-                        .parent().parent()
-                        .appendNode("developer").appendNode("name", "Dmitry Kandalov").parent()
-                        .appendNode("email", "dmitry@forkhandles.dev")
-                        .parent().parent()
-                        .appendNode("developer").appendNode("name", "Duncan McGregor").parent()
-                        .appendNode("email", "duncan@forkhandles.dev")
-                    asNode().appendNode("scm").appendNode("url", "git@github.com:fork-handles/forkhandles.git").parent()
-                        .appendNode("connection", "scm:git:git@github.com:fork-handles/forkhandles.git").parent()
-                        .appendNode("developerConnection", "scm:git:git@github.com:fork-handles/forkhandles.git")
-                    asNode().appendNode("licenses").appendNode("license")
-                        .appendNode("name", "Apache License, Version 2.0")
-                        .parent().appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.html")
-                }
-
-                from(components["java"])
-
-                // replace all runtime dependencies with provided
-                pom.withXml {
-                    asNode()
-                        .childrenCalled("dependencies")
-                        .flatMap { it.childrenCalled("dependency") }
-                        .flatMap { it.childrenCalled("scope") }
-                        .forEach { if (it.text() == "runtime") it.setValue("provided") }
-                }
-
-                artifact(sourcesJar)
-                artifact(javadocJar)
             }
         }
     }
@@ -250,10 +217,10 @@ tasks.register<JacocoReport>("jacocoRootReport") {
     classDirectories.from(subprojects.map { it.the<SourceSetContainer>()["main"].output })
     executionData.from(
         subprojects
-        .filter { it.name != "forkhandles-bom" }
-        .map {
-            it.tasks.named<JacocoReport>("jacocoTestReport").get().executionData
-        }
+            .filter { it.name != "forkhandles-bom" }
+            .map {
+                it.tasks.named<JacocoReport>("jacocoTestReport").get().executionData
+            }
     )
 
     reports {

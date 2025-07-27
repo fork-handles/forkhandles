@@ -5,7 +5,7 @@ on:
 env:
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 jobs:
-  StageMC:
+  Publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -18,29 +18,10 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - name: Upload to Sonatype
-        run: |
-          ./gradlew publishMavenJavaPublicationToSonatypeStagingRepository \
-          -Psign=true \
-          -PreleaseVersion="${{ steps.tagName.outputs.tag }}" \
-          -PsigningKey="${{ secrets.SIGNING_KEY }}" \
-          -PsigningPassword="${{ secrets.SIGNING_PASSWORD }}" \
-          -PmavenCentralUsername="${{ secrets.MAVENCENTRAL_USERNAME }}" \
-          -PmavenCentralPassword="${{ secrets.MAVENCENTRAL_PASSWORD }}"
-  ReleaseMC:
-    needs: [StageMC]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.2.2
-      - name: Setup Java
-        uses: actions/setup-java@v4.7.1
-        with:
-          distribution: temurin
-          java-version: 21
-      - name: Release to Maven Central
-        run: |
-          ./gradlew closeAndReleaseRepository \
-          -PmavenCentralUsername="${{ secrets.MAVENCENTRAL_USERNAME }}" \
-          -PmavenCentralPassword="${{ secrets.MAVENCENTRAL_PASSWORD }}"
-
+      - name: Publish
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+        run: sh ./gradlew publish --no-configuration-cache --info -PreleaseVersion="${{ steps.tagName.outputs.tag }}" -PsigningKey="${{ secrets.SIGNING_KEY }}" -PsigningPassword="${{ secrets.SIGNING_PASSWORD }}"
