@@ -5,14 +5,14 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
-    kotlin("jvm")
+    alias(libs.plugins.kotlin.jvm)
     jacoco
     `java-library`
     signing
 
-    id("com.github.kt3k.coveralls")
-    id("org.jetbrains.kotlin.plugin.serialization")
-    id("com.vanniktech.maven.publish.base") version "0.34.0"
+    alias(libs.plugins.coveralls)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.maven.publish)
 }
 
 buildscript {
@@ -21,8 +21,8 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath(Kotlin.gradlePlugin)
-        classpath("com.github.kt3k.coveralls:com.github.kt3k.coveralls.gradle.plugin:_")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0")
+        classpath("com.github.kt3k.coveralls:com.github.kt3k.coveralls.gradle.plugin:2.12.2")
     }
 }
 
@@ -128,13 +128,13 @@ subprojects {
     }
 
     dependencies {
-        api(Kotlin.stdlib)
-        testApi(platform("org.junit:junit-bom:_"))
-        testApi("org.junit.jupiter:junit-jupiter")
-        testApi("org.junit.jupiter:junit-jupiter-api")
-        testApi("org.junit.jupiter:junit-jupiter-engine")
-        testApi("org.junit.platform:junit-platform-launcher")
-        testApi("com.natpryce:hamkrest:_")
+        api("org.jetbrains.kotlin:kotlin-stdlib:2.2.0")
+        testApi(platform("org.junit:junit-bom:5.11.4"))
+        testApi("org.junit.jupiter:junit-jupiter:5.11.4")
+        testApi("org.junit.jupiter:junit-jupiter-api:5.11.4")
+        testApi("org.junit.jupiter:junit-jupiter-engine:5.11.4")
+        testApi("org.junit.platform:junit-platform-launcher:1.9.3")
+        testApi("com.natpryce:hamkrest:1.8.0.1")
     }
 
     val enableSigning = project.findProperty("sign") == "true"

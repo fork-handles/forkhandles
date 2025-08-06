@@ -6,8 +6,8 @@
 description = "ForkHandles ropes library"
 
 plugins {
-    id("org.jetbrains.kotlinx.benchmark") version "0.4.10"
-    id("io.morethan.jmhreport") version "0.9.0"
+    alias(libs.plugins.kotlinx.benchmark)
+    alias(libs.plugins.jmhreport)
 }
 
 kotlin {
@@ -15,12 +15,12 @@ kotlin {
 }
 
 dependencies {
-    testImplementation("org.jetbrains.kotlinx:kotlinx-benchmark-runtime:_")
+    testImplementation(libs.kotlinx.benchmark.runtime)
 
-    testImplementation(platform("org.junit:junit-bom:_"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter)
 
-    testImplementation("io.strikt:strikt-core:_")
+    testImplementation(libs.strikt.core)
 }
 
 tasks.test {

@@ -1,0 +1,64 @@
+[versions]
+kotlin = "2.2.0"
+kotlinx-coroutines = "1.10.2"
+kotlinx-serialization = "1.9.0"
+kotlinx-benchmark = "0.4.14"
+jackson = "2.19.2"
+hamkrest = "1.8.0.1"
+kotest = "5.6.2"
+strikt = "0.34.1"
+junit = "5.10.3"
+junit-bom = "5.10.3"
+okeydoke = "2.0.3"
+jmh = "1.36"
+coveralls = "2.12.2"
+jmhreport = "0.9.6"
+champeau-jmh = "0.7.3"
+maven-publish = "0.34.0"
+junit-platform-launcher= "1.9.3"
+
+[libraries]
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlinx-benchmark" }
+
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+
+hamkrest = { module = "com.natpryce:hamkrest", version.ref = "hamkrest" }
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest" }
+
+strikt-jvm = { module = "io.strikt:strikt-jvm", version.ref = "strikt" }
+strikt-core = { module = "io.strikt:strikt-core", version.ref = "strikt" }
+
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit-bom" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform-launcher" }
+
+okeydoke = { module = "com.oneeyedmen:okeydoke", version.ref = "okeydoke" }
+
+jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }
+jmh-generator-bytecode = { module = "org.openjdk.jmh:jmh-generator-bytecode", version.ref = "jmh" }
+
+[bundles]
+junit = ["junit-jupiter", "junit-jupiter-api", "junit-jupiter-engine", "junit-platform-launcher"]
+kotest = ["kotest-runner-junit5", "kotest-assertions-core", "kotest-property"]
+strikt = ["strikt-core", "strikt-jvm"]
+jmh = ["jmh-core", "jmh-generator-bytecode"]
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlinx-benchmark = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "kotlinx-benchmark" }
+coveralls = { id = "com.github.kt3k.coveralls", version.ref = "coveralls" }
+jmhreport = { id = "io.morethan.jmhreport", version.ref = "jmhreport" }
+jmh = { id = "me.champeau.jmh", version.ref = "champeau-jmh" }
+maven-publish = { id = "com.vanniktech.maven.publish.base", version.ref = "maven-publish" }

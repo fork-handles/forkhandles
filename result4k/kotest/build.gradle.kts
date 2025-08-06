@@ -2,7 +2,7 @@ description = "ForkHandles Library Testing Helpers (Kotest)"
 
 dependencies {
     implementation(project(":result4k"))
-    implementation("io.kotest:kotest-assertions-core-jvm:_")
+    implementation(libs.kotest.assertions.core)
 
     testImplementation(project(path= ":result4k", configuration= "testArtifacts"))
 }

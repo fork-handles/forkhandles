@@ -1,11 +1,11 @@
 plugins {
-    id("me.champeau.jmh")
+    alias(libs.plugins.jmh)
 }
 
 description = "A friendly Kotlin Result type"
 
 dependencies {
-    testApi(Kotlin.test)
+    testApi(libs.kotlin.test)
 }
 
 compileJmhKotlin.kotlinOptions.jvmTarget = "1.8"

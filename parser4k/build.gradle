@@ -4,8 +4,6 @@ dependencies {
     api(project(":tuples4k"))
 }
 
-tasks.configureEach {
-    if (it instanceof Test) {
-        it.jvmArgs("-Xss10M")
-    }
+tasks.withType(Test) {
+    jvmArgs("-Xss10M")
 }

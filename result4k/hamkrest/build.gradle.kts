@@ -2,7 +2,7 @@ description = "ForkHandles Library Testing Helpers (Hamkrest)"
 
 dependencies {
     implementation(project(":result4k"))
-    implementation("com.natpryce:hamkrest:_")
+    implementation(libs.hamkrest)
 
     testImplementation(project(path = ":result4k", configuration = "testArtifacts"))
 }

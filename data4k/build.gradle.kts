@@ -1,10 +1,10 @@
 description = "ForkHandles data-oriented programming library"
 
 dependencies {
-    api("org.jetbrains.kotlin:kotlin-reflect:_")
+    api(libs.kotlin.reflect)
     api(project(":values4k"))
-    implementation("com.fasterxml.jackson.core:jackson-databind:_")
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:_")
-    testImplementation("io.strikt:strikt-jvm:_")
-    testImplementation("com.oneeyedmen:okeydoke:_")
+    implementation(libs.jackson.databind)
+    testImplementation(libs.jackson.databind)
+    testImplementation(libs.strikt.jvm)
+    testImplementation(libs.okeydoke)
 }
