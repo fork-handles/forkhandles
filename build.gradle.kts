@@ -22,8 +22,8 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0")
-        classpath("com.github.kt3k.coveralls:com.github.kt3k.coveralls.gradle.plugin:2.12.2")
+        classpath(libs.kotlin.gradle.plugin)
+        classpath("com.github.kt3k.coveralls:com.github.kt3k.coveralls.gradle.plugin:${libs.versions.coveralls.get()}")
     }
 }
 
@@ -53,7 +53,7 @@ subprojects {
     group = "dev.forkhandles"
 
     jacoco {
-        toolVersion = "0.8.9"
+        toolVersion = rootProject.libs.versions.jacoco.get()
     }
 
     tasks {
@@ -129,13 +129,13 @@ subprojects {
     }
 
     dependencies {
-        api("org.jetbrains.kotlin:kotlin-stdlib:2.2.0")
-        testApi(platform("org.junit:junit-bom:5.11.4"))
-        testApi("org.junit.jupiter:junit-jupiter:5.11.4")
-        testApi("org.junit.jupiter:junit-jupiter-api:5.11.4")
-        testApi("org.junit.jupiter:junit-jupiter-engine:5.11.4")
-        testApi("org.junit.platform:junit-platform-launcher:1.9.3")
-        testApi("com.natpryce:hamkrest:1.8.0.1")
+        api(rootProject.libs.kotlin.stdlib)
+        testApi(platform(rootProject.libs.junit.bom))
+        testApi(rootProject.libs.junit.jupiter)
+        testApi(rootProject.libs.junit.jupiter.api)
+        testApi(rootProject.libs.junit.jupiter.engine)
+        testApi(rootProject.libs.junit.platform.launcher)
+        testApi(rootProject.libs.hamkrest)
     }
 
     val enableSigning = project.findProperty("sign") == "true"
