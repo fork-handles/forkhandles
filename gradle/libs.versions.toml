@@ -10,12 +10,13 @@ strikt = "0.34.1"
 junit = "5.10.3"
 junit-bom = "5.10.3"
 okeydoke = "2.0.3"
-jmh = "1.36"
+jmh = "1.37"
 coveralls = "2.12.2"
 jmhreport = "0.9.6"
 champeau-jmh = "0.7.3"
 maven-publish = "0.34.0"
 junit-platform-launcher= "1.9.3"
+versions = "0.51.0"
 
 [libraries]
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
@@ -62,3 +63,4 @@ coveralls = { id = "com.github.kt3k.coveralls", version.ref = "coveralls" }
 jmhreport = { id = "io.morethan.jmhreport", version.ref = "jmhreport" }
 jmh = { id = "me.champeau.jmh", version.ref = "champeau-jmh" }
 maven-publish = { id = "com.vanniktech.maven.publish.base", version.ref = "maven-publish" }
+versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }

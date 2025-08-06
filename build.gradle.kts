@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.coveralls)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.maven.publish)
+    alias(libs.plugins.versions)
 }
 
 buildscript {
