@@ -9,6 +9,7 @@ dependencies {
 }
 
 compileJmhKotlin.kotlinOptions.jvmTarget = "11"
+kotlin.compilerOptions.freeCompilerArgs.add("-Xreturn-value-checker=full")
 
 test {
     include("dev/forkhandles/**")
