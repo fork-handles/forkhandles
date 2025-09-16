@@ -20,14 +20,14 @@ class OrThrowTests {
 
         assertThrows<ExampleException> { r.orThrow() }
     }
-    
+
     @Test
     fun `convenience function to convert failure to exception and throw`() {
-        val r : Result<Int,String> = Failure("error value")
+        val r: Result<Int, String> = Failure("error value")
         val e = assertThrows<ExampleException> {
             r.orThrow { ExampleException(it) }
         }
-        
+
         assertEquals("error value", e.message)
     }
 }

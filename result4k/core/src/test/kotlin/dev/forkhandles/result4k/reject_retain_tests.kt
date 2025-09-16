@@ -6,31 +6,31 @@ import kotlin.test.assertEquals
 class RejectRetainTests {
     sealed class Error
     data class TooBig(val limit: Int) : Error()
-    
+
     @Test
     fun `retaining values`() {
         val a = 10
-        
+
         assertEquals(
             Success(a),
             a.asSuccess().retainIf({ it <= 15 }, otherwise = { TooBig(limit = 15) })
         )
-        
+
         assertEquals(
             a.asSuccess().retainIf({ it <= 15 }, { TooBig(limit = 15) }),
             a.asSuccess().rejectIf({ it > 15 }, { TooBig(limit = 15) })
         )
     }
-    
+
     @Test
     fun `rejecting values`() {
         val a = 20
-        
+
         assertEquals(
             Failure(TooBig(15)),
             a.asSuccess().retainIf({ it <= 15 }, otherwise = { TooBig(limit = 15) })
         )
-        
+
         assertEquals(
             a.asSuccess().retainIf({ it <= 15 }, { TooBig(limit = 15) }),
             a.asSuccess().rejectIf({ it > 15 }, { TooBig(limit = 15) })

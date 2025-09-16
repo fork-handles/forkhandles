@@ -10,8 +10,8 @@ sealed class Result<out T, out E>
 data class Success<out T>(val value: T) : Result<T, Nothing>()
 data class Failure<out E>(val reason: E) : Result<Nothing, E>()
 
-fun <T> T.asSuccess(): Result<T,Nothing> = Success(this)
-fun <E> E.asFailure(): Result<Nothing,E> = Failure(this)
+fun <T> T.asSuccess(): Result<T, Nothing> = Success(this)
+fun <E> E.asFailure(): Result<Nothing, E> = Failure(this)
 
 val begin = Unit.asSuccess()
 
@@ -110,11 +110,10 @@ fun <T, X : Throwable> Result<T, X>.orThrow(): T = when (this) {
 /**
  * Unwrap a successful result or convert an error into an exception and throw it
  */
-fun <T, E> Result<T, E>.orThrow(x: (E)->Throwable): T = when (this) {
+fun <T, E> Result<T, E>.orThrow(x: (E) -> Throwable): T = when (this) {
     is Success<T> -> value
     is Failure<E> -> throw x(reason)
 }
-
 
 /**
  * Unwrap a `Result`, by returning the success value or calling `block` on failure to abort from the current function.
