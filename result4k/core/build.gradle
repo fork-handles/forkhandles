@@ -8,7 +8,7 @@ dependencies {
     testApi(libs.kotlin.test)
 }
 
-compileJmhKotlin.kotlinOptions.jvmTarget = "1.8"
+compileJmhKotlin.kotlinOptions.jvmTarget = "11"
 
 test {
     include("dev/forkhandles/**")
