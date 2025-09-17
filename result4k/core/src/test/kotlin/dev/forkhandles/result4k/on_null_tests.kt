@@ -15,7 +15,7 @@ class OnNullTests {
 
     @Test
     fun `does nothing on unsuccessful result`() {
-        fun subject() = resultFrom { throw AnError("kaboom"); "unreachable" }
+        fun subject() = resultFrom<String> { throw AnError("kaboom") }
             .onNull { return Success("early-returned") }
 
         assertEquals(Failure(AnError("kaboom")), subject())

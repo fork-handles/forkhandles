@@ -18,7 +18,7 @@ class CatchingTests {
     @Test
     fun `check do not specific error`() {
         val exception = assertThrows<IllegalArgumentException> {
-            resultFromCatching<IllegalStateException, _> {
+            val _ = resultFromCatching<IllegalStateException, _> {
                 throw IllegalArgumentException("error")
             }
             fail("should not reach here")

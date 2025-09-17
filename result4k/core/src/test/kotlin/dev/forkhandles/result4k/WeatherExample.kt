@@ -33,6 +33,6 @@ fun main() {
         .map { it.message } // convert success to message
         .peekFailure { println("Physics has imploded!") }  // perform side-effect if failure
         .recover { message -> "WARNING: $message" } // convert failure to message
-    
+
     println(forecast)
 }
