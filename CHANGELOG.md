@@ -3,8 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
-### v2.22.5.0 (uncut)
-- **all** : Upgrade versions
+### v2.23.0.0
+- **all** : Upgrade versions, including Jackson to v3
+- **data4k** : [Breaking] Migrated to Jackson v3 - this is a major change and may require changes to your code if you were using Jackson-specific annotations or features.
 
 ### v2.22.4.0
 - **all** : Release to new Maven Central target

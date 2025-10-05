@@ -1,22 +1,22 @@
 package dev.forkhandles.data
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.BigIntegerNode
-import com.fasterxml.jackson.databind.node.BinaryNode
-import com.fasterxml.jackson.databind.node.BooleanNode
-import com.fasterxml.jackson.databind.node.BooleanNode.FALSE
-import com.fasterxml.jackson.databind.node.BooleanNode.TRUE
-import com.fasterxml.jackson.databind.node.DecimalNode
-import com.fasterxml.jackson.databind.node.DoubleNode
-import com.fasterxml.jackson.databind.node.FloatNode
-import com.fasterxml.jackson.databind.node.IntNode
-import com.fasterxml.jackson.databind.node.JsonNodeFactory.instance
-import com.fasterxml.jackson.databind.node.LongNode
-import com.fasterxml.jackson.databind.node.NullNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.databind.node.ShortNode
-import com.fasterxml.jackson.databind.node.TextNode
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.node.ArrayNode
+import tools.jackson.databind.node.BigIntegerNode
+import tools.jackson.databind.node.BinaryNode
+import tools.jackson.databind.node.BooleanNode
+import tools.jackson.databind.node.BooleanNode.FALSE
+import tools.jackson.databind.node.BooleanNode.TRUE
+import tools.jackson.databind.node.DecimalNode
+import tools.jackson.databind.node.DoubleNode
+import tools.jackson.databind.node.FloatNode
+import tools.jackson.databind.node.IntNode
+import tools.jackson.databind.node.JsonNodeFactory.instance
+import tools.jackson.databind.node.LongNode
+import tools.jackson.databind.node.NullNode
+import tools.jackson.databind.node.ObjectNode
+import tools.jackson.databind.node.ShortNode
+import tools.jackson.databind.node.StringNode
 import java.math.BigDecimal
 import java.math.BigInteger
 
@@ -47,7 +47,7 @@ open class JsonNodeDataContainer(input: JsonNode) :
                 is BigDecimal -> DecimalNode(this)
                 is BigInteger -> BigIntegerNode(this)
                 is Double -> DoubleNode(this)
-                is String -> TextNode(this)
+                is String -> StringNode(this)
                 is Iterable<*> -> ArrayNode(instance)
                     .also { map { if (it is JsonNode) it else it.toNode() }.forEach(it::add) }
 
@@ -56,7 +56,7 @@ open class JsonNodeDataContainer(input: JsonNode) :
 
         private fun nodeToValue(input: JsonNode): Any? = when (input) {
             is NullNode -> null
-            is TextNode -> input.textValue()
+            is StringNode -> input.textValue()
             is ArrayNode -> input.map(::nodeToValue)
             is ObjectNode -> input
             is BooleanNode -> input.booleanValue()

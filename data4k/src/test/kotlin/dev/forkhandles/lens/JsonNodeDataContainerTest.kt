@@ -1,7 +1,7 @@
 package dev.forkhandles.lens
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.ObjectMapper
 import com.oneeyedmen.okeydoke.Approver
 import dev.forkhandles.data.JsonNodeDataContainer
 import dev.forkhandles.lens.ContainerMeta.bar
