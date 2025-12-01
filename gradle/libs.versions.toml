@@ -1,67 +1,74 @@
 [versions]
-kotlin = "2.2.20"
-kotlinx-coroutines = "1.10.2"
-kotlinx-serialization = "1.9.0"
-kotlinx-benchmark = "0.4.14"
-jackson = "3.0.0"
+champeau-jmh = "0.7.3"
 hamkrest = "1.8.0.1"
-kotest = "5.6.2"
-strikt = "0.34.1"
+jackson = "3.0.0"
+jmh = "1.37"
+jmhreport = "0.9.6"
 junit = "5.11.4"
 junit-bom = "5.11.4"
-okeydoke = "2.0.3"
-jmh = "1.37"
-coveralls = "2.12.2"
-jmhreport = "0.9.6"
-champeau-jmh = "0.7.3"
+junit-platform-launcher = "1.9.3"
+kotest = "5.6.2"
+kotlin = "2.2.20"
+kotlinx-benchmark = "0.4.14"
+kotlinx-coroutines = "1.10.2"
+kotlinx-serialization = "1.9.0"
 maven-publish = "0.34.0"
-junit-platform-launcher= "1.9.3"
+okeydoke = "2.0.3"
+strikt = "0.34.1"
+version-catalog-update = "1.0.1"
 versions = "0.51.0"
-jacoco = "0.8.9"
 
 [libraries]
-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-kotlinx-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlinx-benchmark" }
-
-jackson-databind = { module = "tools.jackson.core:jackson-databind", version.ref = "jackson" }
-
 hamkrest = { module = "com.natpryce:hamkrest", version.ref = "hamkrest" }
-kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
-kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
-kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest" }
-
-strikt-jvm = { module = "io.strikt:strikt-jvm", version.ref = "strikt" }
-strikt-core = { module = "io.strikt:strikt-core", version.ref = "strikt" }
-
+jackson-databind = { module = "tools.jackson.core:jackson-databind", version.ref = "jackson" }
+jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }
+jmh-generator-bytecode = { module = "org.openjdk.jmh:jmh-generator-bytecode", version.ref = "jmh" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit-bom" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform-launcher" }
-
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest" }
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlinx-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlinx-benchmark" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 okeydoke = { module = "com.oneeyedmen:okeydoke", version.ref = "okeydoke" }
-
-jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }
-jmh-generator-bytecode = { module = "org.openjdk.jmh:jmh-generator-bytecode", version.ref = "jmh" }
+strikt-core = { module = "io.strikt:strikt-core", version.ref = "strikt" }
+strikt-jvm = { module = "io.strikt:strikt-jvm", version.ref = "strikt" }
 
 [bundles]
-junit = ["junit-jupiter", "junit-jupiter-api", "junit-jupiter-engine", "junit-platform-launcher"]
-kotest = ["kotest-runner-junit5", "kotest-assertions-core", "kotest-property"]
-strikt = ["strikt-core", "strikt-jvm"]
-jmh = ["jmh-core", "jmh-generator-bytecode"]
+jmh = [
+    "jmh-core",
+    "jmh-generator-bytecode",
+]
+junit = [
+    "junit-jupiter",
+    "junit-jupiter-api",
+    "junit-jupiter-engine",
+    "junit-platform-launcher",
+]
+kotest = [
+    "kotest-assertions-core",
+    "kotest-property",
+    "kotest-runner-junit5",
+]
+strikt = [
+    "strikt-core",
+    "strikt-jvm",
+]
 
 [plugins]
+jmh = { id = "me.champeau.jmh", version.ref = "champeau-jmh" }
+jmhreport = { id = "io.morethan.jmhreport", version.ref = "jmhreport" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinx-benchmark = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "kotlinx-benchmark" }
-coveralls = { id = "com.github.kt3k.coveralls", version.ref = "coveralls" }
-jmhreport = { id = "io.morethan.jmhreport", version.ref = "jmhreport" }
-jmh = { id = "me.champeau.jmh", version.ref = "champeau-jmh" }
 maven-publish = { id = "com.vanniktech.maven.publish.base", version.ref = "maven-publish" }
+version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "version-catalog-update" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }

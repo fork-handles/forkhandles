@@ -6,14 +6,14 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
-    jacoco
     `java-library`
     signing
+    `java-test-fixtures`
 
-    alias(libs.plugins.coveralls)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.maven.publish)
     alias(libs.plugins.versions)
+    alias(libs.plugins.version.catalog.update)
 }
 
 buildscript {
@@ -23,7 +23,6 @@ buildscript {
     }
     dependencies {
         classpath(libs.kotlin.gradle.plugin)
-        classpath("com.github.kt3k.coveralls:com.github.kt3k.coveralls.gradle.plugin:${libs.versions.coveralls.get()}")
     }
 }
 
@@ -43,18 +42,11 @@ subprojects {
     }
 
     apply(plugin = "java")
-    apply(plugin = "org.gradle.jacoco")
-    apply(plugin = "com.github.kt3k.coveralls")
-    apply(plugin = "java-test-fixtures")
     apply(plugin = "com.vanniktech.maven.publish.base")
     apply(plugin = "kotlin")
 
     version = project.properties["releaseVersion"] ?: "LOCAL"
     group = "dev.forkhandles"
-
-    jacoco {
-        toolVersion = rootProject.libs.versions.jacoco.get()
-    }
 
     tasks {
         withType<KotlinJvmCompile>().configureEach {
@@ -70,16 +62,6 @@ subprojects {
 
         withType<Test> {
             useJUnitPlatform()
-        }
-
-        if (hasCodeCoverage(project)) {
-            named<JacocoReport>("jacocoTestReport") {
-                reports {
-                    html.required.set(true)
-                    xml.required.set(true)
-                    csv.required.set(false)
-                }
-            }
         }
 
         withType<GenerateModuleMetadata> {
@@ -142,9 +124,6 @@ subprojects {
 
     mavenPublishing {
         val javaComponent = components["java"] as AdhocComponentWithVariants
-
-        javaComponent.withVariantsFromConfiguration(configurations["testFixturesApiElements"]) { skip() }
-        javaComponent.withVariantsFromConfiguration(configurations["testFixturesRuntimeElements"]) { skip() }
 
         configure<PublishingExtension> {
             publications {
@@ -216,32 +195,6 @@ fun Node.childrenCalled(wanted: String) = children()
 
 fun hasCodeCoverage(project: Project) = project.name != "forkhandles-bom" &&
     !project.name.endsWith("generator")
-
-coveralls {
-    sourceDirs = subprojects.map { it.sourceSets.getByName("main").allSource.srcDirs }.flatten().map { it.absolutePath }
-    jacocoReportPath = file("${layout.buildDirectory}/reports/jacoco/test/jacocoRootReport.xml")
-}
-
-tasks.register<JacocoReport>("jacocoRootReport") {
-    dependsOn(subprojects.map { it.tasks.named<Test>("test").get() })
-
-    sourceDirectories.from(subprojects.flatMap { it.the<SourceSetContainer>()["main"].allSource.srcDirs })
-    classDirectories.from(subprojects.map { it.the<SourceSetContainer>()["main"].output })
-    executionData.from(
-        subprojects
-            .filter { it.name != "forkhandles-bom" }
-            .map {
-                it.tasks.named<JacocoReport>("jacocoTestReport").get().executionData
-            }
-    )
-
-    reports {
-        html.required.set(true)
-        xml.required.set(true)
-        csv.required.set(false)
-        xml.outputLocation.set(file("${layout.buildDirectory}/reports/jacoco/test/jacocoRootReport.xml"))
-    }
-}
 
 dependencies {
     subprojects
