@@ -28,7 +28,6 @@ import java.util.UUID
 
 @Suppress(
     "ConvertSecondaryConstructorToPrimary",
-    "JoinDeclarationAndAssignment",
     "unused",
     "USELESS_IS_CHECK"
 )
@@ -335,7 +334,6 @@ class InstanceFabricatorTest {
         assertThat(Fabrikate().random<Foobar>(), present())
     }
 
-    @Suppress("DataClassPrivateConstructor")
     @ExposedCopyVisibility
     data class X private constructor(val a: Instant) {
         companion object {
@@ -347,7 +345,7 @@ class InstanceFabricatorTest {
 
     interface Q
 
-    @Suppress("DataClassPrivateConstructor")
+    @ConsistentCopyVisibility
     data class R private constructor(val a: String) : Q {
         companion object {
             fun of(name: String): Q = R(name)
@@ -366,24 +364,43 @@ class InstanceFabricatorTest {
 
     @Test
     fun `randomly sets nullable properties to null by default`() {
-        assertThat(Fabrikate(FabricatorConfig(1).withStandardMappings()).random<S>().toString(), equalTo("S(a=1982-07-13T19:53:20Z)"))
+        assertThat(
+            Fabrikate(FabricatorConfig(1).withStandardMappings()).random<S>().toString(),
+            equalTo("S(a=1982-07-13T19:53:20Z)")
+        )
         assertThat(Fabrikate(FabricatorConfig(2).withStandardMappings()).random<S>().toString(), equalTo("S(a=null)"))
     }
 
     @Test
     fun `does not set nullable properties to null if explicitly configured`() {
-        assertThat(Fabrikate(FabricatorConfig(1, nullableStrategy = FabricatorConfig.NullableStrategy.NeverSetToNull)
-            .withStandardMappings()).random<S>().toString(), equalTo("S(a=1992-11-18T07:29:28Z)"))
-        assertThat(Fabrikate(FabricatorConfig(2,nullableStrategy = FabricatorConfig.NullableStrategy.NeverSetToNull)
-            .withStandardMappings()).random<S>().toString(), equalTo("S(a=2002-01-05T13:32:51Z)"))
+        assertThat(
+            Fabrikate(
+                FabricatorConfig(1, nullableStrategy = FabricatorConfig.NullableStrategy.NeverSetToNull)
+                    .withStandardMappings()
+            ).random<S>().toString(), equalTo("S(a=1992-11-18T07:29:28Z)")
+        )
+        assertThat(
+            Fabrikate(
+                FabricatorConfig(2, nullableStrategy = FabricatorConfig.NullableStrategy.NeverSetToNull)
+                    .withStandardMappings()
+            ).random<S>().toString(), equalTo("S(a=2002-01-05T13:32:51Z)")
+        )
     }
 
     @Test
     fun `sets nullable properties to null if explicitly configured`() {
-        assertThat(Fabrikate(FabricatorConfig(1, nullableStrategy = FabricatorConfig.NullableStrategy.AlwaysSetToNull)
-            .withStandardMappings()).random<S>().toString(), equalTo("S(a=null)"))
-        assertThat(Fabrikate(FabricatorConfig(2,nullableStrategy = FabricatorConfig.NullableStrategy.AlwaysSetToNull)
-            .withStandardMappings()).random<S>().toString(), equalTo("S(a=null)"))
+        assertThat(
+            Fabrikate(
+                FabricatorConfig(1, nullableStrategy = FabricatorConfig.NullableStrategy.AlwaysSetToNull)
+                    .withStandardMappings()
+            ).random<S>().toString(), equalTo("S(a=null)")
+        )
+        assertThat(
+            Fabrikate(
+                FabricatorConfig(2, nullableStrategy = FabricatorConfig.NullableStrategy.AlwaysSetToNull)
+                    .withStandardMappings()
+            ).random<S>().toString(), equalTo("S(a=null)")
+        )
     }
 
     enum class RandomEnum {
@@ -394,20 +411,23 @@ class InstanceFabricatorTest {
 
     @Test
     fun `does enums`() {
-        assertThat(Fabrikate(FabricatorConfig(2).withStandardMappings()).random<T>().toString(), equalTo("T(a=D, b=[D, A, A, D, A])"))
+        assertThat(
+            Fabrikate(FabricatorConfig(2).withStandardMappings()).random<T>().toString(),
+            equalTo("T(a=D, b=[D, A, A, D, A])")
+        )
     }
 
     @Serializable
     data class KotlinSerializable(val string: String)
 
     @Test
-    fun `does not create nulls on non-nullables for serializable classes`(){
+    fun `does not create nulls on non-nullables for serializable classes`() {
         val random = Fabrikate(FabricatorConfig(84).withStandardMappings()).random<KotlinSerializable>()
         val nonNullableString = random.string
         assertThat(nonNullableString, present())
     }
 
-    class TestListFabricator: Fabricator<List<String>>{
+    class TestListFabricator : Fabricator<List<String>> {
         override fun invoke(fabrikate: Fabrikate): List<String> {
             return testList
         }
@@ -418,7 +438,7 @@ class InstanceFabricatorTest {
     }
 
     @Test
-    fun `registered Fabricators override defaults`(){
+    fun `registered Fabricators override defaults`() {
         val defaultFabrikate = Fabrikate(FabricatorConfig())
         val overriddenFabrikate = Fabrikate(FabricatorConfig().register(TestListFabricator()))
 
