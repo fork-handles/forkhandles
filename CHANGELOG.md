@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.24.0.0
+- **all** : Upgrade versions, including Kotlin to 2.2.21
+
 ### v2.23.0.0
 - **all** : Upgrade versions, including Jackson to v3
 - **data4k** : [Breaking] Migrated to Jackson v3 - this is a major change and may require changes to your code if you were using Jackson-specific annotations or features.

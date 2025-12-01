@@ -1,29 +1,28 @@
 [versions]
 champeau-jmh = "0.7.3"
 hamkrest = "1.8.0.1"
-jackson = "3.0.0"
+jackson = "3.0.3"
 jmh = "1.37"
 jmhreport = "0.9.6"
 junit = "5.11.4"
-junit-bom = "5.11.4"
 junit-platform-launcher = "1.9.3"
 kotest = "5.6.2"
-kotlin = "2.2.20"
+kotlin = "2.2.21"
 kotlinx-benchmark = "0.4.14"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
-maven-publish = "0.34.0"
+maven-publish = "0.35.0"
 okeydoke = "2.0.3"
 strikt = "0.34.1"
 version-catalog-update = "1.0.1"
-versions = "0.51.0"
+versions = "0.53.0"
 
 [libraries]
 hamkrest = { module = "com.natpryce:hamkrest", version.ref = "hamkrest" }
 jackson-databind = { module = "tools.jackson.core:jackson-databind", version.ref = "jackson" }
 jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }
 jmh-generator-bytecode = { module = "org.openjdk.jmh:jmh-generator-bytecode", version.ref = "jmh" }
-junit-bom = { module = "org.junit:junit-bom", version.ref = "junit-bom" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
