@@ -41,13 +41,13 @@ class MatchersTest {
         val value = "Test successful"
         val success = Success(value)
 
-        throwsAssertionError("expected:<Failure> but was:<Success(value=Test successful)>") {
+        throwsAssertionError("\nexpected:<Failure> but was:<Success(value=Test successful)>") {
             success.shouldBeFailure()
         }
-        throwsAssertionError("expected:<Failure> but was:<Success(value=Test successful)>") {
+        throwsAssertionError("\nexpected:<Failure> but was:<Success(value=Test successful)>") {
             success.shouldBeFailure { }
         }
-        throwsAssertionError("expected:<Failure(reason=Test successful)> but was:<Success(value=Test successful)>") {
+        throwsAssertionError("\nexpected:<Failure(reason=Test successful)> but was:<Success(value=Test successful)>") {
             success shouldBeFailure value
         }
     }
@@ -57,23 +57,23 @@ class MatchersTest {
         val reason = "Test failed"
         val failure = Failure(reason)
 
-        throwsAssertionError("expected:<Success> but was:<Failure(reason=Test failed)>") {
+        throwsAssertionError("\nexpected:<Success> but was:<Failure(reason=Test failed)>") {
             failure.shouldBeSuccess()
         }
-        throwsAssertionError("expected:<Success> but was:<Failure(reason=Test failed)>") {
+        throwsAssertionError("\nexpected:<Success> but was:<Failure(reason=Test failed)>") {
             failure.shouldBeSuccess { }
         }
-        throwsAssertionError("expected:<Success(value=Test failed)> but was:<Failure(reason=Test failed)>") {
+        throwsAssertionError("\nexpected:<Success(value=Test failed)> but was:<Failure(reason=Test failed)>") {
             failure shouldBeSuccess reason
         }
     }
 
     @Test
     fun `should correctly assert value`() {
-        throwsAssertionError("expected:<Failure(reason=Expected value)> but was:<Failure(reason=Actual value)>") {
+        throwsAssertionError("\nexpected:<Failure(reason=Expected value)> but was:<Failure(reason=Actual value)>") {
             Failure("Actual value") shouldBeFailure "Expected value"
         }
-        throwsAssertionError("expected:<Success(value=Expected value)> but was:<Success(value=Actual value)>") {
+        throwsAssertionError("\nexpected:<Success(value=Expected value)> but was:<Success(value=Actual value)>") {
             Success("Actual value") shouldBeSuccess "Expected value"
         }
     }

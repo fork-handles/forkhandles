@@ -3,7 +3,8 @@ package dev.forkhandles.result4k.kotest
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
-import io.kotest.matchers.ComparableMatcherResult
+import io.kotest.assertions.print.Printed
+import io.kotest.matchers.ComparisonMatcherResult
 import io.kotest.matchers.Matcher
 import io.kotest.matchers.MatcherResult
 import io.kotest.matchers.should
@@ -62,24 +63,24 @@ infix fun <E> Result<*, E>.shouldBeFailure(expected: E) =
 private fun <T, E> Result<T, E>.matchesValue(actual: Result<T, E>): MatcherResult =
     matcherResultWithIntelliJDiff(
         passed = this == actual,
-        actual = actual.toString(),
-        expected = this.toString()
+        actual = Printed(actual.toString()),
+        expected = Printed(this.toString())
     )
 
 private fun <T, E, C : Result<T, E>> Result<T, E>.matchesType(expected: KClass<C>): MatcherResult =
     matcherResultWithIntelliJDiff(
         passed = expected.isInstance(this),
-        actual = this.toString(),
-        expected = expected.simpleName!!
+        actual = Printed(this.toString()),
+        expected = Printed(expected.simpleName!!)
     )
 
 /**
- * Return ComparableMatcherResult so that Kotest throws AssertFailedError
+ * Return ComparisonMatcherResult so that Kotest throws AssertFailedError
  * with the failure message formatted by io.kotest.assertions.intellijFormatError()
  * which makes IntelliJ show the link to the diff window.
  */
-private fun matcherResultWithIntelliJDiff(passed: Boolean, actual: String, expected: String) =
-    ComparableMatcherResult(
+private fun matcherResultWithIntelliJDiff(passed: Boolean, actual: Printed, expected: Printed) =
+    ComparisonMatcherResult(
         passed = passed,
         failureMessageFn = { "" },
         negatedFailureMessageFn = { "not " },
