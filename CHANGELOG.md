@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.25.0.0
+- **all** : Upgrade kotest
+
 ### v2.24.0.0
 - **all** : Upgrade versions, including Kotlin to 2.2.21
 
