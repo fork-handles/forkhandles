@@ -44,7 +44,7 @@ Person(
  */
 ```
 
-### Creating a custom `Fabrikator`
+### Creating a custom `Fabricator`
 
 If you need more control over the randomly created data you can register your own implementation:
 
@@ -120,7 +120,7 @@ Parent(
 
 ### Configuring the fabrication
 
-`FabrikatorConfig` can be configured by passing parameters to adjust the
+`FabricatorConfig` can be configured by passing parameters to adjust the
 behavior during fabrication.
 
 | Parameter          | Description                                                                                                                                                                                                                                   |
@@ -163,18 +163,18 @@ val fabrikate = Fabrikate
 
 #### Standard mappings
 
-When a `FabrikatorConfig` is instantiated, none of the default mappings
+When a `FabricatorConfig` is instantiated, none of the default mappings
 will be applied.
 If you want to make use of those, make sure to
 call `.withStandardMappings()`.
 
 #### Registration ordering
 
-The `register()` method of `FabrikatorConfig` will override the already
-existing `Fabrikator` for that type.
-If you need to provide a custom `Fabrikator` for one of supported types
+The `register()` method of `FabricatorConfig` will override the already
+existing `Fabricator` for that type.
+If you need to provide a custom `Fabricator` for one of supported types
 and want to use the standard mappings also, make sure to
-call `.register()` for your custom `Fabrikator` _after_
+call `.register()` for your custom `Fabricator` _after_
 calling `.withStandardMappings()`.
 
 ## Supported Types
