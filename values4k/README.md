@@ -132,52 +132,17 @@ class JobName(value: String) : StringValue(value) {
 data class Job (val id: JobId, val name: JobName)
 ```
 
-You'd like to write the Kondor `JJob` parser, but you need to link the value types into Kondor
+You'd like to write the Kondor `JJob` parser, but you need to link the value types into Kondor... the extensions for
+this are in the kondor.kt file, included in the library. 
+
+There are extensions for StringValue, IntValue, DoubleValue, FloatValue, InstantValue, BigDecimalValue, BigIntegerValue...
+
+InstantValue converters define both `str` and `num` - for parsing both Instant strings, and millis-since-eopch.
 
 ```kotlin
 object JJob : JAny<Job>() {
     val id by num(JobId, Job::id)
     val name by str(JobName, Job::name)
     override fun JsonNodeObject.deserializeOrThrow() = Job(+id, +name)
-}
-```
-
-You can do this by first creating a JConverter for each base/primitive type to a Value. Here are examples for Long and String - 
-these can be copied straight into your code.
-
-```kotlin
-class DJLongRepresentable<D : LongValue>(val vf: ValueFactory<D, Long>) : JLongRepresentable<D>() {
-    override val cons: (Long) -> D = vf::of
-    override val render: (D) -> Long = vf::unwrap
-}
-
-class DJStringRepresentable<D : StringValue>(val vf: ValueFactory<D, String>) : JStringRepresentable<D>() {
-    override val cons: (String) -> D = vf::of
-    override val render: (D) -> String = vf::unwrap
-}
-```
-
-Then by adding overloads for `str` and `num` (and other types you might need), that take the ValueFactory
-for the specific type, and providing implementations for both 'nullable' and 'not-nullable' variants.
-
-```kotlin
-@JvmName("bindLongValue")
-fun <PT : Any, D : LongValue> num(vf: ValueFactory<D, Long>, binder: PT.() -> D): JField<D, PT> {
-    return JField(binder, DJLongRepresentable(vf))
-}
-
-@JvmName("bindLongValueNull")
-fun <PT : Any, D : LongValue> num(vf: ValueFactory<D, Long>, binder: PT.() -> D?): JFieldMaybe<D, PT> {
-    return JFieldMaybe(binder, DJLongRepresentable(vf))
-}
-
-@JvmName("bindStringValue")
-fun <PT : Any, D : StringValue> str(vf: ValueFactory<D, String>, binder: PT.() -> D): JField<D, PT> {
-    return JField(binder, DJStringRepresentable(vf))
-}
-
-@JvmName("bindStringValueNull")
-fun <PT : Any, D : StringValue> str(vf: ValueFactory<D, String>, binder: PT.() -> D?): JFieldMaybe<D, PT> {
-    return JFieldMaybe(binder, DJStringRepresentable(vf))
 }
 ```
