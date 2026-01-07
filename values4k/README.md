@@ -146,3 +146,25 @@ object JJob : JAny<Job>() {
     override fun JsonNodeObject.deserializeOrThrow() = Job(+id, +name)
 }
 ```
+
+### Specialised mappings
+
+It's not always possible to control the JSON that you get given. For example, you might receive
+an `""` - empty string - for a field when it has no value, but preferably you'd map it to a null value4k value type.
+
+Here is one way to achieve this - create a subclass of JStringRepresentable that filters the input appropriately, and
+calls the ValueFactory when the input matches. Note that the whole thing is wrapped inside a `catch` anyhow
+so additional validations in the ValueFactory don't need to be duplicated here. This is more effective, as
+the validation won't be throwing an exception for empty strings now.
+
+```kotlin
+private class DJStringMaybeRepresentable<D : StringValue>(val vf: ValueFactory<D, String>) : JStringRepresentable<D?>() {
+    override val cons: (String) -> D? = { it.takeIf { it.isNotBlank() }?.let(vf::of) }
+    override val render: (D?) -> String = { it?.let(vf::unwrap) ?: "" }
+}
+
+@JvmName("bindNonEmptyStringValueNull")
+fun <PT : Any, D : StringValue> nestr(vf: ValueFactory<D, String>, binder: PT.() -> D?): JFieldMaybe<D?, PT> {
+    return JFieldMaybe(binder, DJStringMaybeRepresentable(vf))
+}
+```
