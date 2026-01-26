@@ -4,9 +4,10 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import io.kotest.assertions.print.Printed
-import io.kotest.matchers.ComparisonMatcherResult
+import io.kotest.matchers.DiffableMatcherResult
 import io.kotest.matchers.Matcher
 import io.kotest.matchers.MatcherResult
+import io.kotest.matchers.MatcherResultBuilder
 import io.kotest.matchers.should
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -75,15 +76,15 @@ private fun <T, E, C : Result<T, E>> Result<T, E>.matchesType(expected: KClass<C
     )
 
 /**
- * Return ComparisonMatcherResult so that Kotest throws AssertFailedError
+ * Return MatcherResult so that Kotest throws AssertFailedError
  * with the failure message formatted by io.kotest.assertions.intellijFormatError()
  * which makes IntelliJ show the link to the diff window.
  */
 private fun matcherResultWithIntelliJDiff(passed: Boolean, actual: Printed, expected: Printed) =
-    ComparisonMatcherResult(
+    MatcherResultBuilder(
         passed = passed,
         failureMessageFn = { "" },
         negatedFailureMessageFn = { "not " },
-        actual = actual,
-        expected = expected
-    )
+        actual = { actual },
+        expected = { expected }
+    ).build()
