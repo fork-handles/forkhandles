@@ -13,7 +13,9 @@ class JdbcTransactor<out API>(
     private val createConnection: () -> Connection,
     private val createWrapper: (Connection) -> API,
     private val retryPolicy: RetryPolicy =
-        increasingBackoff(Duration.ofMillis(50)).maxAttempts(5)
+        increasingBackoff(Duration.ofMillis(50)).maxAttempts(5),
+    private val retryableFailurePolicy: (Exception) -> Boolean =
+        ::jdbcStandardRetryability
 ) : Transactor<Connection, API>() {
     override fun createResource(): Connection = createConnection()
     
@@ -35,11 +37,12 @@ class JdbcTransactor<out API>(
     override fun commitTransaction(resource: Connection) = resource.commit()
     
     override fun canRetry(e: Exception): Boolean =
-        when (e) {
-            is SQLException -> e.sqlState == "40001" || e.sqlState == "40P01"
-            else -> false
-        }
+        retryableFailurePolicy(e)
     
     override fun retryBackoff(attempt: Int): Duration? =
         retryPolicy(attempt)
 }
+
+
+fun jdbcStandardRetryability(e: Exception): Boolean =
+    e is SQLException && (e.sqlState == "40001" || e.sqlState == "40P01")
