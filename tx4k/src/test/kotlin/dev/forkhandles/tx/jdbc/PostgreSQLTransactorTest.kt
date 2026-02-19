@@ -2,9 +2,7 @@
 
 package dev.forkhandles.tx.jdbc
 
-import dev.forkhandles.tx.Counter
 import dev.forkhandles.tx.Transactional
-import dev.forkhandles.tx.TransactorContract
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInfo
@@ -16,8 +14,8 @@ import kotlin.uuid.ExperimentalUuidApi
 
 // language = postgresql
 @Testcontainers
-class PostgreSQLTransactorTest : TransactorContract() {
-    override lateinit var transactor: Transactional<Counter>
+class PostgreSQLTransactorTest : JdbcTransactorContract() {
+    override lateinit var transactor: Transactional<JdbcCounter>
     
     @BeforeEach
     fun createCounter(testInfo: TestInfo) {

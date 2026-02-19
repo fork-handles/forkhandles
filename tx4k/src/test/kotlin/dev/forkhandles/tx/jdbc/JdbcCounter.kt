@@ -23,7 +23,7 @@ class JdbcCounter(
         
         connection.prepareStatement(
             "UPDATE COUNTER SET count = ? WHERE id = ?"
-                                                                                                                                                                                                ).use { s ->
+        ).use { s ->
             s.setInt(1, newCount)
             s.setString(2, name)
             
@@ -42,7 +42,14 @@ class JdbcCounter(
             }
         }
     }
+    
+    fun causeUnrecoverableFailure() {
+        connection.createStatement().use { s ->
+            s.executeQuery("SELECT nonsense FROM DOES_NOT_EXIST").close()
+        }
+    }
 }
+
 
 fun createSchema(c: Connection): Boolean = c.createStatement().use { s ->
     s.execute(
@@ -54,6 +61,7 @@ fun createSchema(c: Connection): Boolean = c.createStatement().use { s ->
         """
     )
 }
+
 
 fun createCounterTransactor(
     database: JdbcDatabaseContainer<*>,
