@@ -17,7 +17,7 @@ abstract class Transactor<Resource,out API> {
     abstract fun rollbackTransaction(resource: Resource)
     
     abstract fun canRetry(e: Exception): Boolean
-    abstract fun retryBackoff(attempt: Int): Duration
+    abstract fun retryBackoff(attempt: Int): Duration?
     
     // Inline so that the `work` lambda can do an early return
     @OptIn(ExperimentalContracts::class)
@@ -42,10 +42,9 @@ abstract class Transactor<Resource,out API> {
                 rollbackTransaction(resource)
                 if (canRetry(e)) {
                     attempts++
-                    if (attempts >= 4) {
-                        throw SerialisabilityFailure(e)
-                    } else {
-                        Thread.sleep(retryBackoff(attempts))
+                    when (val backoff = retryBackoff(attempts)) {
+                        null -> throw SerialisabilityFailure(e)
+                        else -> Thread.sleep(backoff)
                     }
                 } else {
                     throw e

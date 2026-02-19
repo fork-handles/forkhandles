@@ -2,8 +2,10 @@
 
 package dev.forkhandles.tx.mem
 
+import dev.forkhandles.tx.RetryPolicy
 import dev.forkhandles.tx.Transactor
-import dev.forkhandles.tx.linearBackoff
+import dev.forkhandles.tx.increasingBackoff
+import dev.forkhandles.tx.maxAttempts
 import java.time.Duration
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
@@ -16,7 +18,8 @@ class InMemoryTransaction<State>(val initialState: State) {
 class InMemoryTransactor<State, out API>(
     initialState: State,
     private val createRepository: (InMemoryTransaction<State>) -> API,
-    private val retryPolicy: (Int) -> Duration = linearBackoff(Duration.ofMillis(1))
+    private val retryPolicy: RetryPolicy =
+        increasingBackoff(Duration.ofMillis(1)).maxAttempts(5)
 ) : Transactor<InMemoryTransaction<State>, API>() {
     val state = AtomicReference(initialState)
     
