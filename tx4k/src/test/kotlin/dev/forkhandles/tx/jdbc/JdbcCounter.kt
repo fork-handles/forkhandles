@@ -1,6 +1,8 @@
 package dev.forkhandles.tx.jdbc
 
 import dev.forkhandles.tx.Counter
+import dev.forkhandles.tx.Transactional
+import org.testcontainers.containers.JdbcDatabaseContainer
 import java.sql.Connection
 
 class JdbcCounter(
@@ -51,4 +53,18 @@ fun createSchema(c: Connection): Boolean = c.createStatement().use { s ->
         )
         """
     )
+}
+
+fun createCounterTransactor(
+    database: JdbcDatabaseContainer<*>,
+    testName: String
+): Transactional<JdbcCounter> {
+    val transactor = JdbcTransactor(
+        createConnection = { database.createConnection("") },
+        createWrapper = { JdbcCounter(it, testName) }
+    )
+    
+    transactor.perform { it.init() }
+    
+    return transactor
 }

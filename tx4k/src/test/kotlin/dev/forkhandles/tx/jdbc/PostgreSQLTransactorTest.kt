@@ -2,12 +2,13 @@
 
 package dev.forkhandles.tx.jdbc
 
+import dev.forkhandles.tx.Counter
 import dev.forkhandles.tx.Transactional
 import dev.forkhandles.tx.TransactorContract
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInfo
+import org.testcontainers.containers.JdbcDatabaseContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.postgresql.PostgreSQLContainer
@@ -15,36 +16,23 @@ import kotlin.uuid.ExperimentalUuidApi
 
 // language = postgresql
 @Testcontainers
-class PostgresTransactorTest : TransactorContract() {
-    override lateinit var transactor: Transactional<JdbcCounter>
+class PostgreSQLTransactorTest : TransactorContract() {
+    override lateinit var transactor: Transactional<Counter>
     
     @BeforeEach
     fun createCounter(testInfo: TestInfo) {
-        transactor = JdbcTransactor(
-            createConnection = { database.createConnection("") },
-            createWrapper = { JdbcCounter(it, testInfo.displayName) }
-        )
-        
-        transactor.perform { it.init() }
+        transactor = createCounterTransactor(database, testInfo.displayName)
     }
     
     companion object {
         @Container
         @JvmStatic
-        private val database = PostgreSQLContainer("postgres:18.2")
+        private val database: JdbcDatabaseContainer<*> = PostgreSQLContainer("postgres:18.2")
         
         @BeforeAll
         @JvmStatic
         fun createSchema() {
-            database.start()
-            database.createConnection("")
-                .use(::createSchema)
-        }
-        
-        @AfterAll
-        @JvmStatic
-        fun cleanUp() {
-            database.stop()
+            database.createConnection("").use(::createSchema)
         }
     }
 }
