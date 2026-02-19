@@ -3,6 +3,7 @@ package dev.forkhandles.tx.jdbc
 import dev.forkhandles.tx.RetryPolicy
 import dev.forkhandles.tx.Transactor
 import dev.forkhandles.tx.increasingBackoff
+import dev.forkhandles.tx.withAdditiveJitter
 import dev.forkhandles.tx.maxAttempts
 import java.sql.Connection
 import java.sql.SQLException
@@ -13,7 +14,7 @@ class JdbcTransactor<out API>(
     private val createConnection: () -> Connection,
     private val createWrapper: (Connection) -> API,
     private val retryPolicy: RetryPolicy =
-        increasingBackoff(Duration.ofMillis(50)).maxAttempts(5),
+        increasingBackoff(Duration.ofMillis(50)).withAdditiveJitter().maxAttempts(5),
     private val retryableFailurePolicy: (Exception) -> Boolean =
         ::jdbcStandardRetryability
 ) : Transactor<Connection, API>() {
