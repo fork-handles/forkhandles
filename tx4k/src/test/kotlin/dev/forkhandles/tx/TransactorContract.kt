@@ -2,11 +2,9 @@
 
 package dev.forkhandles.tx
 
-import org.junit.jupiter.api.BeforeEach
 import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit.SECONDS
 import kotlin.concurrent.atomics.AtomicInt
 import kotlin.concurrent.atomics.incrementAndFetch

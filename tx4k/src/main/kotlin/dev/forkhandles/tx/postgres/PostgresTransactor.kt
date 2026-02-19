@@ -3,7 +3,7 @@ package dev.forkhandles.tx.postgres
 import dev.forkhandles.tx.Transactor
 import java.sql.Connection
 import java.sql.SQLException
-import java.sql.SQLTransientException
+
 
 class PostgresTransactor<out API>(
     private val createConnection: () -> Connection,
