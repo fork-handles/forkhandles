@@ -32,16 +32,16 @@ abstract class Transactor<Resource,out API> {
             var attempts = 0
             while (true) try {
                 startTransaction(resource)
-                val res = work(api)
+                val result = work(api)
                 commitTransaction(resource)
-                return res
+                return result
             }
             catch (e: Exception) {
                 rollbackTransaction(resource)
                 if (canRetry(e)) {
                     attempts++
                     if (attempts >= 4) {
-                        throw e
+                        throw SerialisabilityFailure(e)
                     } else {
                         Thread.sleep(10) // TODO: exponential backoff and jitter
                     }
@@ -54,3 +54,7 @@ abstract class Transactor<Resource,out API> {
         }
     }
 }
+
+class SerialisabilityFailure(cause: Exception) : Exception(cause)
+
+typealias Transactional<API> = Transactor<*, API>
