@@ -4,6 +4,9 @@ This list is not intended to be all-encompassing - it will document major and br
 when appropriate:
 
 ### v2.25.2.1
+- **all** : fix 2.25.2.0 publishing process
+
+### v2.25.2.0
 - **tx4k** : [New module] Typesafe, programmatic transaction boundaries, with implementations for JDBC and in-memory transactions.
 
 ### v2.25.1.0
