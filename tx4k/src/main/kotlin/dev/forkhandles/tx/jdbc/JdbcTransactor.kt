@@ -1,13 +1,16 @@
 package dev.forkhandles.tx.jdbc
 
 import dev.forkhandles.tx.Transactor
+import dev.forkhandles.tx.linearBackoff
 import java.sql.Connection
 import java.sql.SQLException
+import java.time.Duration
 
 
 class JdbcTransactor<out API>(
     private val createConnection: () -> Connection,
-    private val createWrapper: (Connection) -> API
+    private val createWrapper: (Connection) -> API,
+    private val retryPolicy: (Int) -> Duration =  linearBackoff(Duration.ofMillis(50))
 ) : Transactor<Connection, API>() {
     override fun createResource(): Connection = createConnection()
     
@@ -33,4 +36,7 @@ class JdbcTransactor<out API>(
             is SQLException -> e.sqlState == "40001" || e.sqlState == "40P01"
             else -> false
         }
+    
+    override fun retryBackoff(attempt: Int): Duration =
+        retryPolicy(attempt)
 }

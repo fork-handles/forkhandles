@@ -1,5 +1,6 @@
 package dev.forkhandles.tx
 
+import java.time.Duration
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -16,6 +17,7 @@ abstract class Transactor<Resource,out API> {
     abstract fun rollbackTransaction(resource: Resource)
     
     abstract fun canRetry(e: Exception): Boolean
+    abstract fun retryBackoff(attempt: Int): Duration
     
     // Inline so that the `work` lambda can do an early return
     @OptIn(ExperimentalContracts::class)
@@ -43,7 +45,7 @@ abstract class Transactor<Resource,out API> {
                     if (attempts >= 4) {
                         throw SerialisabilityFailure(e)
                     } else {
-                        Thread.sleep(10) // TODO: exponential backoff and jitter
+                        Thread.sleep(retryBackoff(attempts))
                     }
                 } else {
                     throw e

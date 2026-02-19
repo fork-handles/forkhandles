@@ -39,8 +39,13 @@ abstract class TransactorContract {
         
         transactor.perform { counter ->
             val actualWriteCount = counter.count()
+            val actualFailureCount = failureCount.load()
             
-            assertEquals(intendedWriteCount, actualWriteCount + failureCount.load())
+            if (actualFailureCount > 0) {
+                println("serialisation failures: $actualFailureCount")
+            }
+            
+            assertEquals(intendedWriteCount, actualWriteCount + actualFailureCount)
         }
     }
     

@@ -1,7 +1,10 @@
 @file:OptIn(ExperimentalAtomicApi::class)
+
 package dev.forkhandles.tx.mem
 
 import dev.forkhandles.tx.Transactor
+import dev.forkhandles.tx.linearBackoff
+import java.time.Duration
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.Unit as noop
@@ -12,7 +15,8 @@ class InMemoryTransaction<State>(val initialState: State) {
 
 class InMemoryTransactor<State, out API>(
     initialState: State,
-    private val createRepository: (InMemoryTransaction<State>)->API
+    private val createRepository: (InMemoryTransaction<State>) -> API,
+    private val retryPolicy: (Int) -> Duration = linearBackoff(Duration.ofMillis(1))
 ) : Transactor<InMemoryTransaction<State>, API>() {
     val state = AtomicReference(initialState)
     
@@ -32,6 +36,7 @@ class InMemoryTransactor<State, out API>(
     }
     
     override fun canRetry(e: Exception) = e is RetryException
+    override fun retryBackoff(attempt: Int) = retryPolicy(attempt)
     
     internal class RetryException : Exception()
 }
