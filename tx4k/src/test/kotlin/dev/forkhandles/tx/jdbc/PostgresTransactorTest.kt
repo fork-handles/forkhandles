@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package dev.forkhandles.tx.postgres
+package dev.forkhandles.tx.jdbc
 
 import dev.forkhandles.tx.Transactional
 import dev.forkhandles.tx.TransactorContract
@@ -16,13 +16,13 @@ import kotlin.uuid.ExperimentalUuidApi
 // language = postgresql
 @Testcontainers
 class PostgresTransactorTest : TransactorContract() {
-    override lateinit var transactor: Transactional<PostgresCounter>
+    override lateinit var transactor: Transactional<JdbcCounter>
     
     @BeforeEach
     fun createCounter(testInfo: TestInfo) {
-        transactor = PostgresTransactor(
-            createConnection = { postgres.createConnection("") },
-            createWrapper = { PostgresCounter(it, testInfo.displayName) }
+        transactor = JdbcTransactor(
+            createConnection = { database.createConnection("") },
+            createWrapper = { JdbcCounter(it, testInfo.displayName) }
         )
         
         transactor.perform { it.init() }
@@ -31,31 +31,21 @@ class PostgresTransactorTest : TransactorContract() {
     companion object {
         @Container
         @JvmStatic
-        private val postgres = PostgreSQLContainer("postgres:18.2")
+        private val database = PostgreSQLContainer("postgres:18.2")
         
         @BeforeAll
         @JvmStatic
         fun createSchema() {
-            postgres.start()
-            
-            postgres.createConnection("").use { c ->
-                c.createStatement().use { s ->
-                    s.execute(
-                        """
-                        create table COUNTER (
-                            id TEXT PRIMARY KEY,
-                            count INT NOT NULL DEFAULT 0
-                        )
-                        """
-                    )
-                }
-            }
+            database.start()
+            database.createConnection("")
+                .use(::createSchema)
         }
         
         @AfterAll
         @JvmStatic
         fun cleanUp() {
-            postgres.stop()
+            database.stop()
         }
     }
 }
+

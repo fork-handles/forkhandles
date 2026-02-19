@@ -7,6 +7,7 @@ dependencies {
     testImplementation(libs.bundles.junit)
     testImplementation(libs.bundles.testcontainers)
     testImplementation(libs.bundles.testcontainers.postgres)
+    testImplementation(libs.bundles.testcontainers.mariadb)
 }
 
 

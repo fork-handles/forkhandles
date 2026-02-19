@@ -1,11 +1,11 @@
-package dev.forkhandles.tx.postgres
+package dev.forkhandles.tx.jdbc
 
 import dev.forkhandles.tx.Transactor
 import java.sql.Connection
 import java.sql.SQLException
 
 
-class PostgresTransactor<out API>(
+class JdbcTransactor<out API>(
     private val createConnection: () -> Connection,
     private val createWrapper: (Connection) -> API
 ) : Transactor<Connection, API>() {

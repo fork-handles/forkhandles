@@ -1,9 +1,9 @@
-package dev.forkhandles.tx.postgres
+package dev.forkhandles.tx.jdbc
 
 import dev.forkhandles.tx.Counter
 import java.sql.Connection
 
-class PostgresCounter(
+class JdbcCounter(
     val connection: Connection,
     val name: String
 ) : Counter {
@@ -17,10 +17,12 @@ class PostgresCounter(
     }
     
     override fun incrementBy(n: Int) {
+        val newCount = count() + n
+        
         connection.prepareStatement(
-            "UPDATE COUNTER SET count = count + ? WHERE id = ?"
+            "UPDATE COUNTER SET count = ? WHERE id = ?"
                                                                                                                                                                                                 ).use { s ->
-            s.setInt(1, n)
+            s.setInt(1, newCount)
             s.setString(2, name)
             
             s.executeUpdate()
@@ -38,4 +40,15 @@ class PostgresCounter(
             }
         }
     }
+}
+
+fun createSchema(c: Connection): Boolean = c.createStatement().use { s ->
+    s.execute(
+        """
+        create table COUNTER (
+            id VARCHAR(64) PRIMARY KEY,
+            count NUMERIC(8) NOT NULL DEFAULT 0
+        )
+        """
+    )
 }

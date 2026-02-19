@@ -17,7 +17,8 @@ strikt = "0.34.1"
 version-catalog-update = "1.0.1"
 versions = "0.53.0"
 testcontainers = "2.0.2"
-postgres = "42.7.7"
+postgres-driver = "42.7.7"
+mariadb-driver = "3.5.7"
 
 [libraries]
 hamkrest = { module = "com.natpryce:hamkrest", version.ref = "hamkrest" }
@@ -45,8 +46,9 @@ strikt-jvm = { module = "io.strikt:strikt-jvm", version.ref = "strikt" }
 testcontainers-bom = { module = "org.testcontainers:testcontainers-bom", version.ref = "testcontainers" }
 testcontainers-junit5 = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "testcontainers" }
 testcontainers-postgres = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
-postgres-driver = { module = "org.postgresql:postgresql", version.ref = "postgres" }
-
+testcontainers-mariadb = { module = "org.testcontainers:testcontainers-mariadb", version.ref = "testcontainers" }
+postgres-driver = { module = "org.postgresql:postgresql", version.ref = "postgres-driver" }
+mariadb-driver = { module = "org.mariadb.jdbc:mariadb-java-client", version.ref = "mariadb-driver" }
 
 [bundles]
 jmh = [
@@ -77,6 +79,11 @@ testcontainers = [
 testcontainers-postgres = [
     "testcontainers-postgres",
     "postgres-driver"
+]
+
+testcontainers-mariadb = [
+    "testcontainers-mariadb",
+    "mariadb-driver"
 ]
 
 [plugins]
