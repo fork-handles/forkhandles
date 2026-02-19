@@ -20,6 +20,7 @@ Forkhandles (4k) contains foundational libraries for Kotlin
 - [State4k](state4k) - Simple event/command state machine modelling
 - [Time4k](time4k) - Clock and deterministic scheduler
 - [Tuples4k](tuples4k) - Tuple classes
+- [Tx4k](tx4) - Typesafe, programmatic transaction boundaries
 - [Values4k](values4k) - Value classes aka Microtypes aka Tinytypes
 
 ## Installation
