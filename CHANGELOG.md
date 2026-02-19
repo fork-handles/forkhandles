@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.25.2.0
+- **tx4k** : Typesafe, programmatic transaction boundaries, with implementations for JDBC (e.g. PostgreSQL, MariaDB) and in-memory.
+
 ### v2.25.1.0
 - **all** : Upgrade libraries
 
