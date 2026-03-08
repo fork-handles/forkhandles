@@ -56,8 +56,8 @@ open class JsonNodeDataContainer(input: JsonNode) :
 
         private fun nodeToValue(input: JsonNode): Any? = when (input) {
             is NullNode -> null
-            is StringNode -> input.textValue()
-            is ArrayNode -> input.map(::nodeToValue)
+            is StringNode -> input.stringValue()
+            is ArrayNode -> input.elements().map { nodeToValue(it) }
             is ObjectNode -> input
             is BooleanNode -> input.booleanValue()
             is IntNode -> input.intValue()

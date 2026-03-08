@@ -7,7 +7,7 @@ class OnNullTests {
 
     @Test
     fun `does nothing on successful non-null result`() {
-        fun subject() = Success("non-null")
+        fun subject(): Result<String, Nothing> = Success("non-null")
             .onNull { return Success("early-returned") }
 
         assertEquals(Success("non-null"), subject())
@@ -15,7 +15,7 @@ class OnNullTests {
 
     @Test
     fun `does nothing on unsuccessful result`() {
-        fun subject() = resultFrom<String> { throw AnError("kaboom") }
+        fun subject(): Result<String, Exception> = resultFrom<String> { throw AnError("kaboom") }
             .onNull { return Success("early-returned") }
 
         assertEquals(Failure(AnError("kaboom")), subject())
@@ -23,7 +23,7 @@ class OnNullTests {
 
     @Test
     fun `early returns on successful null result`() {
-        fun subject() = Success(null)
+        fun subject(): Result<String, Nothing> = Success(null)
             .onNull { return Success("early-returned") }
             .map { "mapped" }
 
@@ -32,7 +32,7 @@ class OnNullTests {
 
     @Test
     fun `continue the chain on successful non-null result`() {
-        fun subject() = Success("non-null")
+        fun subject(): Result<String, Nothing> = Success("non-null")
             .onNull { return Success("early-returned") }
             .map { "mapped" }
 
