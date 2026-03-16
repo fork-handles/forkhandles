@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.25.4.0
+- **all** : Upgrade libraries
+
 ### v2.25.3.0
 - **all** : Upgrade libraries
 
