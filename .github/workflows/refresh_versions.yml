@@ -43,7 +43,7 @@ jobs:
             echo "No dependency update report generated" > dependency-report.md
           fi
       - name: Commit report
-        uses: EndBug/add-and-commit@v9
+        uses: EndBug/add-and-commit@v10
         with:
           author_name: GitHub Actions
           author_email: noreply@github.com
