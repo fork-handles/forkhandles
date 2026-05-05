@@ -26,6 +26,11 @@ class RejectRetainTests {
             a.asSuccess().retainIf({ it <= 15 }, { TooBigWithActual(limit = 15, actual = it) }),
             a.asSuccess().rejectIf({ it > 15 }, { TooBigWithActual(limit = 15, actual = it) })
         )
+
+        assertEquals(
+            a.asSuccess().retainIfNotNull({ TooBig(limit = 15) }),
+            a.asSuccess().rejectIfNull({ TooBig(limit = 15) })
+        )
     }
 
     @Test
