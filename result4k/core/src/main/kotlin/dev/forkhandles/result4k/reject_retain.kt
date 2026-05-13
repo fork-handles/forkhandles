@@ -17,3 +17,6 @@ inline fun <T, E> Result<T, E>.retainIfNotNull(otherwise: (T) -> E): Result<T, E
 
 inline fun <T, E> Result<T, E>.rejectIfNull(otherwise: (T) -> E): Result<T, E> =
     flatMap { it?.asSuccess() ?: Failure(otherwise(it)) }
+
+inline fun <T, E> Result<T, E>.reject(failureFor: (T) -> E?): Result<T, E> =
+    flatMap { failureFor(it)?.asFailure() ?: it.asSuccess() }
