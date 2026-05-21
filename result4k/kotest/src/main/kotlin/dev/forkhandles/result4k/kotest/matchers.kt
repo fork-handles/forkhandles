@@ -22,6 +22,7 @@ fun beSuccess(): Matcher<Result<*, *>> = object : Matcher<Result<*, *>> {
 }
 
 @OptIn(ExperimentalContracts::class)
+@IgnorableReturnValue
 fun <T> Result<T, *>.shouldBeSuccess(): T {
     contract {
         returns() implies (this@shouldBeSuccess is Success<T>)
@@ -45,6 +46,7 @@ fun beFailure(): Matcher<Result<*, *>> = object : Matcher<Result<*, *>> {
 }
 
 @OptIn(ExperimentalContracts::class)
+@IgnorableReturnValue
 fun <E> Result<*, E>.shouldBeFailure(): E {
     contract {
         returns() implies (this@shouldBeFailure is Failure<*>)
@@ -54,8 +56,7 @@ fun <E> Result<*, E>.shouldBeFailure(): E {
 }
 
 infix fun <E> Result<*, E>.shouldBeFailure(block: (E) -> Unit) {
-    this.shouldBeFailure()
-    block((this as Failure<E>).reason)
+    block(this.shouldBeFailure())
 }
 
 infix fun <E> Result<*, E>.shouldBeFailure(expected: E) =
