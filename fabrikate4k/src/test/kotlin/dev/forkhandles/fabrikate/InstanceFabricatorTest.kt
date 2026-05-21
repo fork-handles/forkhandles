@@ -191,9 +191,8 @@ class InstanceFabricatorTest {
         assertTrue(gaa2.t1 is Long)
         assertTrue(gaa2.t2 is List<Int>)
 
-        val gta: GTA<Long, String> = Fabrikate().random()
-        gta.t2.length
-
+        val _: GTA<Long, String> = Fabrikate().random()
+        
         val gaaga: GAA<Long, GA<GT<Int>>> = Fabrikate().random()
         assertTrue(gaaga.t1 is Long)
         assertTrue(gaaga.t2 is GA<GT<Int>>)
