@@ -12,17 +12,20 @@ class BuntingTest {
     private val testIo = TestIO()
     private val testConfig = InMemoryConfig()
 
+    @Suppress("EnumEntryName")
     enum class AnEnum {
         a, b
     }
 
     class MyGrandChildFlags(args: Array<String>, io: IO) : Bunting(args, io = io, baseCommand = "MyTestFlags")
 
+    @Suppress("unused")
     class MyChildFlags(args: Array<String>, io: IO) : Bunting(args, "This is a command flag", "MyTestFlags", io) {
         val noDescription by option().defaultsTo("no description default")
         val grandchild by command { MyGrandChildFlags(it, io) }
     }
 
+    @Suppress("unused")
     class MyTestFlags(args: Array<String>, io: IO, config: Config) : Bunting(args, "some description of all my commands", "MyTestFlags", io = io, config = config) {
         val switch: Boolean by switch("This is a switch")
         val optional: String by option("This is an optional flag").required()
@@ -50,9 +53,9 @@ class BuntingTest {
         class Foo(args: Array<String>, io: IO) : Bunting(args, "description", "foo", io = io) {
             val aReallyReallyReallyReallyReallyReallyReallyReallyLongName by option("some description").defaultsTo("foobar")
         }
-
+        
         Foo(arrayOf("--help"), testIo).use {
-            aReallyReallyReallyReallyReallyReallyReallyReallyLongName
+            val _ = aReallyReallyReallyReallyReallyReallyReallyReallyLongName
         }
         assertThat(testIo.toString(), equalTo("""Usage: foo [commands] [options]
 description
@@ -143,7 +146,7 @@ description
     @Test
     fun `illegal prompted secret flag does not leak value`() {
         MyTestFlags(arrayOf("-s", "foobar"), testIo, testConfig).use {
-            secret
+            val _ = secret
         }
         assertThat(testIo.toString(), equalTo("Usage: MyTestFlags [commands] [options]\n" +
             "Illegal --secret (INT) flag: ******. Use --help for docs."))
@@ -160,7 +163,7 @@ description
     @Test
     fun `missing required flag rejected`() {
         MyTestFlags(arrayOf(), testIo, testConfig).use {
-            required
+            val _ = required
         }
         assertThat(testIo.toString(), equalTo("""Usage: MyTestFlags [commands] [options]
 Missing --required (STRING) flag. Use --help for docs."""))
@@ -229,7 +232,7 @@ Missing --required (STRING) flag. Use --help for docs."""))
     @Test
     fun `illegal value flag`() {
         MyTestFlags(arrayOf("--mapped", "asd"), testIo, testConfig).use {
-            mapped
+            val _ = mapped
         }
         assertThat(testIo.toString(), equalTo("Usage: MyTestFlags [commands] [options]\n" +
             "Illegal --mapped (INT) flag: asd. Use --help for docs."))
@@ -282,7 +285,7 @@ Missing --required (STRING) flag. Use --help for docs."""))
 
         Foo(arrayOf("command"), testIo).use {
             command.use {
-                required
+                val _ = required
             }
         }
 
@@ -342,7 +345,7 @@ Missing --required (STRING) flag. Use --help for docs."""))
         }
 
         ExtensionFlags(arrayOf("--boolean", "foobar"), testIo).use {
-            boolean
+            val _ = boolean
         }
         assertThat(testIo.toString(), equalTo("""Usage: foo [commands] [options]
 Illegal --boolean (BOOLEAN) flag: foobar. Use --help for docs."""))
