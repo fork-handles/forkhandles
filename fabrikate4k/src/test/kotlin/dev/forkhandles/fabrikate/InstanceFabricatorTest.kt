@@ -71,7 +71,7 @@ class InstanceFabricatorTest {
     @Test
     fun `throws NoUsableConstructor error if there is no constructor that could be used`() {
         try {
-            Fabrikate().random<P>()
+            val _ = Fabrikate().random<P>()
             error("makeRandomInstance should throw NoUsableConstructor error")
         } catch (e: NoUsableConstructor) {
             // no-op
