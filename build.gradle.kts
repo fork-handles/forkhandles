@@ -112,7 +112,6 @@ subprojects {
     }
 
     dependencies {
-        api(rootProject.libs.kotlin.stdlib)
         testApi(platform(rootProject.libs.junit.bom))
         testApi(rootProject.libs.junit.jupiter)
         testApi(rootProject.libs.junit.jupiter.api)
