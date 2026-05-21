@@ -35,7 +35,8 @@ class SimpleSchedulerService(private val executor: ScheduledExecutorService) : S
 
     override fun isShutdown(): Boolean = executor.isShutdown
 
+    @IgnorableReturnValue
     override fun submit(task: Runnable): Future<*> = executor.submit(task)
-
+    
     override fun <T> submit(task: Callable<T>): Future<T> = executor.submit(task)
 }

@@ -9,10 +9,3 @@ dependencies {
     testImplementation(libs.bundles.testcontainers.postgres)
     testImplementation(libs.bundles.testcontainers.mariadb)
 }
-
-
-tasks.withType<KotlinJvmCompile>().configureEach {
-    compilerOptions {
-        freeCompilerArgs.set(freeCompilerArgs.get() + "-Xinline-classes")
-    }
-}

@@ -29,8 +29,6 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
-import java.nio.file.Files
-import java.nio.file.Path
 
 abstract class RopeContract {
 
@@ -73,10 +71,11 @@ abstract class RopeContract {
     fun testLengthOverflow() {
         val r = (2..30).fold(make("01")) { acc, i -> acc.append(acc) }
         expectThat(r.length).isEqualTo(1073741824)
+        
         try {
-            r.append(r)
+            val _ = r.append(r)
             Assertions.fail<Any>("Expected overflow.")
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             // this is what we expect
         }
     }
@@ -425,7 +424,7 @@ abstract class RopeContract {
 
 
     @Test
-    fun `adding`() {
+    fun adding() {
         val r1 = make("11")
         val r2 = make("22")
         expectThat(r1 + r2).isEqualTo(r1.append(r2))
@@ -433,6 +432,7 @@ abstract class RopeContract {
     }
 
 
+    @IgnorableReturnValue
     fun <T : Rope> strikt.api.Assertion.Builder<T>.startsWith(
         expected: CharSequence,
         startIndex: Int
@@ -446,6 +446,7 @@ abstract class RopeContract {
         }
 
 
+    @IgnorableReturnValue
     fun <T : Rope> strikt.api.Assertion.Builder<T>.endsWith(
         expected: CharSequence,
         startIndex: Int

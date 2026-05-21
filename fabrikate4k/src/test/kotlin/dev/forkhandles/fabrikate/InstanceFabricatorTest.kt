@@ -71,7 +71,7 @@ class InstanceFabricatorTest {
     @Test
     fun `throws NoUsableConstructor error if there is no constructor that could be used`() {
         try {
-            Fabrikate().random<P>()
+            val _ = Fabrikate().random<P>()
             error("makeRandomInstance should throw NoUsableConstructor error")
         } catch (e: NoUsableConstructor) {
             // no-op
@@ -191,9 +191,8 @@ class InstanceFabricatorTest {
         assertTrue(gaa2.t1 is Long)
         assertTrue(gaa2.t2 is List<Int>)
 
-        val gta: GTA<Long, String> = Fabrikate().random()
-        gta.t2.length
-
+        val _: GTA<Long, String> = Fabrikate().random()
+        
         val gaaga: GAA<Long, GA<GT<Int>>> = Fabrikate().random()
         assertTrue(gaaga.t1 is Long)
         assertTrue(gaaga.t2 is GA<GT<Int>>)

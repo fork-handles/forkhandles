@@ -8,10 +8,3 @@ dependencies {
 
     testImplementation("com.ubertob.kondor:kondor-tools:3.6.1")
 }
-
-
-tasks.withType<KotlinJvmCompile>().configureEach {
-    compilerOptions {
-        freeCompilerArgs.set(freeCompilerArgs.get() + "-Xinline-classes")
-    }
-}

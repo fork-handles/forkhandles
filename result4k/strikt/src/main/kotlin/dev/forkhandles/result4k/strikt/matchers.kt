@@ -6,25 +6,31 @@ import strikt.api.Assertion
 import strikt.assertions.isA
 import strikt.assertions.isEqualTo
 
+@IgnorableReturnValue
 fun Assertion.Builder<*>.isSuccess() =
     isA<Success<*>>()
 
+@IgnorableReturnValue
 fun Assertion.Builder<*>.isFailure() =
     isA<Failure<*>>()
 
 @JvmName("isSuccessOfInstance")
+@IgnorableReturnValue
 inline fun <reified T> Assertion.Builder<*>.isSuccess() =
     isA<Success<T>>().and { get { value }.isA<T>() }
 
 @JvmName("isFailureOfInstance")
+@IgnorableReturnValue
 inline fun <reified E> Assertion.Builder<*>.isFailure() =
     isA<Failure<E>>().and { get { reason }.isA<E>() }
 
 @JvmName("isSuccessOfInstanceAndValue")
+@IgnorableReturnValue
 inline fun <reified T> Assertion.Builder<*>.isSuccess(expected: T) =
     isA<Success<T>>().and { get { value }.isEqualTo(expected) }
 
 @JvmName("isFailureOfInstanceAndValue")
+@IgnorableReturnValue
 inline fun <reified E> Assertion.Builder<*>.isFailure(expected: E) =
     isA<Failure<E>>().and { get { reason }.isEqualTo(expected) }
 

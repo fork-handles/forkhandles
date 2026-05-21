@@ -64,7 +64,7 @@ class MockTest {
     @Test
     fun `function mock supported`() {
         try {
-            AppleStore(mock()).buyMacbookUsing(mock())
+            val _ = AppleStore(mock()).buyMacbookUsing(mock())
             fail("didn't throw")
         } catch (e: UnstubbedCall) {
             assertThat(e.message, equalTo("Unstubbed call: Function2.invoke(MacBook, 9999)"))
@@ -74,7 +74,7 @@ class MockTest {
     @Test
     fun `fails on unexpected call`() {
         try {
-            AppleStore(mock<Wallet>()).buyMacBook()
+            val _ = AppleStore(mock<Wallet>()).buyMacBook()
             fail("didn't throw")
         } catch (e: UnstubbedCall) {
             assertThat(e.message, equalTo("Unstubbed call: Wallet.pay(MacBook, 9999)"))
@@ -86,7 +86,7 @@ class MockTest {
 
         runBlocking {
             try {
-                AppleStore(mock<Wallet>()).buyMacbookLater()
+                val _ = AppleStore(mock<Wallet>()).buyMacbookLater()
                 fail("didn't throw")
             } catch (e: UnstubbedCall) {
                 assertThat(e.message, equalTo("Unstubbed call: Wallet.pay(MacBook, 9999)"))

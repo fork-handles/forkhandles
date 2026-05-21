@@ -13,6 +13,7 @@ interface TickableTimeSource : TimeSource {
     /**
      * Advance the underlying time by a custom amount, or the default amount if no value is passed.
      */
+    @IgnorableReturnValue
     fun tick(amount: Duration? = null): TickableTimeSource
 }
 
@@ -47,5 +48,7 @@ class FixedTimeSource(
 class AutoTickingTimeSource(private val underlying: TickableTimeSource) : TickableTimeSource by underlying {
     constructor(time: Instant = EPOCH, tick: Duration = ofSeconds(1)) : this(FixedTimeSource(time, tick))
 
-    override operator fun invoke() = underlying().also { underlying.tick() }
+    override operator fun invoke() = underlying().also {
+        underlying.tick()
+    }
 }

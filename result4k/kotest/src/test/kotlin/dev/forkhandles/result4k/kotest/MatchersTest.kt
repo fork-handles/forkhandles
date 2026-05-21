@@ -84,6 +84,7 @@ class MatchersTest {
         Success("Actual value") shouldBeSuccess "Expected value"
     }
 
+    @IgnorableReturnValue
     private fun throwsAssertionError(message: String, block: () -> Unit) =
         assertThrows<AssertionError> { block() }.also {
             assertThat(it.message, present(equalTo(message)))
