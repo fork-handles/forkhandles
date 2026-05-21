@@ -32,6 +32,7 @@ class RopeTest {
         return out.toString()
     }
 
+    @IgnorableReturnValue
     private fun <T : Iterator<Char>> Assertion.Builder<T>.isFinished(): Assertion.Builder<Boolean> {
         return get { hasNext() }.isEqualTo(false)
     }
@@ -82,7 +83,7 @@ class RopeTest {
         for (j in 2..30) x1 = x1.append(x1)
         expectThat(x1.length).isEqualTo(1073741824)
         try {
-            x1.append(x1)
+            val _ = x1.append(x1)
             Assertions.fail<Any>("Expected overflow.")
         } catch (e: IllegalArgumentException) {
             // this is what we expect
@@ -121,7 +122,7 @@ class RopeTest {
         var i: Iterator<Char> = c2.iterator()
         for (j in 0 until c2.length) {
             Assertions.assertTrue(i.hasNext(), "Has next (" + j + "/" + c2.length + ")")
-            i.next()
+            val _ = i.next()
         }
         expectThat(i).isFinished()
 
@@ -138,7 +139,7 @@ class RopeTest {
         expectThat(i).isFinished()
         for (j in 0..z3.length) {
             try {
-                z3.iterator(j)
+                val _ = z3.iterator(j)
             } catch (e: Exception) {
                 Assertions.fail<Any>("$j $e")
             }
@@ -146,7 +147,7 @@ class RopeTest {
         Assertions.assertTrue(4 == z4.length)
         for (j in 0..z4.length) {
             try {
-                z4.iterator(j)
+                val _ = z4.iterator(j)
             } catch (e: Exception) {
                 Assertions.fail<Any>("$j $e")
             }
@@ -198,12 +199,12 @@ class RopeTest {
     @Test
     fun testCreation() {
         try {
-            Rope.of("The quick brown fox jumped over")
+            val _ = Rope.of("The quick brown fox jumped over")
         } catch (e: Exception) {
             Assertions.fail<Any>("Nonempty string: " + e.message)
         }
         try {
-            Rope.of("")
+            val _ = Rope.of("")
         } catch (e: Exception) {
             Assertions.fail<Any>("Empty string: " + e.message)
         }
@@ -453,7 +454,7 @@ class RopeTest {
             Rope.ofCopy("01234567890123456789012345678901234567890123456789012345678901234567890123456789".toCharArray())
         val r2 = r.subSequence(0, 30)
         try {
-            r2[31]
+            val _ = r2[31]
             Assertions.fail<Any>("Expected IndexOutOfBoundsException")
         } catch (e: IndexOutOfBoundsException) {
             // success
@@ -592,21 +593,21 @@ class RopeTest {
 
         expectThrows<NoSuchElementException> {
             rs.iterator().also {
-                it.next()
-                it.next()
+                val _ = it.next()
+                val _ = it.next()
             }
         }
         expectThrows<NoSuchElementException> {
             rca.iterator().also {
-                it.next()
-                it.next()
+                val _ = it.next()
+                val _ = it.next()
             }
         }
         expectThrows<NoSuchElementException> {
             cat.iterator().also {
-                it.next()
-                it.next()
-                it.next()
+                val _ = it.next()
+                val _ = it.next()
+                val _ = it.next()
             }
         }
     }

@@ -13,6 +13,7 @@ import strikt.api.Assertion
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
+@IgnorableReturnValue
 fun <T : Rope> Assertion.Builder<T>.isString(s: String): Assertion.Builder<String> {
     return get { this.toString() }.isEqualTo(s)
 }
