@@ -52,9 +52,10 @@ subprojects {
         withType<KotlinJvmCompile>().configureEach {
             compilerOptions {
                 jvmTarget.set(JVM_11)
+                freeCompilerArgs.add("-Xreturn-value-checker=full")
             }
         }
-
+        
         java {
             sourceCompatibility = VERSION_11
             targetCompatibility = VERSION_11
