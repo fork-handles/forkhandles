@@ -202,7 +202,7 @@ class JsonParserTests {
 
         testCases.forEach { file ->
             try {
-                parse(file.readText())
+                val _ = parse(file.readText())
                 if (file.name.startsWith("fail")) fail("Expected failure: ${file.name}")
             } catch (e: Exception) {
                 if (file.name.startsWith("pass")) throw e

@@ -61,7 +61,7 @@ class `Cached parsers are called at most one time at each offset` {
 
     @Test
     fun `log when parsing '123'`() {
-        "123".parseWith(plusMinusGrammar.expr)
+        val _ = "123".parseWith(plusMinusGrammar.expr)
         logEvents.toDebugString() shouldEqual """
             "123" plus:0
             "123" plus:0 minus:0

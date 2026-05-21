@@ -32,7 +32,7 @@ class OneOfTests {
         val log = ParsingLog { logEvents.add(it) }
         val parser = oneOf(str("abc").with("abc", log))
 
-        parser.parse(Input("abc", offset = 3))
+        val _ = parser.parse(Input("abc", offset = 3))
 
         logEvents shouldEqual emptyList<ParsingEvent>()
     }
