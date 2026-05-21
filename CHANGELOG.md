@@ -3,6 +3,10 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v2.25.6.0
+
+- **all** : support for unused result checking.
+
 ### v2.25.5.0
 - **all** : Upgrade libraries
 - **result4k** : Evaluated value access for failure branch, and dedicated nullability handling. H/T @potfur
