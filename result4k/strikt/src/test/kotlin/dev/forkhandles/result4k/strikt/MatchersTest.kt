@@ -70,6 +70,7 @@ class MatchersTest {
         }
     }
 
+    @IgnorableReturnValue
     private fun expectAssertionError(message: String, block: () -> Unit) =
         expectThrows<AssertionError> { block() }
             .and { get { subject.formatterMessage }.isEqualTo(message) }
