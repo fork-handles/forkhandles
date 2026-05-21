@@ -13,17 +13,17 @@ class ValueFactoryTest {
     @Test
     fun `throwable factory`() {
         assertThat(MyIntValue.of(123), equalTo(MyIntValue.of(123)))
-        assertThat({ MyIntValue.of(0) }, throws<IllegalArgumentException>())
+        assertThat({ val _ = MyIntValue.of(0) }, throws<IllegalArgumentException>())
 
         assertThat(MyIntValue.ofList(), equalTo(listOf()))
         assertThat(MyIntValue.ofList(123, 456), equalTo(listOf(MyIntValue.of(123), MyIntValue.of(456))))
-        assertThat({ MyIntValue.ofList(0, 1) }, throws<IllegalArgumentException>())
+        assertThat({ val _ = MyIntValue.ofList(0, 1) }, throws<IllegalArgumentException>())
     }
 
     @Test
     fun `throwable factory as function`() {
         assertThat(MyIntValue.of(123), equalTo(MyIntValue.of(123)))
-        assertThat({ MyIntValue.of(0) }, throws<IllegalArgumentException>())
+        assertThat({ val _ = MyIntValue.of(0) }, throws<IllegalArgumentException>())
     }
 
     @Test
@@ -65,11 +65,11 @@ class ValueFactoryTest {
     @Test
     fun `throwable parse`() {
         assertThat(MyIntValue.parse("123"), equalTo(MyIntValue.of(123)))
-        assertThat({ MyIntValue.parse("") }, throws<IllegalArgumentException>())
+        assertThat({ val _ = MyIntValue.parse("") }, throws<IllegalArgumentException>())
 
         assertThat(MyIntValue.parseList(), equalTo(listOf()))
         assertThat(MyIntValue.parseList("123", "456"), equalTo(listOf(MyIntValue.of(123), MyIntValue.of(456))))
-        assertThat({ MyIntValue.parseList("") }, throws<IllegalArgumentException>())
+        assertThat({ val _ = MyIntValue.parseList("") }, throws<IllegalArgumentException>())
     }
 
     @Test
