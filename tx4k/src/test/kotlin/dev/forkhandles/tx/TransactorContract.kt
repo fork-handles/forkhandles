@@ -60,7 +60,7 @@ abstract class TransactorContract {
                         }
                     }
                 } catch (_: SerialisabilityFailure) {
-                    failureCount.incrementAndFetch()
+                    val _ = failureCount.incrementAndFetch()
                 } catch (_: ForceARollback) {
                     // Expected, but catch here to prevent the executor writing a lot of noise to stderr
                 }
