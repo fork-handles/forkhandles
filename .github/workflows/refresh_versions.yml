@@ -23,7 +23,7 @@ jobs:
           java-version: 21
           cache: gradle
       - name: create-branch
-        uses: peterjgrainger/action-create-branch@v3.0.0
+        uses: peterjgrainger/action-create-branch@v4.0.0
         with:
           branch: dependency-update
         env:
