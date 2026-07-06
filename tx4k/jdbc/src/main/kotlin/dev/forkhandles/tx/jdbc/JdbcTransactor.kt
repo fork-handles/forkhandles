@@ -45,5 +45,5 @@ class JdbcTransactor<out API>(
 }
 
 
-fun jdbcStandardRetryability(e: Exception): Boolean =
+fun jdbcStandardRetryability(e: Throwable): Boolean =
     e is SQLException && (e.sqlState == "40001" || e.sqlState == "40P01")

@@ -40,6 +40,7 @@ include("tuples4k")
 "tx4k".apply {
     includeModule("core")
     includeSubModule("jdbc")
+    includeSubModule("jpa")
 }
 
 include("values4k")

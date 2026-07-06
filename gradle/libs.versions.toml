@@ -1,9 +1,12 @@
 [versions]
 champeau-jmh = "0.7.3"
 hamkrest = "1.8.0.1"
+hibernate = "7.4.4.Final"
+hsqldb = "2.7.2"
 jackson = "3.1.3"
 jmh = "1.37"
 jmhreport = "0.9.6"
+jpa = "3.2.0"
 junit = "5.11.4"
 junit-platform-launcher = "1.9.3"
 kotest = "6.1.11"
@@ -22,9 +25,12 @@ versions = "0.54.0"
 
 [libraries]
 hamkrest = { module = "com.natpryce:hamkrest", version.ref = "hamkrest" }
+hibernate = { module = "org.hibernate.orm:hibernate-core", version.ref = "hibernate" }
+hsqldb = { module = "org.hsqldb:hsqldb", version.ref = "hsqldb" }
 jackson-databind = { module = "tools.jackson.core:jackson-databind", version.ref = "jackson" }
 jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }
 jmh-generator-bytecode = { module = "org.openjdk.jmh:jmh-generator-bytecode", version.ref = "jmh" }
+jpa = { module = "jakarta.persistence:jakarta.persistence-api", version.ref = "jpa" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }

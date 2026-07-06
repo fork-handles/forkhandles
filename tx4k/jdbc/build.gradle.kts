@@ -1,4 +1,5 @@
-description = "ForkHandles Transactor library"
+description = "ForkHandles Transactor library implementation for JDBC"
+
 
 dependencies {
     api(project(":tx4k"))
@@ -8,4 +9,5 @@ dependencies {
     testImplementation(libs.bundles.testcontainers)
     testImplementation(libs.bundles.testcontainers.postgres)
     testImplementation(libs.bundles.testcontainers.mariadb)
+    testImplementation("org.hsqldb:hsqldb:2.7.2")
 }

@@ -56,7 +56,7 @@ fun createSchema(c: Connection): Boolean = c.createStatement().use { s ->
         """
         create table COUNTER (
             id VARCHAR(64) PRIMARY KEY,
-            count NUMERIC(8) NOT NULL DEFAULT 0
+            count NUMERIC(8) DEFAULT 0 NOT NULL
         )
         """
     )
