@@ -1,7 +1,7 @@
 import groovy.namespace.QName
 import groovy.util.Node
-import org.gradle.api.JavaVersion.VERSION_11
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+import org.gradle.api.JavaVersion.VERSION_21
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
@@ -51,14 +51,14 @@ subprojects {
     tasks {
         withType<KotlinJvmCompile>().configureEach {
             compilerOptions {
-                jvmTarget.set(JVM_11)
+                jvmTarget.set(JVM_21)
                 freeCompilerArgs.add("-Xreturn-value-checker=full")
             }
         }
         
         java {
-            sourceCompatibility = VERSION_11
-            targetCompatibility = VERSION_11
+            sourceCompatibility = VERSION_21
+            targetCompatibility = VERSION_21
         }
 
         withType<Test> {
