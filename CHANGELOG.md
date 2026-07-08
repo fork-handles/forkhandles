@@ -3,6 +3,12 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v3.0.0.0
+
+* **all**: minimum Java version increased to 21 (was 11).
+* **tx4k**: split into separate modules. tx4k defines the core interfaces and in-memory implementation. tx4k-jdbc provides the Transactor for JDBC database connections. Apart from the new dependency, no source code changes required.
+* **tx4k**: new module tx4k-jpa provides a Transactor for the Java Persistence API (JPA).
+
 ### v2.25.6.0
 
 - **all** : support for unused result checking.
