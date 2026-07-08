@@ -36,5 +36,11 @@ include("ropes4k")
 include("state4k")
 include("time4k")
 include("tuples4k")
-include("tx4k")
+
+"tx4k".apply {
+    includeModule("core")
+    includeSubModule("jdbc")
+    includeSubModule("jpa")
+}
+
 include("values4k")

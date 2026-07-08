@@ -14,6 +14,7 @@ plugins {
     alias(libs.plugins.maven.publish)
     alias(libs.plugins.versions)
     alias(libs.plugins.version.catalog.update)
+    kotlin("plugin.jpa") version "2.3.21"
 }
 
 buildscript {
@@ -204,6 +205,7 @@ dependencies {
         .forEach {
             api(project(it.name))
         }
+    implementation(kotlin("stdlib"))
 }
 
 sourceSets {
