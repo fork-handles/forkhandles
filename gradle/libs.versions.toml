@@ -1,5 +1,6 @@
 [versions]
 champeau-jmh = "0.7.3"
+eclipselink = "5.0.1"
 hamkrest = "1.8.0.1"
 hibernate = "7.4.4.Final"
 hsqldb = "2.7.2"
@@ -24,6 +25,7 @@ version-catalog-update = "1.1.0"
 versions = "0.54.0"
 
 [libraries]
+eclipselink = { module = "org.eclipse.persistence:eclipselink", version.ref = "eclipselink" }
 hamkrest = { module = "com.natpryce:hamkrest", version.ref = "hamkrest" }
 hibernate = { module = "org.hibernate.orm:hibernate-core", version.ref = "hibernate" }
 hsqldb = { module = "org.hsqldb:hsqldb", version.ref = "hsqldb" }

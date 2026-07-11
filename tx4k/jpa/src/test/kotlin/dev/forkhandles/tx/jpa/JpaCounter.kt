@@ -5,9 +5,9 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Id
+import jakarta.persistence.LockModeType
 
 @Entity
-
 class NamedCount(
     @Id
     var id: String? = null,
@@ -18,12 +18,9 @@ class NamedCount(
 
 class JpaCounter(
     val entityManager: EntityManager,
-    val name: String
+    val name: String,
+    val lockMode : LockModeType = LockModeType.PESSIMISTIC_WRITE
 ) : Counter {
-    fun init() {
-        entityManager.persist(NamedCount(name))
-    }
-    
     override fun incrementBy(n: Int) {
         val count = loadCount()
         count.value += n
@@ -33,9 +30,10 @@ class JpaCounter(
         return loadCount().value
     }
     
-    private fun loadCount(): NamedCount =
-        entityManager.find(NamedCount::class.java, name)
-            ?: error("no count found for name: $name")
+    private fun loadCount(): NamedCount {
+        return entityManager.find(NamedCount::class.java, name, lockMode)
+            ?: NamedCount(name).also { entityManager.persist(it) }
+    }
     
     fun causeUnrecoverableFailure() {
         entityManager.persist(NamedCount(null, 0))

@@ -10,6 +10,7 @@ dependencies {
     compileOnly(libs.jpa)
     testImplementation(kotlin("test-junit5"))
     testImplementation(libs.hibernate)
+    testImplementation(libs.eclipselink)
     testImplementation(project(path = ":tx4k", configuration = "testArtifacts"))
     testImplementation(libs.hsqldb)
     testImplementation(libs.bundles.junit)

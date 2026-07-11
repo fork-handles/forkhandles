@@ -4,8 +4,8 @@ import dev.forkhandles.tx.RetryPolicy
 import dev.forkhandles.tx.Transactor
 import dev.forkhandles.tx.increasingBackoff
 import dev.forkhandles.tx.jdbc.jdbcStandardRetryability
-import dev.forkhandles.tx.withAdditiveJitter
 import dev.forkhandles.tx.maxAttempts
+import dev.forkhandles.tx.withAdditiveJitter
 import jakarta.persistence.EntityManager
 import jakarta.persistence.EntityManagerFactory
 import jakarta.persistence.RollbackException
