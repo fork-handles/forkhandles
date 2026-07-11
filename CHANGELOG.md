@@ -5,67 +5,67 @@ when appropriate:
 
 ### v3.0.0.0
 
-* **all**: minimum Java version increased to 21 (was 11).
-* **tx4k**: split into separate modules. tx4k defines the core interfaces and in-memory implementation. tx4k-jdbc provides the Transactor for JDBC database connections. Apart from the new dependency, no source code changes required.
-* **tx4k**: new module tx4k-jpa provides a Transactor for the Java Persistence API (JPA).
+* **all**: [Breaking] minimum Java version increased to 21 (was 11).
+* **tx4k**: [Breaking] split into separate modules. tx4k defines the core interfaces and in-memory implementation. tx4k-jdbc provides the Transactor for JDBC database connections. The API has not changed, so aside from build changes to add the new dependency, no source code changes are required.
+* **tx4k**: [New module] tx4k-jpa provides a Transactor for the Java Persistence API (JPA).
 
 ### v2.25.6.0
 
-- **all** : support for unused result checking.
+- **all**: support for unused result checking.
 
 ### v2.25.5.0
-- **all** : Upgrade libraries
-- **result4k** : Evaluated value access for failure branch, and dedicated nullability handling. H/T @potfur
+- **all**: Upgrade libraries
+- **result4k**: Evaluated value access for failure branch, and dedicated nullability handling. H/T @potfur
 
 ### v2.25.4.0
-- **all** : Upgrade libraries
+- **all**: Upgrade libraries
 
 ### v2.25.3.0
-- **all** : Upgrade libraries
+- **all**: Upgrade libraries
 
 ### v2.25.2.1
-- **all** : fix 2.25.2.0 publishing process
+- **all**: fix 2.25.2.0 publishing process
 
 ### v2.25.2.0
-- **tx4k** : [New module] Typesafe, programmatic transaction boundaries, with implementations for JDBC and in-memory transactions.
+- **tx4k**: [New module] Typesafe, programmatic transaction boundaries, with implementations for JDBC and in-memory transactions.
 
 ### v2.25.1.0
-- **all** : Upgrade libraries
+- **all**: Upgrade libraries
 
 ### v2.25.0.0
-- **all** : Upgrade kotest
+- **all**: Upgrade kotest
 
 ### v2.24.0.0
-- **all** : Upgrade versions, including Kotlin to 2.2.21
+- **all**: Upgrade versions, including Kotlin to 2.2.21
 
 ### v2.23.0.0
-- **all** : Upgrade versions, including Jackson to v3
-- **data4k** : [Breaking] Migrated to Jackson v3 - this is a major change and may require changes to your code if you were using Jackson-specific annotations or features.
+- **all**: Upgrade versions, including Jackson to v3
+- **data4k**: [Breaking] Migrated to Jackson v3 - this is a major change and may require changes to your code if you were using Jackson-specific annotations or features.
 
 ### v2.22.4.0
-- **all** : Release to new Maven Central target
+- **all**: Release to new Maven Central target
 
 ### v2.22.3.0
-- **all** : Upgrade of dependencies.
+- **all**: Upgrade of dependencies.
 
 ### v2.22.2.1
-- **Bunting** : [Fix] Don't blow up when descriptions cannot be retrieved via reflection.
+- **Bunting**: [Fix] Don't blow up when descriptions cannot be retrieved via reflection.
 
 ### v2.22.2.0
-- **all** : Upgrade of dependencies.
+- **all**: Upgrade of dependencies.
 - **fs3k**: Add in-memory fs implementation. H/T @potfur
 
 ### v2.22.1.0
 - **result4k**: add asSuccess() and asFailure() extensions, retainIf and rejectIf operations, and `begin` as a way to start result pipelines.
 
 ### v2.22.0.0
-- **all** : Upgrade of dependencies including Kotlin to v2.1, gradle to 8.12.1
-- **fs4k** : [New module] File system manipulation in Kotlin with a pluggable file system abstraction
+- **all**: Upgrade of dependencies including Kotlin to v2.1, gradle to 8.12.1
+- **fs4k**: [New module] File system manipulation in Kotlin with a pluggable file system abstraction
 - **data4k** : [Breaking] Removed deprecated methods
 - **result4k**: Convenience overload of Result.orThrow that takes a function to map error value to throwable.
 
 ### v2.21.0.0
-- **all** : Upgrade of dependencies including Kotlin to v2.1, gradle to 8.12.1
+- **all**: Upgrade of dependencies including Kotlin to v2.1, gradle to 8.12.1
 - **all** : [Breaking] Minimum target Java version is now 11
 
 ### v2.20.0.0
