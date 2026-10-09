@@ -41,6 +41,7 @@ class InMemoryTransactor<State, out API>(
     
     override fun rollbackTransaction(resource: InMemoryTransaction<State>) = noop
     override fun commitTransaction(resource: InMemoryTransaction<State>) {
+        if (resource.state === resource.initialState) return
         if (!state.compareAndSet(expectedValue = resource.initialState, newValue = resource.state)) {
             throw RetryException()
         }

@@ -32,4 +32,17 @@ class InMemoryTransactorTest : TransactorContract() {
         assertEquals(listOf(0, 100), seen)
         assertEquals(101, transactor.state.load())
     }
+
+    @Test
+    fun `a read-only transaction does not conflict with a concurrent commit`() {
+        var attempts = 0
+
+        transactor.perform { counter ->
+            attempts++
+            counter.count()
+            if (attempts == 1) transactor.state.store(100)
+        }
+
+        assertEquals(1, attempts)
+    }
 }
