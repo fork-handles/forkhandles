@@ -12,8 +12,10 @@ import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.Unit as noop
 
-class InMemoryTransaction<State>(val initialState: State) {
-    var state: State = initialState
+class InMemoryTransaction<State>(initialState: State) {
+    var initialState: State = initialState
+        internal set
+    var state = initialState
 }
 
 class InMemoryTransactor<State, out API>(
@@ -31,7 +33,12 @@ class InMemoryTransactor<State, out API>(
     override fun createApi(resource: InMemoryTransaction<State>) =
         createRepository(resource)
     
-    override fun startTransaction(resource: InMemoryTransaction<State>) = noop
+    override fun startTransaction(resource: InMemoryTransaction<State>) {
+        val current = state.load()
+        resource.initialState = current
+        resource.state = current
+    }
+    
     override fun rollbackTransaction(resource: InMemoryTransaction<State>) = noop
     override fun commitTransaction(resource: InMemoryTransaction<State>) {
         if (!state.compareAndSet(expectedValue = resource.initialState, newValue = resource.state)) {
