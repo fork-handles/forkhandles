@@ -2,7 +2,6 @@
 
 package dev.forkhandles.tx.mem
 
-import com.natpryce.hamkrest.assertion.assertThat
 import dev.forkhandles.tx.Counter
 import dev.forkhandles.tx.TransactorContract
 import org.junit.jupiter.api.Assertions.assertEquals

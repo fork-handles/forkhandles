@@ -3,14 +3,15 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
-### v3.0.0.0
+### v3.0.0.1
+* **tx4k**: Fix in-memory transactor: Retry a conflicting transaction from the newly committed state
 
+### v3.0.0.0
 * **all**: [Breaking] minimum Java version increased to 21 (was 11).
 * **tx4k**: [Breaking] split into separate modules. tx4k defines the core interfaces and in-memory implementation. tx4k-jdbc provides the Transactor for JDBC database connections. The API has not changed, so aside from build changes to add the new dependency, no source code changes are required.
 * **tx4k**: [New module] tx4k-jpa provides a Transactor for the Java Persistence API (JPA).
 
 ### v2.25.6.0
-
 - **all**: support for unused result checking.
 
 ### v2.25.5.0
