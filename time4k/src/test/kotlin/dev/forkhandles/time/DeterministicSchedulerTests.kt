@@ -261,6 +261,19 @@ class DeterministicSchedulerTests {
     }
 
     @Test
+    fun cancellingAPeriodicCommandAfterItHasRunStopsItFromRunningAgain() {
+        val future = scheduler.scheduleWithFixedDelay(commandA, 1, 1, SECONDS)
+
+        scheduler.tick(1, SECONDS)
+
+        assertTrue(future.cancel(false), "was able to cancel")
+
+        scheduler.tick(5, SECONDS)
+
+        assertEquals(listOf(commandA), invoked)
+    }
+
+    @Test
     fun testCanScheduleCallablesAndGetTheirResultAfterTheyHaveBeenExecuted() {
         val future = scheduler.schedule(
             trackedCallable("A"), 1, SECONDS

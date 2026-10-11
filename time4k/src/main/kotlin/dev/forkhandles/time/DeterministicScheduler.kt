@@ -32,14 +32,9 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
     private fun emptyTaskList(): Queue<SimpleScheduleTask<*>> =
         PriorityQueue(Comparator.comparingLong { tasks -> tasks.getDelay(TimeUnit.MILLISECONDS) })
 
+    override fun submit(task: Runnable): Future<*> = schedule(task, Duration.ZERO)
 
-    override fun submit(task: Runnable): Future<*> {
-        return schedule(task, Duration.ZERO)
-    }
-
-    override fun <T> submit(task: Callable<T>): Future<T> {
-        return schedule(task, Duration.ZERO)
-    }
+    override fun <T> submit(task: Callable<T>): Future<T> = schedule(task, Duration.ZERO)
 
     override fun isShutdown(): Boolean = isShutdown
 
@@ -91,9 +86,7 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
         tasks.clear()
     }
 
-    fun isIdle(): Boolean {
-        return tasks.size == 0 || tasks.peek().timeToRun > clock
-    }
+    fun isIdle(): Boolean = tasks.isEmpty() || tasks.peek().timeToRun > clock
 
     fun runUntilIdle() {
         tick(Duration.ZERO)
@@ -130,10 +123,10 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
                 ranSomething = true
                 val success = task.execute()
                 if (task.isPeriodic && success && !task.isCancelled) {
-                    nextTasks.add(task.atNextExecutionTimeAfter(executionTimeOfTask))
+                    nextTasks.add(task.rescheduleAfter(executionTimeOfTask))
                 }
 
-                if ( tasks.size > 0 ) {
+                if (tasks.isNotEmpty()) {
                     // if a task added another task, then we need to drop out
                     // so that the added task runs in the correct order
                     execute = false
@@ -147,17 +140,13 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
         return ranSomething
     }
 
-    override fun <T : Any?> submit(task: Runnable, result: T): Future<T> {
-        return schedule(Callable { task.run(); result }, Duration.ZERO)
-    }
+    override fun <T> submit(task: Runnable, result: T): Future<T> = schedule(Callable { task.run(); result }, Duration.ZERO)
 
-    override fun schedule(command: Runnable, delay: Long, unit: TimeUnit): ScheduledFuture<*> {
-        return schedule(command, asDuration(delay, unit))
-    }
+    override fun schedule(command: Runnable, delay: Long, unit: TimeUnit): ScheduledFuture<*> =
+        schedule(command, asDuration(delay, unit))
 
-    override fun <V : Any?> schedule(callable: Callable<V>, delay: Long, unit: TimeUnit): ScheduledFuture<V> {
-        return schedule(callable, asDuration(delay, unit))
-    }
+    override fun <V> schedule(callable: Callable<V>, delay: Long, unit: TimeUnit): ScheduledFuture<V> =
+        schedule(callable, asDuration(delay, unit))
 
     private fun asDuration(delay: Long, unit: TimeUnit) =
         Duration.ofMillis(TimeUnit.MILLISECONDS.convert(delay, unit))
@@ -195,9 +184,7 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
         return listOf()
     }
 
-    override fun isTerminated(): Boolean {
-        return isShutdown
-    }
+    override fun isTerminated(): Boolean = isShutdown
 
     override fun awaitTermination(timeout: Long, unit: TimeUnit): Boolean {
         if (isShutdown) {
@@ -206,27 +193,29 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
         blockingOperationsNotSupported()
     }
 
-    override fun <T : Any?> invokeAll(tasks: MutableCollection<out Callable<T>>): MutableList<Future<T>> =
+    override fun <T> invokeAll(tasks: MutableCollection<out Callable<T>>): MutableList<Future<T>> =
         blockingOperationsNotSupported()
 
-    override fun <T : Any?> invokeAll(
+    override fun <T> invokeAll(
         tasks: MutableCollection<out Callable<T>>,
         timeout: Long,
         unit: TimeUnit
     ): MutableList<Future<T>> =
         blockingOperationsNotSupported()
 
-    override fun <T : Any?> invokeAny(tasks: MutableCollection<out Callable<T>>): T = blockingOperationsNotSupported()
+    override fun <T> invokeAny(tasks: MutableCollection<out Callable<T>>): T = blockingOperationsNotSupported()
 
-    override fun <T : Any?> invokeAny(tasks: MutableCollection<out Callable<T>>, timeout: Long, unit: TimeUnit): T =
+    override fun <T> invokeAny(tasks: MutableCollection<out Callable<T>>, timeout: Long, unit: TimeUnit): T =
         blockingOperationsNotSupported()
 
     private inner class SimpleScheduleTask<T>(
         private val callable: Callable<T>,
         private val period: Duration?,
-        val timeToRun: Instant
+        timeToRun: Instant
     ) :
         ScheduledFuture<T> {
+        var timeToRun = timeToRun
+            private set
         private var isCancelled = false
         private var isDone = false
         private var result: T? = null
@@ -273,9 +262,7 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
         }
 
         @Throws(InterruptedException::class, ExecutionException::class, TimeoutException::class)
-        override fun get(timeout: Long, unit: TimeUnit): T? {
-            return get()
-        }
+        override fun get(timeout: Long, unit: TimeUnit): T? = get()
 
         fun execute(): Boolean {
             return try {
@@ -287,15 +274,11 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
                 error = e
                 false
             } finally {
-                isDone = true
+                isDone = !isPeriodic || error != null
             }
         }
 
-        fun atNextExecutionTimeAfter(clock: Instant): SimpleScheduleTask<T> {
-            return SimpleScheduleTask(
-                callable, period, clock + period!!
-            )
-        }
+        fun rescheduleAfter(clock: Instant) = apply { timeToRun = clock + period!! }
     }
 
     private fun blockingOperationsNotSupported(): Nothing =
