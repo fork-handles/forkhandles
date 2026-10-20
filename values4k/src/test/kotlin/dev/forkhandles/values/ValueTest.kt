@@ -16,7 +16,10 @@ class MyValue private constructor(value: String) : StringValue(value) {
 }
 
 class MyIntValue private constructor(value: Int) : IntValue(value) {
-    companion object : IntValueFactory<MyIntValue>(::MyIntValue, { it > 0 })
+    companion object : IntValueFactory<MyIntValue>(::MyIntValue, { it > 0 },
+        onInvalid = { value, e -> throw IllegalArgumentException("Value ($value) must be greater than 0", e) },
+        onParseFailure = { value, e -> throw IllegalArgumentException("Value ($value) must be an integer", e) }
+    )
 }
 
 class HiddenValue private constructor(value: String) : StringValue(value, masking = hidden('t')) {
