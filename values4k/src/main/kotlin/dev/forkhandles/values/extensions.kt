@@ -21,30 +21,35 @@ import kotlin.random.Random
 
 val <DOMAIN : Value<Int>> IntValueFactory<DOMAIN>.ZERO get() = of(0)
 fun <DOMAIN : Value<Int>> IntValueFactory<DOMAIN>.random(random: Random = Random) = of(random.nextInt())
+fun <DOMAIN : Value<Int>> IntValueFactory<DOMAIN>.random(random: java.util.Random) = of(random.nextInt())
 fun <DOMAIN : Value<Int>> IntValueFactory<DOMAIN>.plus(v1: DOMAIN, v2: DOMAIN): DOMAIN = of(v1.value + v2.value)
 fun <DOMAIN : Value<Int>> IntValueFactory<DOMAIN>.minus(v1: DOMAIN, v2: DOMAIN): DOMAIN = of(v1.value - v2.value)
 fun <DOMAIN : Value<Int>> IntValueFactory<DOMAIN>.times(v1: DOMAIN, v2: DOMAIN): DOMAIN = of(v1.value * v2.value)
 
 val <DOMAIN : Value<Long>> LongValueFactory<DOMAIN>.ZERO get() = of(0)
 fun <DOMAIN : Value<Long>> LongValueFactory<DOMAIN>.random(random: Random = Random) = of(random.nextLong())
+fun <DOMAIN : Value<Long>> LongValueFactory<DOMAIN>.random(random: java.util.Random) = of(random.nextLong())
 fun <DOMAIN : Value<Long>> LongValueFactory<DOMAIN>.plus(v1: DOMAIN, v2: DOMAIN): DOMAIN = of(v1.value + v2.value)
 fun <DOMAIN : Value<Long>> LongValueFactory<DOMAIN>.minus(v1: DOMAIN, v2: DOMAIN): DOMAIN = of(v1.value - v2.value)
 fun <DOMAIN : Value<Long>> LongValueFactory<DOMAIN>.times(v1: DOMAIN, v2: DOMAIN): DOMAIN = of(v1.value * v2.value)
 
 val <DOMAIN : Value<Double>> DoubleValueFactory<DOMAIN>.ZERO get() = of(0.0)
 fun <DOMAIN : Value<Double>> DoubleValueFactory<DOMAIN>.random(random: Random = Random) = of(random.nextDouble())
+fun <DOMAIN : Value<Double>> DoubleValueFactory<DOMAIN>.random(random: java.util.Random) = of(random.nextDouble())
 fun <DOMAIN : Value<Double>> DoubleValueFactory<DOMAIN>.plus(v1: DOMAIN, v2: DOMAIN): DOMAIN = of(v1.value + v2.value)
 fun <DOMAIN : Value<Double>> DoubleValueFactory<DOMAIN>.minus(v1: DOMAIN, v2: DOMAIN): DOMAIN = of(v1.value - v2.value)
 fun <DOMAIN : Value<Double>> DoubleValueFactory<DOMAIN>.times(v1: DOMAIN, v2: DOMAIN): DOMAIN = of(v1.value * v2.value)
 
 val <DOMAIN : Value<Float>> FloatValueFactory<DOMAIN>.ZERO get() = of(0.0f)
 fun <DOMAIN : Value<Float>> FloatValueFactory<DOMAIN>.random(random: Random = Random) = of(random.nextFloat())
+fun <DOMAIN : Value<Float>> FloatValueFactory<DOMAIN>.random(random: java.util.Random) = of(random.nextFloat())
 fun <DOMAIN : Value<Float>> FloatValueFactory<DOMAIN>.plus(v1: DOMAIN, v2: DOMAIN): DOMAIN = of(v1.value + v2.value)
 fun <DOMAIN : Value<Float>> FloatValueFactory<DOMAIN>.minus(v1: DOMAIN, v2: DOMAIN): DOMAIN = of(v1.value - v2.value)
 fun <DOMAIN : Value<Float>> FloatValueFactory<DOMAIN>.times(v1: DOMAIN, v2: DOMAIN): DOMAIN = of(v1.value * v2.value)
 
 val <DOMAIN : Value<BigInteger>> BigIntegerValueFactory<DOMAIN>.ZERO get() = of(BigInteger.ZERO)
 fun <DOMAIN : Value<BigInteger>> BigIntegerValueFactory<DOMAIN>.random(random: Random = Random) = of(BigInteger(random.nextLong().toString()))
+fun <DOMAIN : Value<BigInteger>> BigIntegerValueFactory<DOMAIN>.random(random: java.util.Random) = of(BigInteger(random.nextLong().toString()))
 
 fun <DOMAIN : Value<BigInteger>> BigIntegerValueFactory<DOMAIN>.plus(v1: DOMAIN, v2: DOMAIN) = of(v1.value + v2.value)
 fun <DOMAIN : Value<BigInteger>> BigIntegerValueFactory<DOMAIN>.minus(v1: DOMAIN, v2: DOMAIN) = of(v1.value - v2.value)
@@ -53,16 +58,21 @@ fun <DOMAIN : Value<BigInteger>> BigIntegerValueFactory<DOMAIN>.times(v1: DOMAIN
 val <DOMAIN : Value<BigDecimal>> BigDecimalValueFactory<DOMAIN>.ZERO get() = of(BigDecimal.ZERO)
 fun <DOMAIN : Value<BigDecimal>> BigDecimalValueFactory<DOMAIN>.random(random: Random = Random) =
     of(BigDecimal(random.nextDouble()))
+fun <DOMAIN : Value<BigDecimal>> BigDecimalValueFactory<DOMAIN>.random(random: java.util.Random) =
+    of(BigDecimal(random.nextDouble()))
+
 
 fun <DOMAIN : Value<BigDecimal>> BigDecimalValueFactory<DOMAIN>.plus(v1: DOMAIN, v2: DOMAIN) = of(v1.value + v2.value)
 fun <DOMAIN : Value<BigDecimal>> BigDecimalValueFactory<DOMAIN>.minus(v1: DOMAIN, v2: DOMAIN) = of(v1.value - v2.value)
 fun <DOMAIN : Value<BigDecimal>> BigDecimalValueFactory<DOMAIN>.times(v1: DOMAIN, v2: DOMAIN) = of(v1.value * v2.value)
 
 fun <DOMAIN : Value<Boolean>> BooleanValueFactory<DOMAIN>.random(random: Random = Random) = of(random.nextBoolean())
+fun <DOMAIN : Value<Boolean>> BooleanValueFactory<DOMAIN>.random(random: java.util.Random) = of(random.nextBoolean())
 
 val <DOMAIN : Value<UUID>> UUIDValueFactory<DOMAIN>.ZERO get() = of(0, 0)
 fun <DOMAIN : Value<UUID>> UUIDValueFactory<DOMAIN>.of(first: Long = 0, second: Long = 0) = of(UUID(first, second))
 fun <DOMAIN : Value<UUID>> UUIDValueFactory<DOMAIN>.random(random: Random = Random) = of(random.nextLong(), random.nextLong())
+fun <DOMAIN : Value<UUID>> UUIDValueFactory<DOMAIN>.random(random: java.util.Random) = of(random.nextLong(), random.nextLong())
 
 val <DOMAIN : Value<LocalDate>> LocalDateValueFactory<DOMAIN>.EPOCH get() = of(LocalDate.EPOCH)
 val <DOMAIN : Value<LocalDate>> LocalDateValueFactory<DOMAIN>.MAX get() = of(LocalDate.MAX)
