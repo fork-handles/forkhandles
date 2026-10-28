@@ -1,8 +1,11 @@
 package dev.forkhandles.time
 
 import dev.forkhandles.time.executors.SimpleScheduler
+import java.time.Clock
 import java.time.Duration
 import java.time.Instant
+import java.time.ZoneId
+import java.time.ZoneOffset.UTC
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.CancellationException
@@ -97,13 +100,20 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
     }
 
     fun tick(duration: Duration) {
-
         val endOfPeriod = clock + duration
 
         while (true) {
             if (!runNextTask(endOfPeriod)) break
         }
         clock = endOfPeriod
+    }
+
+    fun toClock() = object : Clock() {
+        override fun getZone() = UTC
+
+        override fun withZone(zone: ZoneId) = this
+
+        override fun instant() = currentTime()
     }
 
     private fun runNextTask(endOfPeriod: Instant): Boolean {

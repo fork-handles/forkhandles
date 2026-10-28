@@ -11,6 +11,9 @@ import org.junit.jupiter.api.Test
 import java.lang.IllegalArgumentException
 import java.time.Duration
 import java.time.Instant
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.ZoneOffset.*
 import java.util.concurrent.Callable
 import java.util.concurrent.CancellationException
 import java.util.concurrent.ExecutionException
@@ -409,6 +412,13 @@ class DeterministicSchedulerTests {
         scheduler.tick(8L, SECONDS)
 
         assertEquals(listOf(commandA, commandB, commandA, commandB, commandA, commandB), invoked)
+    }
+
+    @Test
+    fun `supply clock`() {
+        val clock = scheduler.toClock()
+        assertEquals(clock.zone.id, UTC.id)
+        assertEquals(clock.instant(), scheduler.currentTime())
     }
 
     private fun trackedRunnable(name: String): Runnable {
