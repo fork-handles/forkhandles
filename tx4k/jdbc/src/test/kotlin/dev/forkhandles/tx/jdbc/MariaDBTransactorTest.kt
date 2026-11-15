@@ -25,7 +25,7 @@ class MariaDBTransactorTest : JdbcTransactorContract() {
     companion object {
         @Container
         @JvmStatic
-        private val database: JdbcDatabaseContainer<*> = MariaDBContainer("mariadb:10.5.5")
+        private val database: JdbcDatabaseContainer<*> = MariaDBContainer("mariadb:10.5.5").withUrlParam("sslMode", "disable")
         
         @BeforeAll
         @JvmStatic
