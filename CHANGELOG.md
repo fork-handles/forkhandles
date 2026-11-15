@@ -4,6 +4,7 @@ This list is not intended to be all-encompassing - it will document major and br
 when appropriate:
 
 ### v3.2.0.0
+- **all**: Upgrade libraries
 - **values4k**: Time-ordered IDs. `UUIDValueFactory.v7(clock, random)` generates RFC 9562 version 7 UUIDs. New `ULID` type (Crockford base32, sortable, convertible to/from `UUID`) with `UlidValueFactory` and `UlidValueFactory.random(clock, random)`.
 - **tx4k**: A failing rollback or resource cleanup no longer replaces the outcome of `perform`. The original error is thrown (and still retried if retryable) with the cleanup failure attached as suppressed, and a committed result is returned even if cleanup then fails.
 
