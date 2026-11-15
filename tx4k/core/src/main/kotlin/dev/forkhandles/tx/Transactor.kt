@@ -27,6 +27,7 @@ abstract class Transactor<Resource,out API> {
         }
         
         val resource = createResource()
+        var failure: Throwable? = null
         try {
             configureResource(resource)
             val api = createApi(resource)
@@ -39,7 +40,11 @@ abstract class Transactor<Resource,out API> {
                 return result
             }
             catch (e: Exception) {
-                rollbackTransaction(resource)
+                try {
+                    rollbackTransaction(resource)
+                } catch (rollback: Exception) {
+                    e.addSuppressed(rollback)
+                }
                 if (canRetry(e)) {
                     attempts++
                     when (val backoff = retryBackoff(attempts)) {
@@ -50,8 +55,15 @@ abstract class Transactor<Resource,out API> {
                     throw e
                 }
             }
+        } catch (e: Throwable) {
+            failure = e
+            throw e
         } finally {
-            destroyResource(resource)
+            try {
+                destroyResource(resource)
+            } catch (cleanup: Exception) {
+                failure?.addSuppressed(cleanup)
+            }
         }
     }
 }

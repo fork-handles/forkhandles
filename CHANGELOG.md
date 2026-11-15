@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v3.2.0.0 (uncut)
+- **tx4k**: A failing rollback or resource cleanup no longer replaces the outcome of `perform`. The original error is thrown (and still retried if retryable) with the cleanup failure attached as suppressed, and a committed result is returned even if cleanup then fails.
+
 ### v3.1.0.0
 - **time4k**: [Breaking change in tests] `DeterministicScheduler` periodic tasks (`scheduleAtFixedRate`/`scheduleWithFixedDelay`) now keep a single future for their lifetime, matching `ScheduledThreadPoolExecutor`: cancelling it after the first run now stops the task, `isDone` stays false until cancelled or failed, `getDelay` reports the next run, and `get()` throws `UnsupportedSynchronousOperationException` instead of returning null. Tests relying on the previous behaviour may need updating.
 
