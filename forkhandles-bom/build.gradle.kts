@@ -5,6 +5,6 @@ dependencies {
         rootProject.subprojects
             .filter { it.name != project.name }
             .sortedBy { it.name }
-            .forEach { api(it) }
+            .forEach { api(project(it.path)) }
     }
 }

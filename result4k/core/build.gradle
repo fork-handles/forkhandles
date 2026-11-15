@@ -10,13 +10,9 @@ dependencies {
 
 test {
     include("dev/forkhandles/**")
-    scanForTestClasses true
+    scanForTestClasses = true
     reports {
         junitXml.required = true
         html.required = true
     }
-}
-
-artifacts {
-    archives sourcesJar, javadocJar
 }

@@ -1,28 +1,28 @@
 [versions]
-champeau-jmh = "0.7.3"
-eclipselink = "5.0.1"
+champeau-jmh = "0.7.4"
+eclipselink = "5.0.2"
 hamkrest = "1.8.0.1"
-hibernate = "7.4.4.Final"
-hsqldb = "2.7.2"
-jackson = "3.1.3"
+hibernate = "7.4.16.Final"
+hsqldb = "2.7.4"
+jackson = "3.3.0"
 jmh = "1.37"
 jmhreport = "0.9.6"
 jpa = "3.2.0"
-junit = "5.11.4"
-junit-platform-launcher = "1.9.3"
-kotest = "6.1.11"
-kotlin = "2.3.21"
-kotlinx-benchmark = "0.4.17"
+junit = "6.1.3"
+junit-platform-launcher = "6.1.3"
+kotest = "6.2.7"
+kotlin = "2.4.21"
+kotlinx-benchmark = "0.5.0"
 kotlinx-coroutines = "1.11.0"
-kotlinx-serialization = "1.11.0"
-mariadb-driver = "3.5.8"
-maven-publish = "0.36.0"
+kotlinx-serialization = "1.13.0"
+mariadb-driver = "4.0.0"
+maven-publish = "0.37.0"
 okeydoke = "2.0.3"
-postgres-driver = "42.7.11"
-strikt = "0.34.1"
+postgres-driver = "42.7.14"
+strikt = "0.35.1"
 testcontainers = "2.0.5"
-version-catalog-update = "1.1.0"
-versions = "0.54.0"
+version-catalog-update = "1.1.2"
+versions = "0.67.0"
 
 [libraries]
 eclipselink = { module = "org.eclipse.persistence:eclipselink", version.ref = "eclipselink" }
@@ -99,4 +99,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 kotlinx-benchmark = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "kotlinx-benchmark" }
 maven-publish = { id = "com.vanniktech.maven.publish.base", version.ref = "maven-publish" }
 version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "version-catalog-update" }
-versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }
+versions = { id = "io.github.ben-manes.versions", version.ref = "versions" }

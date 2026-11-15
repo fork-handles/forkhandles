@@ -46,7 +46,7 @@ subprojects {
     apply(plugin = "com.vanniktech.maven.publish.base")
     apply(plugin = "kotlin")
 
-    version = project.properties["releaseVersion"] ?: "LOCAL"
+    version = project.findProperty("releaseVersion") ?: "LOCAL"
     group = "dev.forkhandles"
 
     tasks {
@@ -71,17 +71,17 @@ subprojects {
         }
     }
 
-    val sourcesJar by tasks.registering(Jar::class, fun Jar.() {
+    val sourcesJar = tasks.register<Jar>("sourcesJar") {
         archiveClassifier.set("sources")
         from(project.the<SourceSetContainer>()["main"].allSource)
         dependsOn(tasks.named("classes"))
-    })
+    }
 
-    val javadocJar by tasks.registering(Jar::class, fun Jar.() {
+    val javadocJar = tasks.register<Jar>("javadocJar") {
         archiveClassifier.set("javadoc")
         from(tasks.named<Javadoc>("javadoc").get().destinationDir)
         dependsOn(tasks.named("javadoc"))
-    })
+    }
 
     tasks {
         named<Jar>("jar") {
@@ -96,10 +96,10 @@ subprojects {
             }
         }
 
-        val testJar by registering(Jar::class, fun Jar.() {
+        val testJar = register<Jar>("testJar") {
             archiveClassifier.set("test")
             from(project.the<SourceSetContainer>()["test"].output)
-        })
+        }
 
         configurations.create("testArtifacts") {
             extendsFrom(configurations["testApi"])
@@ -107,8 +107,10 @@ subprojects {
 
         artifacts {
             add("testArtifacts", testJar)
-            archives(sourcesJar)
-            archives(javadocJar)
+        }
+
+        named("assemble") {
+            dependsOn(sourcesJar, javadocJar)
         }
     }
 
@@ -137,8 +139,8 @@ subprojects {
             if (enableSigning) {
                 apply(plugin = "signing")
                 signing {
-                    val signingKey: String? by project
-                    val signingPassword: String? by project
+                    val signingKey = project.findProperty("signingKey")?.toString()
+                    val signingPassword = project.findProperty("signingPassword")?.toString()
                     useInMemoryPgpKeys(signingKey, signingPassword)
                     sign(publishing.publications)
                 }
@@ -149,7 +151,7 @@ subprojects {
             coordinates(
                 "dev.forkhandles",
                 project.name,
-                project.properties["releaseVersion"]?.toString() ?: "LOCAL"
+                project.findProperty("releaseVersion")?.toString() ?: "LOCAL"
             )
 
             pom {
