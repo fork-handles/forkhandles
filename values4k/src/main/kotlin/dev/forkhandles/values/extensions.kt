@@ -73,6 +73,11 @@ val <DOMAIN : Value<UUID>> UUIDValueFactory<DOMAIN>.ZERO get() = of(0, 0)
 fun <DOMAIN : Value<UUID>> UUIDValueFactory<DOMAIN>.of(first: Long = 0, second: Long = 0) = of(UUID(first, second))
 fun <DOMAIN : Value<UUID>> UUIDValueFactory<DOMAIN>.random(random: Random = Random) = of(random.nextLong(), random.nextLong())
 fun <DOMAIN : Value<UUID>> UUIDValueFactory<DOMAIN>.random(random: java.util.Random) = of(random.nextLong(), random.nextLong())
+fun <DOMAIN : Value<UUID>> UUIDValueFactory<DOMAIN>.v7(clock: Clock = systemUTC(), random: Random = Random) =
+    of(
+        (clock.millis() shl 16) or 0x7000L or (random.nextLong() and 0xFFFL),
+        Long.MIN_VALUE or (random.nextLong() and 0x3FFFFFFFFFFFFFFFL)
+    )
 
 val <DOMAIN : Value<LocalDate>> LocalDateValueFactory<DOMAIN>.EPOCH get() = of(LocalDate.EPOCH)
 val <DOMAIN : Value<LocalDate>> LocalDateValueFactory<DOMAIN>.MAX get() = of(LocalDate.MAX)
