@@ -128,6 +128,10 @@ open class UUIDValueFactory<DOMAIN : Value<UUID>>(
     fn: (UUID) -> DOMAIN, validation: Validation<UUID>? = null
 ) : ValueFactory<DOMAIN, UUID>(fn, validation, UUID::fromString)
 
+open class UlidValueFactory<DOMAIN : Value<ULID>>(
+    fn: (ULID) -> DOMAIN, validation: Validation<ULID>? = null
+) : ValueFactory<DOMAIN, ULID>(fn, validation, ULID::parse)
+
 open class URLValueFactory<DOMAIN : Value<URL>>(
     fn: (URL) -> DOMAIN, validation: Validation<URL>? = null
 ) : ValueFactory<DOMAIN, URL>(fn, validation, { URI.create(it).toURL() })

@@ -79,6 +79,9 @@ fun <DOMAIN : Value<UUID>> UUIDValueFactory<DOMAIN>.v7(clock: Clock = systemUTC(
         Long.MIN_VALUE or (random.nextLong() and 0x3FFFFFFFFFFFFFFFL)
     )
 
+fun <DOMAIN : Value<ULID>> UlidValueFactory<DOMAIN>.random(clock: Clock = systemUTC(), random: Random = Random) =
+    of(ULID((clock.millis() shl 16) or (random.nextLong() and 0xFFFFL), random.nextLong()))
+
 val <DOMAIN : Value<LocalDate>> LocalDateValueFactory<DOMAIN>.EPOCH get() = of(LocalDate.EPOCH)
 val <DOMAIN : Value<LocalDate>> LocalDateValueFactory<DOMAIN>.MAX get() = of(LocalDate.MAX)
 fun <DOMAIN : Value<LocalDate>> LocalDateValueFactory<DOMAIN>.now(clock: Clock = systemUTC()) =
