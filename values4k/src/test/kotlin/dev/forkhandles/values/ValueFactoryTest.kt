@@ -7,6 +7,7 @@ import com.natpryce.hamkrest.throws
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class ValueFactoryTest {
 
@@ -112,6 +113,22 @@ class ValueFactoryTest {
     @Test
     fun showList() {
         assertThat(MyIntValue.showList(MyIntValue.of(123), MyIntValue.of(456)), equalTo(listOf("123", "456")))
+    }
+
+    @Test
+    fun customOnInvalid() {
+        val exception = assertThrows<IllegalArgumentException> {
+            MyIntValue.parse("-1")
+        }
+        assertThat(exception.message, equalTo("Value (-1) must be greater than 0"))
+    }
+
+    @Test
+    fun customOnFailedParse() {
+        val exception = assertThrows<IllegalArgumentException> {
+            MyIntValue.parse("cat")
+        }
+        assertThat(exception.message, equalTo("Value (cat) must be an integer"))
     }
 
 }
