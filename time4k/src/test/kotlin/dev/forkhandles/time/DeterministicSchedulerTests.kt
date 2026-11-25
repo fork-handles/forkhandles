@@ -50,6 +50,16 @@ class DeterministicSchedulerTests {
     }
 
     @Test
+    fun runsCommandsDueAtTheSameTimeInSubmissionOrder() {
+        val ran = mutableListOf<Int>()
+        (0..7).forEach { n -> scheduler.schedule({ ran.add(n) }, 1, SECONDS) }
+
+        scheduler.tick(1, SECONDS)
+
+        assertEquals((0..7).toList(), ran)
+    }
+
+    @Test
     fun canRunCommandsSpawnedByExecutedCommandsUntilIdle() {
         scheduler.execute { scheduler.execute(commandA) }
         scheduler.execute { scheduler.execute(commandB) }

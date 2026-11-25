@@ -17,6 +17,7 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
+import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.PriorityBlockingQueue
 
 /**
@@ -31,12 +32,13 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
     @Volatile
     private var clock = startTime
     private var isShutdown = false
+    private val sequence = AtomicLong()
     private val tasks = emptyTaskList()
 
     fun currentTime() = clock
 
     private fun emptyTaskList(): PriorityBlockingQueue<SimpleScheduleTask<*>> =
-        PriorityBlockingQueue(11, Comparator.comparingLong { tasks -> tasks.getDelay(TimeUnit.MILLISECONDS) })
+        PriorityBlockingQueue(11, compareBy<SimpleScheduleTask<*>> { it.timeToRun }.thenBy { it.seq })
 
     override fun submit(task: Runnable): Future<*> = schedule(task, ZERO)
 
@@ -228,6 +230,10 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
         ScheduledFuture<T> {
         var timeToRun = timeToRun
             private set
+
+        var seq = sequence.getAndIncrement()
+            private set
+
         @Volatile
         private var isCancelled = false
         private var isDone = false
@@ -291,7 +297,10 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
             }
         }
 
-        fun rescheduleAfter(clock: Instant) = apply { timeToRun = clock + period!! }
+        fun rescheduleAfter(clock: Instant) = apply {
+            timeToRun = clock + period!!
+            seq = sequence.getAndIncrement()
+        }
     }
 
     private fun blockingOperationsNotSupported(): Nothing =

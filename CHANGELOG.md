@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v3.2.1.1
+- **time4k**: Fix bug in DeterministicScheduler task ordering (now runs in submission order if times match)
+
 ### v3.2.1.0
 - **time4k**: Make DeterministicScheduler safe to schedule on from other threads 
 
