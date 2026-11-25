@@ -3,6 +3,9 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v3.2.1.0
+- **time4k**: Make DeterministicScheduler safe to schedule on from other threads 
+
 ### v3.2.0.0
 - **all**: Upgrade libraries
 - **values4k**: Time-ordered IDs. `UUIDValueFactory.v7(clock, random)` generates RFC 9562 version 7 UUIDs. New `ULID` type (Crockford base32, sortable, convertible to/from `UUID`) with `UlidValueFactory` and `UlidValueFactory.random(clock, random)`.

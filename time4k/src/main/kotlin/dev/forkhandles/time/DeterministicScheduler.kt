@@ -3,6 +3,7 @@ package dev.forkhandles.time
 import dev.forkhandles.time.executors.SimpleScheduler
 import java.time.Clock
 import java.time.Duration
+import java.time.Duration.*
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset.UTC
@@ -16,6 +17,7 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
+import java.util.concurrent.PriorityBlockingQueue
 
 /**
  * A [ScheduledExecutorService] that executes commands on the thread that calls
@@ -26,18 +28,19 @@ import java.util.concurrent.TimeoutException
  */
 class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExecutorService, SimpleScheduler {
 
+    @Volatile
     private var clock = startTime
     private var isShutdown = false
-    private var tasks = emptyTaskList()
+    private val tasks = emptyTaskList()
 
     fun currentTime() = clock
 
-    private fun emptyTaskList(): Queue<SimpleScheduleTask<*>> =
-        PriorityQueue(Comparator.comparingLong { tasks -> tasks.getDelay(TimeUnit.MILLISECONDS) })
+    private fun emptyTaskList(): PriorityBlockingQueue<SimpleScheduleTask<*>> =
+        PriorityBlockingQueue(11, Comparator.comparingLong { tasks -> tasks.getDelay(TimeUnit.MILLISECONDS) })
 
-    override fun submit(task: Runnable): Future<*> = schedule(task, Duration.ZERO)
+    override fun submit(task: Runnable): Future<*> = schedule(task, ZERO)
 
-    override fun <T> submit(task: Callable<T>): Future<T> = schedule(task, Duration.ZERO)
+    override fun <T> submit(task: Callable<T>): Future<T> = schedule(task, ZERO)
 
     override fun isShutdown(): Boolean = isShutdown
 
@@ -92,13 +95,14 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
     fun isIdle(): Boolean = tasks.isEmpty() || tasks.peek().timeToRun > clock
 
     fun runUntilIdle() {
-        tick(Duration.ZERO)
+        tick(ZERO)
     }
 
     fun tick(quantity: Long, unit: TimeUnit) {
         tick(asDuration(quantity, unit))
     }
 
+    @Synchronized
     fun tick(duration: Duration) {
         val endOfPeriod = clock + duration
 
@@ -121,9 +125,7 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
         val nextTasks = emptyTaskList()
         var ranSomething = false
         var execute = true
-        val currentTasks = tasks.toList()
-
-        tasks.clear()
+        val currentTasks = mutableListOf<SimpleScheduleTask<*>>().also { tasks.drainTo(it) }
 
         for (task in currentTasks) {
             if (task.isCancelled) continue
@@ -150,7 +152,7 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
         return ranSomething
     }
 
-    override fun <T> submit(task: Runnable, result: T): Future<T> = schedule(Callable { task.run(); result }, Duration.ZERO)
+    override fun <T> submit(task: Runnable, result: T): Future<T> = schedule(Callable { task.run(); result }, ZERO)
 
     override fun schedule(command: Runnable, delay: Long, unit: TimeUnit): ScheduledFuture<*> =
         schedule(command, asDuration(delay, unit))
@@ -159,7 +161,7 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
         schedule(callable, asDuration(delay, unit))
 
     private fun asDuration(delay: Long, unit: TimeUnit) =
-        Duration.ofMillis(TimeUnit.MILLISECONDS.convert(delay, unit))
+        ofMillis(TimeUnit.MILLISECONDS.convert(delay, unit))
 
     override fun scheduleWithFixedDelay(
         command: Runnable,
@@ -226,19 +228,20 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
         ScheduledFuture<T> {
         var timeToRun = timeToRun
             private set
+        @Volatile
         private var isCancelled = false
         private var isDone = false
         private var result: T? = null
         private var error: Throwable? = null
 
         init {
-            period?.run { if (this <= Duration.ZERO) throw IllegalArgumentException("period/rate must be > 0") }
+            require(period == null || period > ZERO) { "period/rate must be > 0" }
         }
 
         val isPeriodic: Boolean
             get() = period != null
 
-        constructor(callable: Callable<T>, timeToRun: Instant) : this(callable, null, timeToRun) {}
+        constructor(callable: Callable<T>, timeToRun: Instant) : this(callable, null, timeToRun)
 
         override fun getDelay(unit: TimeUnit): Long =
             unit.convert(timeToRun.toEpochMilli() - clock.toEpochMilli(), TimeUnit.MILLISECONDS)
@@ -265,7 +268,7 @@ class DeterministicScheduler(startTime: Instant = Instant.now()) : ScheduledExec
             if (error != null) throw ExecutionException(error)
             if (isDone) return result
             throw UnsupportedSynchronousOperationException(
-                "task not scheduled to run for another " + Duration.ofMillis(
+                "task not scheduled to run for another " + ofMillis(
                     timeToRun.toEpochMilli() - clock.toEpochMilli()
                 )
             )

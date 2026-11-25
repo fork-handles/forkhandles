@@ -1,5 +1,7 @@
 package dev.forkhandles.time
 
+import com.natpryce.hamkrest.assertion.assertThat
+import com.natpryce.hamkrest.equalTo
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
@@ -8,14 +10,12 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
-import java.lang.IllegalArgumentException
 import java.time.Duration
 import java.time.Instant
-import java.time.ZoneId
-import java.time.ZoneOffset
-import java.time.ZoneOffset.*
+import java.time.ZoneOffset.UTC
 import java.util.concurrent.Callable
 import java.util.concurrent.CancellationException
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.SECONDS
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
+import kotlin.concurrent.thread
 
 class DeterministicSchedulerTests {
     private val scheduler = DeterministicScheduler()
@@ -419,6 +420,17 @@ class DeterministicSchedulerTests {
         val clock = scheduler.toClock()
         assertEquals(clock.zone.id, UTC.id)
         assertEquals(clock.instant(), scheduler.currentTime())
+    }
+
+    @Test
+    fun `work queued from other threads while it runs is never lost`() {
+        val ran = AtomicInteger()
+        val queuers = (1..8).map { thread { repeat(2000) { scheduler.execute { ran.incrementAndGet() } } } }
+
+        while (queuers.any { it.isAlive }) scheduler.runUntilIdle()
+        scheduler.runUntilIdle()
+
+        assertThat(ran.get(), equalTo(16000))
     }
 
     private fun trackedRunnable(name: String): Runnable {
