@@ -8,6 +8,7 @@ class RejectRetainTests {
     data class TooSmall(val limit: Int) : Error()
     data class TooBig(val limit: Int) : Error()
     data class TooBigWithActual(val limit: Int, val actual: Int) : Error()
+    object IsNull: Error()
     
     @Test
     fun `retaining values`() {
@@ -27,10 +28,15 @@ class RejectRetainTests {
             a.asSuccess().retainIf({ it <= 15 }, { TooBigWithActual(limit = 15, actual = it) }),
             a.asSuccess().rejectIf({ it > 15 }, { TooBigWithActual(limit = 15, actual = it) })
         )
-        
+
         assertEquals(
-            a.asSuccess().retainIfNotNull({ TooBig(limit = 15) }),
-            a.asSuccess().rejectIfNull({ TooBig(limit = 15) })
+            (a as Int?).asSuccess().retainIfNotNull({ IsNull }),
+            (a as Int?).asSuccess().rejectIfNull({ IsNull }),
+        )
+
+        assertEquals(
+            null.asSuccess().retainIfNotNull({ IsNull }),
+            null.asSuccess().rejectIfNull({ IsNull }),
         )
     }
     
