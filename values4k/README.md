@@ -111,7 +111,91 @@ For times where we want to display the underlying value as a String, we can use 
 Money.show(Money.of(123)) // returns "123"
 ```
 
+## Composable validation
 
+The `Validation` typealias above throws on construction. For validating input at the boundary, values4k also
+provides a `Validator<T, Problem>` — a function `(T) -> Problem?` that returns `null` when the value is valid and a
+`Problem` describing why it is not.
+
+```kotlin
+val validator = min(18)
+
+validator(30)   // null
+validator(10)   // ConstraintProblem(Min, "must be greater than or equal to 18", "10")
+```
+
+A `Problem` carries the constraint name, a human-readable `message` and the offending `value`:
+
+```kotlin
+interface Problem {
+    val constraint: Constraint
+    val message: Message
+    val value: String
+}
+```
+
+### Bundled constraints
+
+```kotlin
+notNull<T>()          isNull<T>()            notBlank()
+notEmpty()            size(min, max)         email()
+pattern(regex)        min(n)                 max(n)
+decimalMin(n)         decimalMax(n)          positive<T: Number>()
+positiveOrZero<T>()   negative<T>()          negativeOrZero<T>()
+digits(integer, frac) isTrue()               isFalse()
+past(clock)           pastOrPresent(clock)   future(clock)
+futureOrPresent(clock) notEmptyCollection()  sizeCollection(min, max)
+```
+
+Each maps to a Jakarta Bean Validation-style constraint name, so failures are recognisable:
+
+```kotlin
+email()("not-an-email")
+// ConstraintProblem(Email, "must be a well-formed email address", "not-an-email")
+```
+
+### Combining validators
+
+```kotlin
+val valid = size(min = 2) and email()          // fails on the first problem
+val either = isNull<String>() or notBlank()    // passes if either passes
+val all = allOf(notBlank(), size(max = 100))   // aggregates every failure into a Problems
+```
+
+### Validating object fields
+
+Compose validators onto an object's fields with the `validated` infix and `allOf`:
+
+```kotlin
+data class Person(val name: String, val email: String, val age: Int)
+
+val validator = allOf(
+    Person::name validated notBlank(),
+    Person::email validated email(),
+    Person::age validated min(18)
+)
+
+validator(Person("Bob", "bob@example.com", 30)) // null
+validator(Person("", "x", 17))
+// Problems([NotBlank, Email, Min])
+```
+
+### Getting a Result
+
+result4k is an optional dependency, bridged by a small shim:
+
+```kotlin
+val result = min(18).resultOf(30)   // Success(30)
+val failure = min(18).resultOf(10)  // Failure(ConstraintProblem(...))
+```
+
+### Lifting a boolean Validation
+
+Existing `Validation<T>` predicates can be lifted into a `Validator` with an explicit constraint and message:
+
+```kotlin
+val validator = 1.minLength.toValidator(Constraint("MinLength"), Message("must be at least 1 character"))
+```
 
 ## Linking Up Values4k and Kondor
 

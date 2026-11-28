@@ -28,6 +28,15 @@ fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>
 fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofResult4k(value: PRIMITIVE) =
     resultFrom { validate(value) }
 
+fun <T> Validator<T>.resultOf(value: T): Result<T, Problem> =
+    this(value)?.let { Failure(it) } ?: Success(value)
+
+fun <DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> ValueFactory<DOMAIN, PRIMITIVE>.ofValidated(
+    value: PRIMITIVE,
+    validator: Validator<PRIMITIVE>
+): Result<DOMAIN, Problem> =
+    validator(value)?.let { Failure(it) } ?: Success(of(value))
+
 private fun <IN, DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any> List<IN>.toResult4k(
     fn: (IN) -> Result<DOMAIN, Exception>
 ) = when {
