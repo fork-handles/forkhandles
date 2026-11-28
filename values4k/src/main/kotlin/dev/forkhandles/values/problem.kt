@@ -27,3 +27,8 @@ fun Problem.causes(): List<Problem> = when (this) {
     is Problems -> causes
     else -> listOf(this)
 }
+
+class ValidationException(
+    val problems: List<Problem>,
+    cause: Throwable? = null
+) : IllegalArgumentException(problems.joinToString("; ") { it.message.value }, cause)

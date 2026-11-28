@@ -8,11 +8,16 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class Password(value: String) : StringValue(value, Maskers.hidden())
 
 class Age(value: Int) : IntValue(value) {
     companion object : IntValueFactory<Age>(::Age)
+}
+
+class PositiveAge(value: Int) : IntValue(value) {
+    companion object : IntValueFactory<PositiveAge>(::PositiveAge, min(1))
 }
 
 data class Person(val name: String, val email: String, val age: Int)
@@ -30,7 +35,7 @@ class ValidatorTest {
 
     @Test
     fun `lifts a boolean Validation into a Validator`() {
-        val validator = 1.minLength.toValidator(Constraint("MinLength"), Message("must be at least 1 character"))
+        val validator = { s: String -> s.length >= 1 }.toValidator(Constraint("MinLength"), Message("must be at least 1 character"))
 
         assertThat(validator("a"), absent())
 
@@ -111,5 +116,12 @@ class ValidatorTest {
             Age.ofValidated(10, min(18)),
             equalTo<Result<Age, Problem>>(Failure(ConstraintProblem(Constraint.Min, Message("must be greater than or equal to 18"), "10")))
         )
+    }
+
+    @Test
+    fun `construction failure throws a ValidationException carrying the Problem`() {
+        val exception = assertThrows<ValidationException> { PositiveAge.of(0) }
+
+        assertThat(exception.problems.map { it.constraint }, equalTo(listOf(Constraint.Min)))
     }
 }

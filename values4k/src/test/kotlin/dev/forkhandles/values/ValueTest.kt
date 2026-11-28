@@ -12,11 +12,11 @@ import dev.forkhandles.values.Maskers.substring
 import org.junit.jupiter.api.Test
 
 class MyValue private constructor(value: String) : StringValue(value) {
-    companion object : StringValueFactory<MyValue>(::MyValue, String::isNotEmpty)
+    companion object : StringValueFactory<MyValue>(::MyValue, notEmpty())
 }
 
 class MyIntValue private constructor(value: Int) : IntValue(value) {
-    companion object : IntValueFactory<MyIntValue>(::MyIntValue, { it > 0 })
+    companion object : IntValueFactory<MyIntValue>(::MyIntValue, positive())
 }
 
 class HiddenValue private constructor(value: String) : StringValue(value, masking = hidden('t')) {
