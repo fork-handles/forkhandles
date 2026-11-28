@@ -35,50 +35,50 @@ private val rfcBase16Alphabet get() = "^[0-9A-F]+$".toRegex() // https://www.rfc
 private val base36Alphabet get() = "^[0-9A-Z=]+$".toRegex()
 
 open class StringValueFactory<DOMAIN : Value<String>>(
-    fn: (String) -> DOMAIN, validation: Validation<String>? = null,
+    fn: (String) -> DOMAIN, validation: Validator<String>? = null,
     showFn: (String) -> String = { it }
 ) : ValueFactory<DOMAIN, String>(fn, validation, { it }, showFn)
 
 open class NonEmptyStringValueFactory<DOMAIN : Value<String>>(
     fn: (String) -> DOMAIN,
     showFn: (String) -> String = { it }
-) : ValueFactory<DOMAIN, String>(fn, 1.minLength, { it }, showFn)
+) : ValueFactory<DOMAIN, String>(fn, size(min = 1), { it }, showFn)
 
 open class NonBlankStringValueFactory<DOMAIN : Value<String>>(
     fn: (String) -> DOMAIN,
     showFn: (String) -> String = { it }
-) : ValueFactory<DOMAIN, String>(fn, 1.minLength.let { v -> { v(it.trim()) } }, { it }, showFn)
+) : ValueFactory<DOMAIN, String>(fn, notBlank(), { it }, showFn)
 
 open class Base64StringValueFactory<DOMAIN : Value<String>>(
     fn: (String) -> DOMAIN,
-    validation: Validation<String> = { true },
+    validation: Validator<String>? = null,
     parseFn: (String) -> String = { it },
     showFn: (String) -> String = { it },
-) : ValueFactory<DOMAIN, String>(fn, rfcBase64Alphabet::matches.and(validation), parseFn, showFn) {
+) : ValueFactory<DOMAIN, String>(fn, validation?.let { allOf<String>(pattern(rfcBase64Alphabet), it) } ?: pattern(rfcBase64Alphabet), parseFn, showFn) {
     private val encoder = Base64.getEncoder()
     fun encode(value: ByteArray) = encoder.encodeToString(value).let(coerceFn)
 }
 
 open class Base36StringValueFactory<DOMAIN : Value<String>>(
     fn: (String) -> DOMAIN,
-    validation: Validation<String> = { true },
+    validation: Validator<String>? = null,
     parseFn: (String) -> String = { it },
     showFn: (String) -> String = { it },
-) : ValueFactory<DOMAIN, String>(fn, base36Alphabet::matches.and(validation), parseFn, showFn)
+) : ValueFactory<DOMAIN, String>(fn, validation?.let { allOf<String>(pattern(base36Alphabet), it) } ?: pattern(base36Alphabet), parseFn, showFn)
 
 open class Base32StringValueFactory<DOMAIN : Value<String>>(
     fn: (String) -> DOMAIN,
-    validation: Validation<String> = { true },
+    validation: Validator<String>? = null,
     parseFn: (String) -> String = { it },
     showFn: (String) -> String = { it },
-) : ValueFactory<DOMAIN, String>(fn, rfcBase32Alphabet::matches.and(validation), parseFn, showFn)
+) : ValueFactory<DOMAIN, String>(fn, validation?.let { allOf<String>(pattern(rfcBase32Alphabet), it) } ?: pattern(rfcBase32Alphabet), parseFn, showFn)
 
 open class Base16StringValueFactory<DOMAIN : Value<String>>(
     fn: (String) -> DOMAIN,
-    validation: Validation<String> = { true },
+    validation: Validator<String>? = null,
     parseFn: (String) -> String = { it },
     showFn: (String) -> String = { it },
-) : ValueFactory<DOMAIN, String>(fn, rfcBase16Alphabet::matches.and(validation), parseFn, showFn) {
+) : ValueFactory<DOMAIN, String>(fn, validation?.let { allOf<String>(pattern(rfcBase16Alphabet), it) } ?: pattern(rfcBase16Alphabet), parseFn, showFn) {
     // Source: https://stackoverflow.com/a/9855338/1253613
     private val base16Chars = "0123456789ABCDEF".toCharArray()
     fun encode(bytes: ByteArray): DOMAIN {
@@ -93,111 +93,111 @@ open class Base16StringValueFactory<DOMAIN : Value<String>>(
 }
 
 open class CharValueFactory<DOMAIN : Value<Char>>(
-    fn: (Char) -> DOMAIN, validation: Validation<Char>? = null
+    fn: (Char) -> DOMAIN, validation: Validator<Char>? = null
 ) : ValueFactory<DOMAIN, Char>(fn, validation, String::first)
 
 open class IntValueFactory<DOMAIN : Value<Int>>(
-    fn: (Int) -> DOMAIN, validation: Validation<Int>? = null
+    fn: (Int) -> DOMAIN, validation: Validator<Int>? = null
 ) : ValueFactory<DOMAIN, Int>(fn, validation, String::toInt)
 
 open class LongValueFactory<DOMAIN : Value<Long>>(
-    fn: (Long) -> DOMAIN, validation: Validation<Long>? = null
+    fn: (Long) -> DOMAIN, validation: Validator<Long>? = null
 ) : ValueFactory<DOMAIN, Long>(fn, validation, String::toLong)
 
 open class DoubleValueFactory<DOMAIN : Value<Double>>(
-    fn: (Double) -> DOMAIN, validation: Validation<Double>? = null
+    fn: (Double) -> DOMAIN, validation: Validator<Double>? = null
 ) : ValueFactory<DOMAIN, Double>(fn, validation, String::toDouble)
 
 open class FloatValueFactory<DOMAIN : Value<Float>>(
-    fn: (Float) -> DOMAIN, validation: Validation<Float>? = null
+    fn: (Float) -> DOMAIN, validation: Validator<Float>? = null
 ) : ValueFactory<DOMAIN, Float>(fn, validation, String::toFloat)
 
 open class BooleanValueFactory<DOMAIN : Value<Boolean>>(
-    fn: (Boolean) -> DOMAIN, validation: Validation<Boolean>? = null
+    fn: (Boolean) -> DOMAIN, validation: Validator<Boolean>? = null
 ) : ValueFactory<DOMAIN, Boolean>(fn, validation, String::toBoolean)
 
 open class BigIntegerValueFactory<DOMAIN : Value<BigInteger>>(
-    fn: (BigInteger) -> DOMAIN, validation: Validation<BigInteger>? = null
+    fn: (BigInteger) -> DOMAIN, validation: Validator<BigInteger>? = null
 ) : ValueFactory<DOMAIN, BigInteger>(fn, validation, String::toBigInteger)
 
 open class BigDecimalValueFactory<DOMAIN : Value<BigDecimal>>(
-    fn: (BigDecimal) -> DOMAIN, validation: Validation<BigDecimal>? = null
+    fn: (BigDecimal) -> DOMAIN, validation: Validator<BigDecimal>? = null
 ) : ValueFactory<DOMAIN, BigDecimal>(fn, validation, String::toBigDecimal)
 
 open class UUIDValueFactory<DOMAIN : Value<UUID>>(
-    fn: (UUID) -> DOMAIN, validation: Validation<UUID>? = null
+    fn: (UUID) -> DOMAIN, validation: Validator<UUID>? = null
 ) : ValueFactory<DOMAIN, UUID>(fn, validation, UUID::fromString)
 
 open class UlidValueFactory<DOMAIN : Value<ULID>>(
-    fn: (ULID) -> DOMAIN, validation: Validation<ULID>? = null
+    fn: (ULID) -> DOMAIN, validation: Validator<ULID>? = null
 ) : ValueFactory<DOMAIN, ULID>(fn, validation, ULID::parse)
 
 open class URLValueFactory<DOMAIN : Value<URL>>(
-    fn: (URL) -> DOMAIN, validation: Validation<URL>? = null
+    fn: (URL) -> DOMAIN, validation: Validator<URL>? = null
 ) : ValueFactory<DOMAIN, URL>(fn, validation, { URI.create(it).toURL() })
 
 open class DurationValueFactory<DOMAIN : Value<Duration>>(
-    fn: (Duration) -> DOMAIN, validation: Validation<Duration>? = null
+    fn: (Duration) -> DOMAIN, validation: Validator<Duration>? = null
 ) : ValueFactory<DOMAIN, Duration>(fn, validation, { Duration.parse(it) })
 
 open class InstantValueFactory<DOMAIN : Value<Instant>>(
-    fn: (Instant) -> DOMAIN, validation: Validation<Instant>? = null,
+    fn: (Instant) -> DOMAIN, validation: Validator<Instant>? = null,
     fmt: DateTimeFormatter = ISO_INSTANT
 ) : ValueFactory<DOMAIN, Instant>(fn, validation, { fmt.parse(it, Instant::from) }, fmt::format)
 
 open class LocalDateValueFactory<DOMAIN : Value<LocalDate>>(
-    fn: (LocalDate) -> DOMAIN, validation: Validation<LocalDate>? = null,
+    fn: (LocalDate) -> DOMAIN, validation: Validator<LocalDate>? = null,
     fmt: DateTimeFormatter = ISO_LOCAL_DATE
 ) : ValueFactory<DOMAIN, LocalDate>(fn, validation, { LocalDate.parse(it, fmt) }, fmt::format)
 
 open class LocalTimeValueFactory<DOMAIN : Value<LocalTime>>(
     fn: (LocalTime) -> DOMAIN,
-    validation: Validation<LocalTime>? = null,
+    validation: Validator<LocalTime>? = null,
     fmt: DateTimeFormatter = ISO_LOCAL_TIME
 ) : ValueFactory<DOMAIN, LocalTime>(fn, validation, { LocalTime.parse(it, fmt) }, fmt::format)
 
 open class LocalDateTimeValueFactory<DOMAIN : Value<LocalDateTime>>(
     fn: (LocalDateTime) -> DOMAIN,
-    validation: Validation<LocalDateTime>? = null,
+    validation: Validator<LocalDateTime>? = null,
     fmt: DateTimeFormatter = ISO_LOCAL_DATE_TIME
 ) : ValueFactory<DOMAIN, LocalDateTime>(fn, validation, { LocalDateTime.parse(it, fmt) }, fmt::format)
 
 open class OffsetDateTimeValueFactory<DOMAIN : Value<OffsetDateTime>>(
     fn: (OffsetDateTime) -> DOMAIN,
-    validation: Validation<OffsetDateTime>? = null,
+    validation: Validator<OffsetDateTime>? = null,
     fmt: DateTimeFormatter = ISO_OFFSET_DATE_TIME
 ) : ValueFactory<DOMAIN, OffsetDateTime>(fn, validation, { OffsetDateTime.parse(it, fmt) }, fmt::format)
 
 open class OffsetTimeValueFactory<DOMAIN : Value<OffsetTime>>(
     fn: (OffsetTime) -> DOMAIN,
-    validation: Validation<OffsetTime>? = null,
+    validation: Validator<OffsetTime>? = null,
     fmt: DateTimeFormatter = ISO_OFFSET_TIME
 ) : ValueFactory<DOMAIN, OffsetTime>(fn, validation, { OffsetTime.parse(it, fmt) }, fmt::format)
 
 open class PeriodValueFactory<DOMAIN : Value<Period>>(
     fn: (Period) -> DOMAIN,
-    validation: Validation<Period>? = null
+    validation: Validator<Period>? = null
 ) : ValueFactory<DOMAIN, Period>(fn, validation, { Period.parse(it) })
 
 open class YearMonthValueFactory<DOMAIN : Value<YearMonth>>(
     fn: (YearMonth) -> DOMAIN,
-    validation: Validation<YearMonth>? = null,
+    validation: Validator<YearMonth>? = null,
     fmt: DateTimeFormatter = ofPattern("yyyy-MM")
 ) : ValueFactory<DOMAIN, YearMonth>(fn, validation, { YearMonth.parse(it, fmt) }, fmt::format)
 
 open class YearValueFactory<DOMAIN : Value<Year>>(
     fn: (Year) -> DOMAIN,
-    validation: Validation<Year>? = null,
+    validation: Validator<Year>? = null,
     fmt: DateTimeFormatter = ofPattern("yyyy")
 ) : ValueFactory<DOMAIN, Year>(fn, validation, { Year.parse(it, fmt) }, fmt::format)
 
 open class ZonedDateTimeValueFactory<DOMAIN : Value<ZonedDateTime>>(
     fn: (ZonedDateTime) -> DOMAIN,
-    validation: Validation<ZonedDateTime>? = null,
+    validation: Validator<ZonedDateTime>? = null,
     fmt: DateTimeFormatter = ISO_ZONED_DATE_TIME
 ) : ValueFactory<DOMAIN, ZonedDateTime>(fn, validation, { ZonedDateTime.parse(it, fmt) }, fmt::format)
 
 open class FileValueFactory<DOMAIN : Value<File>>(
-    fn: (File) -> DOMAIN, validation: Validation<File>? = null
+    fn: (File) -> DOMAIN, validation: Validator<File>? = null
 ) : ValueFactory<DOMAIN, File>(fn, validation, { File(it) })
 

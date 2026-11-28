@@ -1,11 +1,11 @@
 package dev.forkhandles.values
 
 /**
- * Base value type for inline classes which enables type-safe primitives, along with Validation.
+ * Base value type for inline classes which enables type-safe primitives, along with Validator.
  */
 abstract class ValueFactory<DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any>(
     internal val coerceFn: (PRIMITIVE) -> DOMAIN,
-    private val validation: Validation<PRIMITIVE>? = null,
+    private val validation: Validator<PRIMITIVE>? = null,
     internal val parseFn: (String) -> PRIMITIVE,
     internal val showFn: (PRIMITIVE) -> String = { it.toString() }
 ) {
@@ -27,6 +27,8 @@ abstract class ValueFactory<DOMAIN : Value<PRIMITIVE>, PRIMITIVE : Any>(
 
     private fun <T> attempt(value: () -> T) = try {
         value()
+    } catch (e: ValidationException) {
+        throw e
     } catch (e: Exception) {
         throw IllegalArgumentException(
             this::class.java.name.substringBeforeLast('$') +
