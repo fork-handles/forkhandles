@@ -3,6 +3,11 @@
 This list is not intended to be all-encompassing - it will document major and breaking API changes with their rationale
 when appropriate:
 
+### v4.0.0.0
+- **all**: Upgrade libraries and gradle
+- **values4k**: [Breaking] Replace `Validator` (Deprecated) with `Validation` so we can support composable validation. See docs for details. H/T @s4nchez
+
+
 ### v3.2.1.2
 - **result4k**: Fix signature and tests for rejectIfNull and retainIfNotNull to resolve nullability of T. H/T @potfur
 
